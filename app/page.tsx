@@ -1,0 +1,89 @@
+import { Navbar } from './components/Navbar'
+import { Hero } from './components/Hero'
+import { Stats, Categories, Products } from './components/Sections'
+import { WhyUs, Contact, Footer } from './components/ContactFooter'
+import { WhatsAppIcon } from './components/ui'
+
+export default function Home() {
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; }
+        ::selection { background: #e7a73f; color: white; }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-7px); }
+        }
+        @keyframes pulse-ring {
+          0%   { box-shadow: 0 0 0 0 rgba(37,211,102,0.45); }
+          70%  { box-shadow: 0 0 0 12px rgba(37,211,102,0); }
+          100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+          .reasons-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .footer-grid  { grid-template-columns: repeat(2,1fr) !important; }
+        }
+        @media (max-width: 768px) {
+          .hero-grid     { grid-template-columns: 1fr !important; }
+          .hero-image    { display: none !important; }
+          .stats-grid    { grid-template-columns: repeat(2,1fr) !important; }
+          .products-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .contact-grid  { grid-template-columns: 1fr !important; }
+          .nav-links     { display: none !important; }
+          .nav-cta       { display: none !important; }
+        }
+        @media (max-width: 480px) {
+          .products-grid { grid-template-columns: 1fr !important; }
+          .stats-grid    { grid-template-columns: 1fr !important; }
+          .reasons-grid  { grid-template-columns: 1fr !important; }
+          .footer-grid   { grid-template-columns: 1fr !important; }
+        }
+
+        /* WhatsApp flotante */
+        .whatsapp-float {
+          position: fixed; bottom: 28px; right: 28px;
+          width: 58px; height: 58px; background: #25D366; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 16px rgba(37,211,102,0.45);
+          z-index: 1000; text-decoration: none;
+          animation: float 3s ease-in-out infinite, pulse-ring 2.5s ease-out infinite;
+          transition: box-shadow 0.2s;
+        }
+        .whatsapp-float:hover {
+          animation-play-state: paused;
+          box-shadow: 0 6px 24px rgba(37,211,102,0.65);
+        }
+      `}</style>
+
+      <Navbar />
+      <Hero />
+      <Stats />
+      <Categories />
+      <Products />
+      <WhyUs />
+      <Contact />
+      <Footer />
+
+      {/* WhatsApp flotante */}
+      <a
+        href="https://wa.me/5493811234567"
+        target="_blank"
+        rel="noreferrer"
+        className="whatsapp-float"
+        title="Escribinos por WhatsApp"
+      >
+        <WhatsAppIcon size={26} color="white" />
+      </a>
+    </>
+  )
+}
