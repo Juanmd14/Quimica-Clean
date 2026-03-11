@@ -136,15 +136,15 @@ export function Contact() {
         </div>
       </div>
 
-      {/* Cuerpo oscuro */}
-      <div style={{ background: C.text, padding: '56px 48px' }}>
-        <div style={{
-          maxWidth: '1000px', margin: '0 auto',
-          display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '48px', alignItems: 'start',
-        }} className="contact-grid">
+       {/* Cuerpo oscuro */}
+       <div style={{ background: C.text, padding: '56px 48px' }}>
+         <div style={{
+           maxWidth: '1000px', margin: '0 auto',
+           display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '48px', alignItems: 'stretch',
+         }} className="contact-grid">
 
-          {/* Columna izquierda — info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+           {/* Columna izquierda — info */}
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between' }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: '18px', color: 'white', marginBottom: '6px' }}>Hablemos directamente</h3>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>
@@ -219,13 +219,13 @@ export function Contact() {
             </a>
           </div>
 
-          {/* Columna derecha — formulario */}
-          <div style={{
-            background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
-            padding: '22px', border: '1px solid rgba(255,255,255,0.1)',
-            display: 'flex', flexDirection: 'column', gap: '8px',
-            alignSelf: 'start',
-          }}>
+           {/* Columna derecha — formulario */}
+           <div style={{
+             background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
+             padding: '32px', border: '1px solid rgba(255,255,255,0.1)',
+             display: 'flex', flexDirection: 'column', gap: '16px',
+             height: 'fit-content',
+           }}>
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '2px' }}>Envianos tu consulta</div>
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Te respondemos en menos de 24hs hábiles</div>

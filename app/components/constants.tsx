@@ -15,21 +15,19 @@ export const C = {
 }
 
 export const products = [
-  { id: 1, name: 'Materias Primas', category: 'Materias Primas', desc: 'Insumos base para formulación industrial y de laboratorio de alta pureza', emoji: '🧪' },
-  { id: 2, name: 'Solventes', category: 'Solventes', desc: 'Alcohol isopropílico, acetona, tolueno y más en grado industrial y farmacéutico', emoji: '🔬' },
-  { id: 3, name: 'Concentrados', category: 'Concentrados', desc: 'Pastas y líquidos concentrados para limpieza, detergentes y uso industrial', emoji: '⚗️' },
-  { id: 4, name: 'Jabones', category: 'Jabones', desc: 'Jabones líquidos, en pasta y en polvo para uso industrial y doméstico', emoji: '🫧' },
-  { id: 5, name: 'Contenedores', category: 'Contenedores', desc: 'Bidones, tambores y envases homologados para productos químicos', emoji: '🪣' },
-  { id: 6, name: 'Higiene Industrial', category: 'Higiene', desc: 'Productos de limpieza y desinfección para plantas industriales y empresas', emoji: '🧹' },
+  { id: 1, name: 'Bidón Plástico 5L', category: 'Bidones de 5L', desc: 'Bidones plásticos de 5 litros con tapa hermética, ideales para químicos', emoji: '🪣' },
+  { id: 2, name: 'Bidón Industrial 20L', category: 'Bidones', desc: 'Contenedor industrial de 20 litros con cierre de seguridad', emoji: '🛢️' },
+  { id: 3, name: 'Bin de Almacenamiento 1000L', category: 'Contenedores', desc: 'Contenedor grande para almacenamiento de productos químicos a granel', emoji: '📦' },
+  { id: 4, name: 'Bidón Metálico 60L', category: 'Bidones', desc: 'Bidón metálico de 60 litros con doble cierre, para químicos agresivos', emoji: '🛢️' },
+  { id: 5, name: 'Contenedor Especial 200L', category: 'Contenedores', desc: 'Contenedor especial de 200 litros, homologado para transporte', emoji: '📦' },
+  { id: 6, name: 'Bidón de 10L con Agarraderas', category: 'Bidones de 5L', desc: 'Bidón de 10 litros con agarraderas laterales para fácil transporte', emoji: '🪣' },
 ]
 
 export const categories = [
-  { name: 'Materias Primas', emoji: '🧪', count: 18 },
-  { name: 'Solventes', emoji: '🔬', count: 15 },
-  { name: 'Concentrados', emoji: '⚗️', count: 12 },
-  { name: 'Jabones', emoji: '🫧', count: 10 },
-  { name: 'Contenedores', emoji: '🪣', count: 9 },
-  { name: 'Higiene', emoji: '🧹', count: 14 },
+  { name: 'Contenedores', emoji: '📦', count: 8 },
+  { name: 'Bidones', emoji: '🛢️', count: 12 },
+  { name: 'Bidones de 5L', emoji: '🪣', count: 6 },
+  { name: 'Accesorios', emoji: '🔧', count: 5 },
 ]
 
 export const stats = [

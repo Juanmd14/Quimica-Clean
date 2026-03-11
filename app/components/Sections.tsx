@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { C, stats, categories, products } from './constants'
 import { CountUp, GlowCard } from './ui'
 
@@ -49,18 +50,20 @@ export function Categories() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '16px' }}>
           {categories.map((cat, i) => (
-            <div key={i} style={{
-              background: C.white, border: `1.5px solid ${C.border}`,
-              padding: '28px 20px', textAlign: 'center', borderRadius: '14px',
-              cursor: 'pointer', transition: 'all 0.25s',
-            }}
-              onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 32px rgba(43,123,184,0.1)' }}
-              onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
-            >
-              <div style={{ fontSize: '36px', marginBottom: '14px' }}>{cat.emoji}</div>
-              <div style={{ fontWeight: 600, fontSize: '14px', color: C.text, marginBottom: '5px' }}>{cat.name}</div>
-              <div style={{ fontSize: '12px', color: C.blue, fontWeight: 600 }}>{cat.count} productos</div>
-            </div>
+            <Link key={i} href={`/productos?cat=${encodeURIComponent(cat.name)}`} style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: C.white, border: `1.5px solid ${C.border}`,
+                padding: '28px 20px', textAlign: 'center', borderRadius: '14px',
+                cursor: 'pointer', transition: 'all 0.25s',
+              }}
+                onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 32px rgba(43,123,184,0.1)' }}
+                onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
+              >
+                <div style={{ fontSize: '36px', marginBottom: '14px' }}>{cat.emoji}</div>
+                <div style={{ fontWeight: 600, fontSize: '14px', color: C.text, marginBottom: '5px' }}>{cat.name}</div>
+                <div style={{ fontSize: '12px', color: C.blue, fontWeight: 600 }}>{cat.count} productos</div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -108,7 +111,7 @@ export function Products() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px' }} className="products-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', marginBottom: '40px' }} className="products-grid">
           {filtered.map(product => (
             <GlowCard key={product.id} style={{ padding: '0' }}>
               {/* Imagen placeholder — reemplazá con <Image src={product.img} ... /> */}
@@ -129,12 +132,37 @@ export function Products() {
               <div style={{ padding: '22px 24px 24px' }}>
                 <h3 style={{ fontWeight: 700, fontSize: '17px', color: C.text, marginBottom: '8px' }}>{product.name}</h3>
                 <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.65, marginBottom: '20px' }}>{product.desc}</p>
-                <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                  Consultar precio →
-                </a>
+                <Link href={`/productos?cat=${encodeURIComponent(product.category)}`} style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
+                  Ver más productos →
+                </Link>
               </div>
             </GlowCard>
           ))}
+        </div>
+
+        {/* CTA Ver todos */}
+        <div style={{ textAlign: 'center' }}>
+          <Link href="/productos" style={{ 
+            display: 'inline-block',
+            background: C.blue,
+            color: 'white',
+            padding: '14px 32px',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            fontSize: '14px',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLAnchorElement).style.background = C.blueDark
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLAnchorElement).style.background = C.blue
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'
+          }}>
+            Ver todos los productos →
+          </Link>
         </div>
       </div>
     </section>

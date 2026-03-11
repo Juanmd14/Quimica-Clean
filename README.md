@@ -54,9 +54,11 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ## Acceder al Panel Admin
 
-1. Ve a [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-2. Ingresa la contraseña que configuraste en `NEXT_PUBLIC_ADMIN_PASSWORD`
-3. ¡Listo! Tendrás acceso al panel de administración
+El panel de administración está protegido y solo accesible con contraseña.
+
+**URL del Admin**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+
+Para más detalles, consulta la [Guía del Admin](./docs/ADMIN_GUIDE.md)
 
 ## Estructura del Proyecto
 
