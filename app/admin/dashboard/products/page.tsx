@@ -541,7 +541,7 @@ export default function ProductsManagement() {
                     </td>
                     <td style={{ padding: '15px', color: '#666' }}>{product.category}</td>
                     <td style={{ padding: '15px', color: '#333', fontWeight: '600' }}>
-                      ${product.price.toFixed(2)}
+                      Consultar precio
                     </td>
                     <td style={{
                       padding: '15px',
