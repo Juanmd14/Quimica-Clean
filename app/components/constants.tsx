@@ -16,19 +16,19 @@ export const C = {
 
 // categories: images[] = rutas en /public/ (solo para Materia Prima y Bouquets)
 export const categories = [
-  { name: 'Jabones',          count: 7  },
-  { name: 'Suavizantes',       count: 3  },
-  { name: 'Detergentes',      count: 3  },
-  { name: 'Desengrasantes',   count: 8  },
-  { name: 'Desinfectantes',   count: 9  },
-  { name: 'Pisos',            count: 4  },
-  { name: 'Piletas',          count: 7  },
-  { name: 'Automotor',        count: 4  },
-  { name: 'Hogar',            count: 5  },
-  { name: 'Concentrados',     count: 10 },
-  { name: 'Materia Prima',    count: 20 },
-  { name: 'Bouquets',          count: 21 },
-  { name: 'Contenedores',     count: 6  },
+  { name: 'Jabones',        count: 7,  emoji: '🧴' },
+  { name: 'Suavizantes',    count: 3,  emoji: '🌸' },
+  { name: 'Detergentes',    count: 3,  emoji: '🧼' },
+  { name: 'Desengrasantes', count: 8,  emoji: '🧹' },
+  { name: 'Desinfectantes', count: 9,  emoji: '🦠' },
+  { name: 'Pisos',          count: 4,  emoji: '🏠' },
+  { name: 'Piletas',        count: 7,  emoji: '🏊' },
+  { name: 'Automotor',      count: 4,  emoji: '🚗' },
+  { name: 'Hogar',          count: 5,  emoji: '🏡' },
+  { name: 'Concentrados',   count: 10, emoji: '🔬' },
+  { name: 'Materia Prima',  count: 20, emoji: '⚗️' },
+  { name: 'Bouquets',       count: 21, emoji: '🌺' },
+  { name: 'Contenedores',   count: 6,  emoji: '📦' },
 ] as const
 
 export type Category = typeof categories[number]
@@ -125,7 +125,6 @@ export const products: {
   { id: 1005, category: 'Contenedores', name: 'Tambores 170 lts',  color: '#5c6bc0' },
   { id: 1006, category: 'Contenedores', name: 'Tambores 200 lts',  color: '#3949ab' },
   { id: 1007, category: 'Contenedores', name: 'Bin 1000 lts',      color: '#263238' },
-,
   // ── Materia Prima (USD) ───────────────────────────────────────────────────────
   { id: 1101, category: 'Materia Prima', name: 'Lauril',       color: '#dfdfdfb0' },
   { id: 1103, category: 'Materia Prima', name: 'CMC',                      color: '#e6e3e3' },
