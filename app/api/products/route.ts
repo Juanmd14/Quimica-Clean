@@ -1,6 +1,7 @@
 // Products API Route
 
-import { createClient, supabaseAdmin } from '@/lib/supabase'
+import { createClient} from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 const supabase = createClient()
 import { productSchema } from '@/lib/validations'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
