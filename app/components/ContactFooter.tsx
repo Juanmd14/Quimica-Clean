@@ -137,15 +137,15 @@ export function Contact() {
         </div>
       </div>
 
-       {/* Cuerpo oscuro */}
-       <div style={{ background: C.text, padding: '56px 48px' }}>
-         <div style={{
-           maxWidth: '1000px', margin: '0 auto',
-           display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '48px', alignItems: 'stretch',
-         }} className="contact-grid">
+      {/* Cuerpo oscuro */}
+      <div style={{ background: C.text, padding: '56px 48px' }}>
+        <div style={{
+          maxWidth: '1000px', margin: '0 auto',
+          display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '48px', alignItems: 'stretch',
+        }} className="contact-grid">
 
-           {/* Columna izquierda — info */}
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between' }}>
+          {/* Columna izquierda — info */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between' }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: '18px', color: 'white', marginBottom: '6px' }}>Hablemos directamente</h3>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>
@@ -223,13 +223,13 @@ export function Contact() {
             </a>
           </div>
 
-           {/* Columna derecha — formulario */}
-           <div style={{
-             background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
-             padding: '32px', border: '1px solid rgba(255,255,255,0.1)',
-             display: 'flex', flexDirection: 'column', gap: '16px',
-             height: 'fit-content',
-           }}>
+          {/* Columna derecha — formulario */}
+          <div style={{
+            background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
+            padding: '32px', border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', flexDirection: 'column', gap: '16px',
+            height: 'fit-content',
+          }}>
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '2px' }}>Envianos tu consulta</div>
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Te respondemos en menos de 24hs hábiles</div>
@@ -364,16 +364,45 @@ export function Footer() {
 
       {/* Bottom */}
       <div style={{
-        borderTop: '1px solid rgba(255,255,255,0.06)', padding: '20px 48px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        padding: '20px 48px',
+        display: 'flex',
+        alignItems: 'center',
       }}>
-        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
+
+        {/* izquierda (vacío o algo futuro) */}
+        <div style={{ flex: 1 }} />
+
+        {/* centro */}
+        <div style={{
+          flex: 1,
+          textAlign: 'center',
+          fontSize: '12px',
+          color: 'rgba(255,255,255,0.25)'
+        }}>
           © 2026 Química Clean · Tucumán, Argentina. Todos los derechos reservados.
         </div>
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
-          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>Sistema operativo</span>
+
+        {/* derecha */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '6px',
+          alignItems: 'center'
+        }}>
+          <div style={{
+            width: '7px',
+            height: '7px',
+            borderRadius: '50%',
+            background: '#22c55e',
+            boxShadow: '0 0 6px #22c55e'
+          }} />
+          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
+            Sistema operativo
+          </span>
         </div>
+
       </div>
     </footer>
   )
