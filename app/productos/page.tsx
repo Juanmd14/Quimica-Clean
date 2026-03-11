@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { C } from '@/app/components/constants'
 import { GlowCard } from '@/app/components/ui'
@@ -16,7 +16,7 @@ interface Product {
   stock: number
 }
 
-export default function CategoryPage() {
+function CategoryPageContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('cat') || 'Todos'
   
@@ -25,7 +25,6 @@ export default function CategoryPage() {
   const [error, setError] = useState('')
   const [activeCategory, setActiveCategory] = useState(categoryParam)
 
-  // Cargar productos de la API
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -59,7 +58,6 @@ export default function CategoryPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: C.offWhite }}>
-      {/* Header */}
       <div style={{ background: C.blueDark, padding: '40px 48px', textAlign: 'center' }}>
         <Link href="/" style={{ 
           color: C.gold, 
@@ -89,7 +87,6 @@ export default function CategoryPage() {
         </p>
       </div>
 
-      {/* Filtros */}
       <div style={{ 
         background: C.white, 
         padding: '24px 48px', 
@@ -124,7 +121,6 @@ export default function CategoryPage() {
         </div>
       </div>
 
-      {/* Productos */}
       <div style={{ padding: '56px 48px', maxWidth: '1200px', margin: '0 auto' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: C.textMid }}>
@@ -175,7 +171,6 @@ export default function CategoryPage() {
             }}>
               {filteredProducts.map(product => (
                 <GlowCard key={product.id} style={{ padding: '0', height: '100%' }}>
-                  {/* Imagen */}
                   <div style={{
                     height: '200px', 
                     borderRadius: '14px 14px 0 0', 
@@ -216,7 +211,6 @@ export default function CategoryPage() {
                     </div>
                   </div>
 
-                  {/* Contenido */}
                   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <h3 style={{ 
                       fontWeight: '700', 
@@ -281,7 +275,6 @@ export default function CategoryPage() {
         )}
       </div>
 
-      {/* CTA */}
       <div style={{
         background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
         padding: '48px', 
@@ -322,5 +315,13 @@ export default function CategoryPage() {
         </a>
       </div>
     </div>
+  )
+}
+
+export default function CategoryPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '80px 0' }}>Cargando...</div>}>
+      <CategoryPageContent />
+    </Suspense>
   )
 }

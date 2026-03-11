@@ -142,26 +142,29 @@ export function Products() {
 
         {/* CTA Ver todos */}
         <div style={{ textAlign: 'center' }}>
-          <Link href="/productos" style={{ 
-            display: 'inline-block',
-            background: C.blue,
-            color: 'white',
-            padding: '14px 32px',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            fontSize: '14px',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = C.blueDark
-            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = C.blue
-            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'
-          }}>
-            Ver todos los productos →
+          <Link href="/productos">
+            <span style={{ 
+              display: 'inline-block',
+              background: C.blue,
+              color: 'white',
+              padding: '14px 32px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              fontSize: '14px',
+              transition: 'all 0.2s',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLSpanElement).style.background = C.blueDark as string
+              (e.currentTarget as HTMLSpanElement).style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLSpanElement).style.background = C.blue as string
+              (e.currentTarget as HTMLSpanElement).style.transform = 'translateY(0)'
+            }}>
+              Ver todos los productos →
+            </span>
           </Link>
         </div>
       </div>

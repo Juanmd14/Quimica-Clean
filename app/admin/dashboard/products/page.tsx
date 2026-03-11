@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Product } from '@/lib/types'
 import { CONFIG } from '@/lib/config'
+import { categories } from '@/app/components/constants'
 
 export default function ProductsManagement() {
   const [products, setProducts] = useState<Product[]>([])
@@ -321,9 +322,9 @@ export default function ProductsManagement() {
                   }}
                 >
                   <option value="">Selecciona una categoría</option>
-                  {CONFIG.CATEGORIES.map(cat => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.icon} {cat.name}
+                  {categories.map(cat => (
+                    <option key={cat.name} value={cat.name}>
+                      {cat.emoji} {cat.name}
                     </option>
                   ))}
                 </select>

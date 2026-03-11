@@ -12,7 +12,7 @@ export const C = {
   textLight: '#8a9ab0',
   border: '#e2e8f0',
   dark: '#0d1520',
-}
+} as const
 
 export const products = [
   { id: 1, name: 'Bidón Plástico 5L', category: 'Bidones de 5L', desc: 'Bidones plásticos de 5 litros con tapa hermética, ideales para químicos', emoji: '🪣' },
