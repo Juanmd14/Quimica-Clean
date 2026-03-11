@@ -7,10 +7,18 @@ export async function POST(request: NextRequest) {
 
   // Validación básica
   if (!nombre || !telefono) {
-    return NextResponse.json(
-      { error: 'Nombre y teléfono son obligatorios' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Nombre y teléfono son obligatorios' }, { status: 400 })
+  }
+
+  // Validación anti-spam
+  if (nombre.length > 100 || telefono.length > 20) {
+    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 })
+  }
+  if (mensaje && mensaje.length > 500) {
+    return NextResponse.json({ error: 'Mensaje demasiado largo' }, { status: 400 })
+  }
+  if (/(.)\1{10,}/.test(nombre + telefono + (mensaje || ''))) {
+    return NextResponse.json({ error: 'Mensaje inválido' }, { status: 400 })
   }
 
   const { data, error } = await supabaseAdmin
@@ -19,14 +27,9 @@ export async function POST(request: NextRequest) {
     .select()
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Error al guardar el lead' },
-      { status: 500 }
-    )
+    console.error('Lead error:', error)
+    return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
   }
 
-  return NextResponse.json(
-    { message: 'Lead guardado correctamente', data },
-    { status: 201 }
-  )
+  return NextResponse.json({ message: 'Lead guardado correctamente', data }, { status: 201 })
 }
