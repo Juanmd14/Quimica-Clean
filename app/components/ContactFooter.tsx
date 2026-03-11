@@ -237,25 +237,33 @@ export function Contact() {
 
             <input
               style={inputStyle} placeholder="Nombre y apellido *"
-              value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+              value={formData.nombre}
+              maxLength={25}
+              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <input
               style={inputStyle} placeholder="Teléfono *"
-              value={formData.telefono} onChange={e => setFormData({ ...formData, telefono: e.target.value })}
+              value={formData.telefono}
+              maxLength={13}
+              onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^0-9+\-\s]/g, '') })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <input
               style={inputStyle} placeholder="Producto de interés"
-              value={formData.producto_interes} onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
+              value={formData.producto_interes}
+              maxLength={25}
+              onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <textarea
-              style={{ ...inputStyle, resize: 'vertical' }} placeholder="Mensaje o consulta" rows={3}
-              value={formData.mensaje} onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
+              style={{ ...inputStyle, resize: 'none' }} placeholder="Mensaje o consulta" rows={3}
+              value={formData.mensaje}
+              maxLength={250}
+              onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
