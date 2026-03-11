@@ -1,595 +1,311 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Product } from '@/lib/types'
-import { CONFIG } from '@/lib/config'
-import { categories } from '@/app/components/constants'
+import { useEffect, useState, useCallback } from 'react'
+import { createClient, type Producto, CATEGORIAS } from '@/lib/supabase'
 
-export default function ProductsManagement() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
+const C = {
+  bg: '#0f1623', card: '#1a2436', border: '#2a3a54',
+  blue: '#2b7bb8', gold: '#e7a73f', text: '#f1f5f9',
+  textMid: '#94a3b8', danger: '#ef4444', success: '#22c55e',
+}
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    image_url: '',
-    stock: '',
+function ColorDot({ color, color2, size = 28 }: { color?: string | null; color2?: string | null; size?: number }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0,
+      background: color2
+        ? `linear-gradient(135deg, ${color} 50%, ${color2} 50%)`
+        : color || '#334155',
+      border: '2px solid rgba(255,255,255,0.15)',
+    }} />
+  )
+}
+
+type FormData = Omit<Producto, 'id' | 'activo' | 'orden'>
+
+function ProductModal({ product, onSave, onClose }: {
+  product: Producto | null
+  onSave: (data: FormData & { id?: number }) => Promise<void>
+  onClose: () => void
+}) {
+  const [form, setForm] = useState<FormData>({
+    categoria: product?.categoria ?? 'Jabones',
+    nombre:    product?.nombre    ?? '',
+    color:     product?.color     ?? '#ffffff',
+    color2:    product?.color2    ?? null,
+    emoji:     product?.emoji     ?? null,
   })
+  const [saving, setSaving] = useState(false)
+  const [useColor2, setUseColor2] = useState(!!product?.color2)
 
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const set = (k: keyof FormData, v: string | null) => setForm(f => ({ ...f, [k]: v }))
 
-  // Fetch products
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/products')
-      const result = await response.json()
-
-      if (result.success) {
-        setProducts(result.data)
-      } else {
-        setError('Error al cargar productos')
-      }
-    } catch (err) {
-      setError('Error de conexión')
-    } finally {
-      setLoading(false)
-    }
+  const handleSave = async () => {
+    if (!form.nombre.trim()) return
+    setSaving(true)
+    await onSave({ ...form, color2: useColor2 ? form.color2 : null, id: product?.id })
+    setSaving(false)
+    onClose()
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    // Clear error for this field
-    if (formErrors[name]) {
-      setFormErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
-    }
+  const inputStyle: React.CSSProperties = {
+    width: '100%', background: '#0f1623', border: `1.5px solid ${C.border}`,
+    color: C.text, padding: '9px 12px', borderRadius: '8px', fontSize: '14px',
+    outline: 'none', fontFamily: 'DM Sans, sans-serif', boxSizing: 'border-box',
   }
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {}
-
-    if (!formData.name || formData.name.length < 3) {
-      errors.name = 'El nombre debe tener al menos 3 caracteres'
-    }
-    if (!formData.description || formData.description.length < 10) {
-      errors.description = 'La descripción debe tener al menos 10 caracteres'
-    }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      errors.price = 'El precio debe ser mayor a 0'
-    }
-    if (!formData.category) {
-      errors.category = 'Debes seleccionar una categoría'
-    }
-    if (!formData.image_url || !formData.image_url.startsWith('http')) {
-      errors.image_url = 'Debes proporcionar una URL válida'
-    }
-    if (!formData.stock || parseInt(formData.stock) < 0) {
-      errors.stock = 'El stock debe ser un número no negativo'
-    }
-
-    setFormErrors(errors)
-    return Object.keys(errors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
-
-    try {
-      setLoading(true)
-      const url = editingId ? `/api/products/${editingId}` : '/api/products'
-      const method = editingId ? 'PUT' : 'POST'
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-          price: parseFloat(formData.price),
-          category: formData.category,
-          image_url: formData.image_url,
-          stock: parseInt(formData.stock),
-        }),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        setError(result.error || 'Error al guardar el producto')
-        return
-      }
-
-      // Reset form and refresh
-      setFormData({
-        name: '',
-        description: '',
-        price: '',
-        category: '',
-        image_url: '',
-        stock: '',
-      })
-      setEditingId(null)
-      setShowForm(false)
-      setFormErrors({})
-      await fetchProducts()
-    } catch (err) {
-      setError('Error de conexión')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleEdit = (product: Product) => {
-    setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price.toString(),
-      category: product.category,
-      image_url: product.image_url,
-      stock: product.stock.toString(),
-    })
-    setEditingId(product.id)
-    setShowForm(true)
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) return
-
-    try {
-      const response = await fetch(`/api/products/${id}`, { method: 'DELETE' })
-      
-      if (response.ok) {
-        await fetchProducts()
-      } else {
-        setError('Error al eliminar el producto')
-      }
-    } catch (err) {
-      setError('Error de conexión')
-    }
-  }
-
-  const handleCancel = () => {
-    setShowForm(false)
-    setEditingId(null)
-    setFormData({
-      name: '',
-      description: '',
-      price: '',
-      category: '',
-      image_url: '',
-      stock: '',
-    })
-    setFormErrors({})
+  const label: React.CSSProperties = {
+    fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em',
+    textTransform: 'uppercase', color: C.textMid, marginBottom: '6px', display: 'block',
   }
 
   return (
-    <div style={{ padding: '40px' }}>
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 50, backdropFilter: 'blur(4px)' }} />
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '30px',
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        background: C.card, border: `1px solid ${C.border}`, borderRadius: '16px',
+        padding: '32px', width: '480px', maxWidth: '95vw', zIndex: 51,
+        boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
       }}>
-        <h2 style={{ margin: 0, color: '#333' }}>Gestionar Productos</h2>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          style={{
-            padding: '10px 20px',
-            background: CONFIG.PRIMARY_COLOR,
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: '600',
-          }}
-        >
-          {showForm ? 'Cancelar' : '+ Nuevo Producto'}
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 style={{ color: C.text, fontWeight: 700, fontSize: '18px', margin: 0 }}>
+            {product ? 'Editar producto' : 'Nuevo producto'}
+          </h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: C.textMid, fontSize: '22px', cursor: 'pointer' }}>×</button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={label}>Nombre</label>
+            <input style={inputStyle} value={form.nombre} onChange={e => set('nombre', e.target.value)} placeholder="Ej: Jabón tipo Ariel" />
+          </div>
+
+          <div>
+            <label style={label}>Categoría</label>
+            <select style={{ ...inputStyle, cursor: 'pointer' }} value={form.categoria} onChange={e => set('categoria', e.target.value)}>
+              {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label style={label}>Color</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <input type="color" value={form.color || '#ffffff'} onChange={e => set('color', e.target.value)}
+                style={{ width: '48px', height: '38px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+              <input style={{ ...inputStyle, flex: 1 }} value={form.color || ''} onChange={e => set('color', e.target.value)} placeholder="#ffffff" />
+              <ColorDot color={form.color} color2={useColor2 ? form.color2 : null} size={36} />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ ...label, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={useColor2} onChange={e => setUseColor2(e.target.checked)} style={{ width: '14px', height: '14px', cursor: 'pointer' }} />
+              Color secundario
+            </label>
+            {useColor2 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+                <input type="color" value={form.color2 || '#000000'} onChange={e => set('color2', e.target.value)}
+                  style={{ width: '48px', height: '38px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                <input style={{ ...inputStyle, flex: 1 }} value={form.color2 || ''} onChange={e => set('color2', e.target.value)} placeholder="#000000" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label style={label}>Emoji (opcional)</label>
+            <input style={inputStyle} value={form.emoji || ''} onChange={e => set('emoji', e.target.value || null)} placeholder="🧴" />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', marginTop: '24px' }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '10px', background: 'transparent', border: `1.5px solid ${C.border}`, color: C.textMid, borderRadius: '8px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            Cancelar
+          </button>
+          <button onClick={handleSave} disabled={saving || !form.nombre.trim()} style={{
+            flex: 2, padding: '10px', background: C.blue, border: 'none', color: 'white',
+            borderRadius: '8px', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
+            fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
+          }}>
+            {saving ? 'Guardando…' : 'Guardar'}
+          </button>
+        </div>
       </div>
+    </>
+  )
+}
 
-      {error && (
-        <div style={{
-          background: '#fee',
-          color: '#c33',
-          padding: '15px',
-          borderRadius: '6px',
-          marginBottom: '20px',
-        }}>
-          {error}
+export default function ProductsManagement() {
+  const [products, setProducts] = useState<Producto[]>([])
+  const [filtered, setFiltered] = useState<Producto[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [catFilter, setCatFilter] = useState('Todos')
+  const [search, setSearch] = useState('')
+  const [modal, setModal] = useState<Producto | null | 'new'>(null)
+  const [toast, setToast] = useState('')
+  const sb = createClient()
+
+  const loadProducts = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await sb.from('productos').select('*').order('categoria').order('orden')
+    if (error) setError('Error al cargar productos')
+    else setProducts(data || [])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { loadProducts() }, [loadProducts])
+
+  useEffect(() => {
+    let f = products
+    if (catFilter !== 'Todos') f = f.filter(p => p.categoria === catFilter)
+    if (search) f = f.filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()))
+    setFiltered(f)
+  }, [products, catFilter, search])
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
+
+  const handleSave = async (data: FormData & { id?: number }) => {
+    const { id, ...rest } = data as any
+    if (id) {
+      await sb.from('productos').update(rest).eq('id', id)
+      showToast('✓ Producto actualizado')
+    } else {
+      await sb.from('productos').insert([{ ...rest, activo: true, orden: products.length }])
+      showToast('✓ Producto creado')
+    }
+    await loadProducts()
+  }
+
+  const handleDelete = async (id: number, nombre: string) => {
+    if (!confirm(`¿Eliminar "${nombre}"?`)) return
+    await sb.from('productos').delete().eq('id', id)
+    showToast('Producto eliminado')
+    await loadProducts()
+  }
+
+  const handleToggle = async (p: Producto) => {
+    await sb.from('productos').update({ activo: !p.activo }).eq('id', p.id)
+    setProducts(prev => prev.map(x => x.id === p.id ? { ...x, activo: !x.activo } : x))
+  }
+
+  const cats = ['Todos', ...Array.from(new Set(products.map(p => p.categoria))).sort()]
+
+  return (
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: 'DM Sans, sans-serif', color: C.text }}>
+
+      {toast && (
+        <div style={{ position: 'fixed', top: '20px', right: '20px', background: '#1e3a1e', border: '1px solid #22c55e', color: '#4ade80', padding: '12px 20px', borderRadius: '10px', zIndex: 100, fontWeight: 500, fontSize: '14px' }}>
+          {toast}
         </div>
       )}
 
-      {/* Product Form */}
-      {showForm && (
-        <div style={{
-          background: 'white',
-          padding: '30px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          marginBottom: '30px',
-        }}>
-          <h3 style={{ marginTop: 0, color: '#333' }}>
-            {editingId ? 'Editar Producto' : 'Crear Nuevo Producto'}
-          </h3>
+      <div style={{ padding: '28px 32px', maxWidth: '1300px', margin: '0 auto' }}>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-              {/* Name */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#333',
-                  fontWeight: '500',
-                  fontSize: '14px',
-                }}>
-                  Nombre del Producto *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Ej: Limpiador Multiusos"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: formErrors.name ? '2px solid #c33' : '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                {formErrors.name && (
-                  <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                    {formErrors.name}
-                  </p>
-                )}
-              </div>
-
-              {/* Price */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#333',
-                  fontWeight: '500',
-                  fontSize: '14px',
-                }}>
-                  Precio *
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  placeholder="299.99"
-                  step="0.01"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: formErrors.price ? '2px solid #c33' : '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                {formErrors.price && (
-                  <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                    {formErrors.price}
-                  </p>
-                )}
-              </div>
-
-              {/* Category */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#333',
-                  fontWeight: '500',
-                  fontSize: '14px',
-                }}>
-                  Categoría *
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: formErrors.category ? '2px solid #c33' : '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <option value="">Selecciona una categoría</option>
-                  {categories.map(cat => (
-                    <option key={cat.name} value={cat.name}>
-                      {cat.emoji} {cat.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.category && (
-                  <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                    {formErrors.category}
-                  </p>
-                )}
-              </div>
-
-              {/* Stock */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#333',
-                  fontWeight: '500',
-                  fontSize: '14px',
-                }}>
-                  Stock *
-                </label>
-                <input
-                  type="number"
-                  name="stock"
-                  value={formData.stock}
-                  onChange={handleInputChange}
-                  placeholder="50"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: formErrors.stock ? '2px solid #c33' : '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                {formErrors.stock && (
-                  <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                    {formErrors.stock}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Description */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: '#333',
-                fontWeight: '500',
-                fontSize: '14px',
-              }}>
-                Descripción *
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe el producto en detalle..."
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: formErrors.description ? '2px solid #c33' : '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                  fontFamily: 'inherit',
-                }}
-              />
-              {formErrors.description && (
-                <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                  {formErrors.description}
-                </p>
-              )}
-            </div>
-
-            {/* Image URL */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: '#333',
-                fontWeight: '500',
-                fontSize: '14px',
-              }}>
-                URL de la Imagen *
-              </label>
-              <input
-                type="url"
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleInputChange}
-                placeholder="https://ejemplo.com/imagen.jpg"
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: formErrors.image_url ? '2px solid #c33' : '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                }}
-              />
-              {formErrors.image_url && (
-                <p style={{ color: '#c33', fontSize: '12px', margin: '5px 0 0 0' }}>
-                  {formErrors.image_url}
-                </p>
-              )}
-              {formData.image_url.startsWith('http') && (
-                <div style={{ marginTop: '10px' }}>
-                  <img
-                    src={formData.image_url}
-                    alt="Preview"
-                    style={{
-                      maxWidth: '150px',
-                      maxHeight: '150px',
-                      borderRadius: '6px',
-                      border: '1px solid #ddd',
-                    }}
-                    onError={() => console.log('Error loading image')}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Buttons */}
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={handleCancel}
-                style={{
-                  padding: '10px 20px',
-                  background: '#f0f0f0',
-                  color: '#333',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  padding: '10px 20px',
-                  background: loading ? '#ccc' : CONFIG.PRIMARY_COLOR,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                }}
-              >
-                {loading ? 'Guardando...' : 'Guardar Producto'}
-              </button>
-            </div>
-          </form>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+          <h2 style={{ color: C.text, fontWeight: 700, fontSize: '22px', margin: 0 }}>Gestionar Productos</h2>
+          <button onClick={() => setModal('new')} style={{ background: C.gold, color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', fontFamily: 'DM Sans, sans-serif' }}>
+            + Nuevo producto
+          </button>
         </div>
-      )}
 
-      {/* Products List */}
-      <div style={{
-        background: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        overflow: 'hidden',
-      }}>
-        {loading && !showForm ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-            Cargando productos...
+        {error && (
+          <div style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', padding: '12px 16px', borderRadius: '8px', marginBottom: '20px' }}>
+            {error}
           </div>
-        ) : products.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-            No hay productos aún. Crea el primero!
+        )}
+
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+          {[
+            { label: 'Total', value: products.length },
+            { label: 'Activos', value: products.filter(p => p.activo).length },
+            { label: 'Categorías', value: cats.length - 1 },
+            { label: 'Inactivos', value: products.filter(p => !p.activo).length },
+          ].map((s, i) => (
+            <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px 20px' }}>
+              <div style={{ fontSize: '26px', fontWeight: 800, color: i === 3 ? C.danger : C.gold }}>{s.value}</div>
+              <div style={{ fontSize: '12px', color: C.textMid, marginTop: '4px' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="🔍 Buscar producto..."
+            style={{ background: C.card, border: `1.5px solid ${C.border}`, color: C.text, padding: '9px 14px', borderRadius: '8px', fontSize: '14px', outline: 'none', fontFamily: 'DM Sans, sans-serif', width: '240px' }}
+          />
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {cats.map(cat => (
+              <button key={cat} onClick={() => setCatFilter(cat)} style={{
+                background: catFilter === cat ? C.blue : C.card,
+                border: `1.5px solid ${catFilter === cat ? C.blue : C.border}`,
+                color: catFilter === cat ? 'white' : C.textMid,
+                padding: '7px 14px', borderRadius: '20px', cursor: 'pointer',
+                fontSize: '12px', fontWeight: 500, fontFamily: 'DM Sans, sans-serif',
+              }}>{cat}</button>
+            ))}
           </div>
+        </div>
+
+        {/* Tabla */}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px', color: C.textMid }}>Cargando…</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              fontSize: '14px',
-            }}>
-              <thead>
-                <tr style={{ background: '#f9f9f9', borderBottom: '2px solid #ddd' }}>
-                  <th style={{ padding: '15px', textAlign: 'left', fontWeight: '600', color: '#333' }}>Nombre</th>
-                  <th style={{ padding: '15px', textAlign: 'left', fontWeight: '600', color: '#333' }}>Categoría</th>
-                  <th style={{ padding: '15px', textAlign: 'left', fontWeight: '600', color: '#333' }}>Precio</th>
-                  <th style={{ padding: '15px', textAlign: 'left', fontWeight: '600', color: '#333' }}>Stock</th>
-                  <th style={{ padding: '15px', textAlign: 'center', fontWeight: '600', color: '#333' }}>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(product => (
-                  <tr key={product.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '15px', color: '#333' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        {product.image_url && (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              borderRadius: '4px',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        )}
-                        <span>{product.name}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '15px', color: '#666' }}>{product.category}</td>
-                    <td style={{ padding: '15px', color: '#333', fontWeight: '600' }}>
-                      Consultar precio
-                    </td>
-                    <td style={{
-                      padding: '15px',
-                      color: product.stock > 0 ? '#27ae60' : '#e74c3c',
-                      fontWeight: '600',
-                    }}>
-                      {product.stock}
-                    </td>
-                    <td style={{ padding: '15px', textAlign: 'center' }}>
-                      <button
-                        onClick={() => handleEdit(product)}
-                        style={{
-                          padding: '6px 12px',
-                          background: '#3498db',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          marginRight: '8px',
-                        }}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        style={{
-                          padding: '6px 12px',
-                          background: '#e74c3c',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                        }}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 160px 80px 100px', padding: '12px 20px', borderBottom: `1px solid ${C.border}`, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: C.textMid }}>
+              <div></div><div>Nombre</div><div>Categoría</div><div>Estado</div><div style={{ textAlign: 'right' }}>Acciones</div>
+            </div>
+
+            {filtered.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: C.textMid }}>Sin resultados</div>
+            ) : filtered.map((p, i) => (
+              <div key={p.id} style={{
+                display: 'grid', gridTemplateColumns: '40px 1fr 160px 80px 100px',
+                padding: '12px 20px', alignItems: 'center',
+                borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none',
+                opacity: p.activo ? 1 : 0.45, transition: 'background 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)'}
+                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}
+              >
+                <ColorDot color={p.color} color2={p.color2} size={26} />
+                <div style={{ fontWeight: 500, fontSize: '14px', paddingRight: '12px' }}>
+                  {p.emoji && <span style={{ marginRight: '8px' }}>{p.emoji}</span>}
+                  {p.nombre}
+                </div>
+                <div>
+                  <span style={{ background: 'rgba(43,123,184,0.15)', color: '#60a5fa', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                    {p.categoria}
+                  </span>
+                </div>
+                <div>
+                  <button onClick={() => handleToggle(p)} style={{
+                    background: p.activo ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                    color: p.activo ? '#4ade80' : '#f87171',
+                    border: 'none', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                  }}>
+                    {p.activo ? 'Activo' : 'Oculto'}
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setModal(p)} style={{ background: 'rgba(43,123,184,0.15)', border: 'none', color: '#60a5fa', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }} title="Editar">✏️</button>
+                  <button onClick={() => handleDelete(p.id, p.nombre)} style={{ background: 'rgba(239,68,68,0.12)', border: 'none', color: '#f87171', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }} title="Eliminar">🗑️</button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {modal && (
+        <ProductModal
+          product={modal === 'new' ? null : modal as Producto}
+          onSave={handleSave}
+          onClose={() => setModal(null)}
+        />
+      )}
     </div>
   )
 }
