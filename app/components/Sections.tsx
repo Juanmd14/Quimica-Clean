@@ -43,6 +43,39 @@ function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?
   }
 }
 
+// ─── ProductThumb: muestra imagen si existe, sino color, sino gradiente ────────
+function ProductThumb({ id, color, color2, emoji, height = 140 }: {
+  id: number; color?: string; color2?: string; emoji?: string; height?: number
+}) {
+  const [imgError, setImgError] = useState(false)
+
+  const bg = color2
+    ? `linear-gradient(135deg, ${color} 50%, ${color2} 50%)`
+    : color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+
+  return (
+    <div style={{
+      height, position: 'relative', overflow: 'hidden',
+      background: bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      {!imgError && (
+        <img
+          src={`/products/${id}.jpg`}
+          alt=""
+          onError={() => setImgError(true)}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      )}
+      {(imgError || !color) && emoji && (
+        <span style={{ fontSize: height > 100 ? '42px' : '28px', position: 'relative', zIndex: 1 }}>
+          {emoji}
+        </span>
+      )}
+    </div>
+  )
+}
+
 // ─── Stats ────────────────────────────────────────────────────────────────────
 export function Stats() {
   return (
@@ -69,7 +102,6 @@ export function Stats() {
 // ─── Category Modal ───────────────────────────────────────────────────────────
 function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClose: () => void }) {
   const catProducts = products.filter(p => p.category === cat.name)
-  const hasImages = false
 
   return (
     <>
@@ -81,7 +113,6 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
         zIndex: 201, boxShadow: '0 40px 100px rgba(0,0,0,0.28)',
         animation: 'modalIn 0.25s ease both',
       }}>
-        {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -89,9 +120,7 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: '20px', color: C.text }}>{cat.name}</div>
-              <div style={{ fontSize: '13px', color: C.textMid }}>
-                {catProducts.length} productos
-              </div>
+              <div style={{ fontSize: '13px', color: C.textMid }}>{catProducts.length} productos</div>
             </div>
           </div>
           <button onClick={onClose} style={{
@@ -104,28 +133,18 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
           >×</button>
         </div>
 
-        {/* Product grid — with optional price badge */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '14px' }}>
           {catProducts.map(product => {
             const p = product as any
             return (
               <div key={product.id} style={{
-                border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden', transition: 'all 0.22s', position: 'relative',
+                border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden',
+                transition: 'all 0.22s', position: 'relative',
               }}
                 onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
                 onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
               >
-                <div style={{
-                  height: '80px',
-                  background: p.color2
-                    ? `linear-gradient(135deg, ${p.color} 50%, ${p.color2} 50%)`
-                    : p.color
-                      ? p.color
-                      : `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px',
-                }}>
-                  {!p.color && product.emoji}
-                </div>
+                <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={80} />
                 <div style={{ padding: '14px 16px 16px' }}>
                   <div style={{ fontWeight: 700, fontSize: '14px', color: C.text, marginBottom: '6px', lineHeight: 1.3 }}>{product.name}</div>
                   <p style={{ fontSize: '12px', color: C.textMid, lineHeight: 1.6, marginBottom: '12px' }}>{product.desc}</p>
@@ -179,9 +198,7 @@ export function Categories() {
                 <CategoryIcon name={cat.name} size={24} color={C.blue} />
               </div>
               <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '4px', lineHeight: 1.25 }}>{cat.name}</div>
-              <div style={{ fontSize: '11px', color: C.blue, fontWeight: 600 }}>
-                {cat.count} productos
-              </div>
+              <div style={{ fontSize: '11px', color: C.blue, fontWeight: 600 }}>{cat.count} productos</div>
             </div>
           ))}
         </div>
@@ -197,7 +214,7 @@ export function Products() {
   const { productos } = useProductos()
   const displayCats = categories
   const [activeCat, setActiveCat] = useState('Todos')
-const filtered = activeCat === 'Todos' ? products : products.filter(p => p.category === activeCat)
+  const filtered = activeCat === 'Todos' ? products : products.filter(p => p.category === activeCat)
   const shown = filtered.slice(0, 6)
 
   return (
@@ -228,28 +245,26 @@ const filtered = activeCat === 'Todos' ? products : products.filter(p => p.categ
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', marginBottom: '40px' }} className="products-grid">
-          {shown.map(product => (
-            <GlowCard key={product.id} style={{ padding: '0' }}>
-              <div style={{
-                height: '140px', borderRadius: '14px 14px 0 0',
-                background: `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px',
-                position: 'relative',
-              }}>
-                {product.emoji}
-                <div style={{ position: 'absolute', top: '10px', left: '10px', background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
-                  {product.category.toUpperCase()}
+          {shown.map(product => {
+            const p = product as any
+            return (
+              <GlowCard key={product.id} style={{ padding: '0' }}>
+                <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
+                  <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={140} />
+                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
+                    {product.category.toUpperCase()}
+                  </div>
                 </div>
-              </div>
-              <div style={{ padding: '20px 22px 22px' }}>
-                <h3 style={{ fontWeight: 700, fontSize: '16px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.name}</h3>
-                <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.65, marginBottom: '18px' }}>{product.desc}</p>
-                <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                  Consultar →
-                </a>
-              </div>
-            </GlowCard>
-          ))}
+                <div style={{ padding: '20px 22px 22px' }}>
+                  <h3 style={{ fontWeight: 700, fontSize: '16px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.name}</h3>
+                  <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.65, marginBottom: '18px' }}>{product.desc}</p>
+                  <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
+                    Consultar →
+                  </a>
+                </div>
+              </GlowCard>
+            )
+          })}
         </div>
 
         <div style={{ textAlign: 'center' }}>
