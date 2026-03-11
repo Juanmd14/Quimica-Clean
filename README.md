@@ -1,36 +1,161 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quimica Clean - E-Commerce de Productos Químicos
 
-## Getting Started
+Plataforma moderna de e-commerce para la venta de productos químicos y de limpieza, construida con Next.js 16, React 19, TypeScript y Supabase.
 
-First, run the development server:
+## Características
 
+- 🛍️ **Catálogo de Productos**: Gestión completa de productos químicos y de limpieza
+- 🔐 **Panel Admin Protegido**: Administra tu negocio de forma segura
+- 📱 **Responsive Design**: Optimizado para todos los dispositivos
+- 💾 **Base de Datos**: Integración con Supabase
+- 📝 **Validación de Datos**: Validación con Zod en backend y frontend
+- ⚡ **Rendimiento**: Optimizado con Next.js App Router
+- 🎨 **Tailwind CSS**: Estilos modernos y personalizables
+
+## Requisitos Previos
+
+- Node.js 18+
+- npm o yarn
+- Cuenta de Supabase
+
+## Instalación
+
+1. **Clonar el repositorio**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <tu-repo>
+cd quimica-clean
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Instalar dependencias**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Configurar variables de entorno**
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edita `.env.local` con tus valores:
+```env
+NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
+SUPABASE_SECRET_KEY=tu_secret_key_de_supabase
+NEXT_PUBLIC_ADMIN_PASSWORD=tu_contraseña_admin_segura
+NEXT_PUBLIC_WHATSAPP_NUMBER=+5493811234567
+```
 
-## Learn More
+4. **Ejecutar el servidor de desarrollo**
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Acceder al Panel Admin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Ve a [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+2. Ingresa la contraseña que configuraste en `NEXT_PUBLIC_ADMIN_PASSWORD`
+3. ¡Listo! Tendrás acceso al panel de administración
 
-## Deploy on Vercel
+## Estructura del Proyecto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+quimica-clean/
+├── app/
+│   ├── admin/                 # Panel de administración
+│   │   ├── login/            # Página de login
+│   │   ├── dashboard/        # Dashboard principal
+│   │   └── layout.tsx        # Layout protegido
+│   ├── api/                   # Rutas API
+│   │   └── admin/
+│   │       ├── login/        # Login endpoint
+│   │       ├── logout/       # Logout endpoint
+│   │       └── session/      # Verificar sesión
+│   ├── components/            # Componentes React
+│   └── page.tsx              # Página principal
+├── lib/
+│   ├── config.ts             # Configuración centralizada
+│   ├── types.ts              # Tipos TypeScript
+│   ├── validations.ts        # Esquemas Zod
+│   ├── auth.ts               # Autenticación
+│   └── supabase.ts           # Cliente Supabase
+└── public/                    # Archivos estáticos
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts Disponibles
+
+```bash
+# Desarrollar
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Ejecutar en producción
+npm start
+
+# Ejecutar linter
+npm run lint
+```
+
+## Seguridad
+
+⚠️ **Importante**: 
+- Nunca subas `.env.local` al repositorio
+- Usa una contraseña fuerte para el admin
+- En producción, usa variables de entorno seguras en tu plataforma de hosting
+- Las contraseñas de admin se almacenan en cookies httpOnly
+
+## Tecnologías
+
+- **Next.js 16**: Framework React moderno
+- **React 19**: Biblioteca UI
+- **TypeScript**: Type-safety
+- **Tailwind CSS 4**: Estilos
+- **Supabase**: Base de datos y autenticación
+- **Zod**: Validación de esquemas
+- **ESLint**: Linting de código
+
+## Desarrollo
+
+### Agregar nuevos productos
+
+Usa el endpoint POST `/api/admin/products` con validación Zod:
+
+```typescript
+{
+  "name": "Limpiador Multiusos",
+  "description": "Limpiador efectivo para todas las superficies",
+  "price": 299.99,
+  "category": "Limpiadores",
+  "image_url": "https://...",
+  "stock": 50
+}
+```
+
+### Crear nuevas rutas protegidas
+
+Todas las rutas en `/admin/*` están protegidas automáticamente por el middleware de autenticación.
+
+## Contribuir
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT.
+
+## Soporte
+
+Para soporte, contáctanos por WhatsApp o email.
+
+---
+
+Hecho con ❤️ para Quimica Clean
