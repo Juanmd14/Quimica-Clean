@@ -157,7 +157,7 @@ export function Contact() {
               {[
                 {
                   icon: <WhatsAppIcon size={20} color="#25D366" />,
-                  label: 'WhatsApp', value: '+54 9 381 123-4567',
+                  label: 'WhatsApp', value: '+54 9 381 304-6228',
                   bg: 'rgba(37,211,102,0.1)', border: 'rgba(37,211,102,0.2)',
                 },
                 {
@@ -202,7 +202,7 @@ export function Contact() {
               ))}
             </div>
 
-            <a href="https://wa.me/5493811234567" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
               <button style={{
                 width: '100%', background: '#25D366', color: 'white', border: 'none',
                 padding: '13px 24px', borderRadius: '8px',
@@ -313,7 +313,7 @@ export function Footer() {
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, maxWidth: '260px', marginBottom: '24px' }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
-            <a href="https://wa.me/5493811234567" target="_blank" rel="noreferrer" style={{
+            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.2)',
               color: '#4ade80', padding: '8px 16px', borderRadius: '8px',
@@ -323,7 +323,7 @@ export function Footer() {
               onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(37,211,102,0.1)'}
             >
               <WhatsAppIcon size={16} color="#4ade80" />
-              +54 9 381 123-4567
+              +54 9 381 304-6228
             </a>
           </div>
 

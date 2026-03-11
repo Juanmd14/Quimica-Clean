@@ -104,7 +104,7 @@ export function Hero() {
               >Ver catálogo →</button>
             </a>
 
-            <a href="https://wa.me/5493811234567" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
               <button style={{
                 background: 'rgba(255,255,255,0.1)', color: 'white',
                 border: '1.5px solid rgba(255,255,255,0.3)',
