@@ -1,6 +1,6 @@
 // Get, Update, Delete Product by ID
-
-import { createClient, supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { createClient} from '@/lib/supabase'
 const supabase = createClient()
 import { productSchema } from '@/lib/validations'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
