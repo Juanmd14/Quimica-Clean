@@ -26,16 +26,16 @@ export function Navbar() {
     }}>
 
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <a href="/" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', textDecoration: 'none' }} aria-label="Ir al inicio">
         <Image
           src="/logo_qm.jpg"
-          alt="Química Clean"
+          alt="Quimica Clean"
           width={52}
           height={52}
           style={{ objectFit: 'contain' }}
           priority
         />
-      </div>
+      </a>
 
       {/* Links en pill container */}
       <div style={{

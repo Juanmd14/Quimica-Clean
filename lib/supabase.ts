@@ -1,13 +1,26 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
-// Para el frontend
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
 
-// Para el backend (más permisos)
-export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SECRET_KEY!
-)
+// Tipos
+export type Producto = {
+  id: number
+  categoria: string
+  nombre: string
+  color: string | null
+  color2: string | null
+  emoji: string | null
+  activo: boolean
+  orden: number
+}
+
+export const CATEGORIAS = [
+  'Jabones', 'Suavizantes', 'Detergentes', 'Desengrasantes',
+  'Desinfectantes', 'Pisos', 'Piletas', 'Automotor',
+  'Hogar', 'Concentrados', 'Materia Prima', 'Bouquets', 'Contenedores',
+] as const

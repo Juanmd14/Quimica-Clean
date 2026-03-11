@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { C } from './constants'
 import { GlowCard, WhatsAppIcon } from './ui'
 
@@ -166,7 +167,7 @@ export function Contact() {
                       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
                     </svg>
                   ),
-                  label: 'Email', value: 'ventas@quimicaclean.com.ar',
+                  label: 'Email', value: 'admquimicaclean@gmail.com',
                   bg: 'rgba(231,167,63,0.1)', border: 'rgba(231,167,63,0.2)',
                 },
                 {
@@ -175,7 +176,7 @@ export function Contact() {
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
                     </svg>
                   ),
-                  label: 'Ubicación', value: 'Tucumán, Argentina',
+                  label: 'Ubicación', value: 'San Miguel de Tucumán, Argentina',
                   bg: 'rgba(43,123,184,0.1)', border: 'rgba(43,123,184,0.2)',
                 },
                 {
@@ -184,19 +185,22 @@ export function Contact() {
                       <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                     </svg>
                   ),
-                  label: 'Horario', value: 'Lun–Vie 8:00 a 18:00',
+                  label: 'Horario', value: 'Lun–Vie 8:00–13:30 y 14:30–18:00\nSáb 8:00–13:00',
                   bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)',
                 },
               ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <div style={{
                     width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0,
                     background: item.bg, border: `1px solid ${item.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginTop: '2px',
                   }}>{item.icon}</div>
                   <div>
                     <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: '1px' }}>{item.label}</div>
-                    <div style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>{item.value}</div>
+                    {item.value.split('\n').map((line, j) => (
+                      <div key={j} style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>{line}</div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -294,18 +298,14 @@ export function Footer() {
 
       {/* Top */}
       <div style={{ padding: '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '48px' }} className="footer-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px' }} className="footer-grid">
 
           {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              {/* Logo pequeño — reemplazá con <Image src="/logo_qm.jpg" width={100} height={40} ... /> */}
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '8px',
-                background: `linear-gradient(135deg, ${C.blue}, ${C.gold})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'white', fontWeight: 700, fontSize: '16px',
-              }}>Q</div>
+              <div style={{ width: '38px', height: '38px', borderRadius: '8px', overflow: 'hidden', background: 'white' }}>
+                <Image src="/logo_qm.jpg" alt="Quimica Clean" width={38} height={38} style={{ objectFit: 'contain' }} />
+              </div>
               <span style={{ fontWeight: 700, fontSize: '16px', color: 'white' }}>
                 QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
               </span>
@@ -352,10 +352,11 @@ export function Footer() {
           {/* Contacto */}
           <div>
             <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '20px' }}>Contacto</div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 2 }}>
-              <div>ventas@quimicaclean.com.ar</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.9 }}>
+              <div>admquimicaclean@gmail.com</div>
               <div>Tucumán, Argentina</div>
-              <div style={{ marginTop: '4px' }}>Lun–Vie 8:00 a 18:00</div>
+              <div style={{ marginTop: '4px', fontSize: '11px' }}>Lun–Vie: 8:00–13:30 y 14:30–18:00</div>
+              <div style={{ fontSize: '11px' }}>Sáb: 8:00–13:00</div>
             </div>
           </div>
         </div>
