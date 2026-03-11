@@ -170,7 +170,7 @@ export const products: {
 
 export const stats = [
   { value: 5,    suffix: '+', label: 'Años de experiencia' },
-  { value: 50,   suffix: '+', label: 'Productos disponibles' },
+  { value: 100,   suffix: '+', label: 'Productos disponibles' },
   { value: 1000, suffix: '+', label: 'Clientes activos'     },
   { display: 'check',         label: 'Entregas en todo el país' },
 ]
