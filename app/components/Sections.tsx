@@ -1,12 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { C, stats, categories, products } from './constants'
 import { CountUp, GlowCard } from './ui'
 import { useProductos } from '@/lib/useProductos'
 
+// ─── Breakpoint hook ──────────────────────────────────────────────────────────
+function useBreakpoint() {
+  const [width, setWidth] = useState(1200)
+  useEffect(() => {
+    const update = () => setWidth(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return { isMobile: width < 768, isTablet: width < 1024, width }
+}
 
 // ─── SVG icons por categoría ──────────────────────────────────────────────────
 function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?: number; color?: string }) {
@@ -43,22 +54,17 @@ function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?
   }
 }
 
-// ─── ProductThumb: muestra imagen si existe, sino color, sino gradiente ────────
+// ─── ProductThumb ─────────────────────────────────────────────────────────────
 function ProductThumb({ id, color, color2, emoji, height = 140 }: {
   id: number; color?: string; color2?: string; emoji?: string; height?: number
 }) {
   const [imgError, setImgError] = useState(false)
-
   const bg = color2
     ? `linear-gradient(135deg, ${color} 50%, ${color2} 50%)`
     : color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
 
   return (
-    <div style={{
-      height, position: 'relative', overflow: 'hidden',
-      background: bg,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
+    <div style={{ height, position: 'relative', overflow: 'hidden', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {!imgError && (
         <img
           src={`/products/${id}.jpg`}
@@ -78,22 +84,37 @@ function ProductThumb({ id, color, color2, emoji, height = 140 }: {
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 export function Stats() {
+  const { isMobile } = useBreakpoint()
+
   return (
     <section style={{ background: C.blueDark }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }} className="stats-grid">
-        {stats.map((s, i) => (
-          <div key={i} style={{ textAlign: 'center', padding: '44px 24px', borderRight: i < 3 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
-            <div style={{ fontWeight: 800, fontSize: '46px', color: C.gold, lineHeight: 1, marginBottom: '8px', letterSpacing: '-0.02em' }}>
-              {'display' in s ? (
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block' }}>
-                  <circle cx="12" cy="12" r="11" stroke={C.gold} strokeWidth="1.5" fill="none" opacity="0.25" />
-                  <polyline points="6.5 12.5 10 16 17.5 8.5" stroke={C.gold} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : <CountUp target={s.value} suffix={s.suffix} />}
+      <div style={{
+        maxWidth: '1200px', margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)',
+      }}>
+        {stats.map((s, i) => {
+          const isLastInRow = isMobile ? i % 2 === 1 : i === 3
+          const isBottomRow = isMobile && i >= 2
+          return (
+            <div key={i} style={{
+              textAlign: 'center',
+              padding: isMobile ? '28px 16px' : '44px 24px',
+              borderRight: !isLastInRow ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              borderBottom: isBottomRow ? 'none' : isMobile && i < 2 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+            }}>
+              <div style={{ fontWeight: 800, fontSize: isMobile ? '36px' : '46px', color: C.gold, lineHeight: 1, marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                {'display' in s ? (
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block' }}>
+                    <circle cx="12" cy="12" r="11" stroke={C.gold} strokeWidth="1.5" fill="none" opacity="0.25" />
+                    <polyline points="6.5 12.5 10 16 17.5 8.5" stroke={C.gold} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : <CountUp target={s.value} suffix={s.suffix} />}
+              </div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
             </div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
@@ -101,6 +122,7 @@ export function Stats() {
 
 // ─── Category Modal ───────────────────────────────────────────────────────────
 function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClose: () => void }) {
+  const { isMobile } = useBreakpoint()
   const catProducts = products.filter(p => p.category === cat.name)
 
   return (
@@ -108,32 +130,36 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(10,20,35,0.72)', backdropFilter: 'blur(5px)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        background: C.white, borderRadius: '20px', padding: '36px',
-        width: '92%', maxWidth: '820px', maxHeight: '85vh', overflowY: 'auto',
+        background: C.white, borderRadius: '20px',
+        padding: isMobile ? '20px 16px' : '36px',
+        width: '92%', maxWidth: '820px',
+        maxHeight: isMobile ? '90vh' : '85vh',
+        overflowY: 'auto',
         zIndex: 201, boxShadow: '0 40px 100px rgba(0,0,0,0.28)',
         animation: 'modalIn 0.25s ease both',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CategoryIcon name={cat.name} size={26} color={C.blue} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <CategoryIcon name={cat.name} size={22} color={C.blue} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '20px', color: C.text }}>{cat.name}</div>
-              <div style={{ fontSize: '13px', color: C.textMid }}>{catProducts.length} productos</div>
+              <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.name}</div>
+              <div style={{ fontSize: '12px', color: C.textMid }}>{catProducts.length} productos</div>
             </div>
           </div>
           <button onClick={onClose} style={{
             background: C.offWhite, border: `1px solid ${C.border}`, width: '36px', height: '36px',
             borderRadius: '8px', cursor: 'pointer', fontSize: '20px', color: C.textMid,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s',
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = C.border }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.offWhite }}
-          >×</button>
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>×</button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '14px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(210px, 1fr))',
+          gap: isMobile ? '10px' : '14px',
+        }}>
           {catProducts.map(product => {
             const p = product as any
             return (
@@ -144,10 +170,10 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
                 onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
                 onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
               >
-                <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={80} />
-                <div style={{ padding: '14px 16px 16px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '14px', color: C.text, marginBottom: '6px', lineHeight: 1.3 }}>{product.name}</div>
-                  <p style={{ fontSize: '12px', color: C.textMid, lineHeight: 1.6, marginBottom: '12px' }}>{product.desc}</p>
+                <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={isMobile ? 64 : 80} />
+                <div style={{ padding: isMobile ? '10px 12px 12px' : '14px 16px 16px' }}>
+                  <div style={{ fontWeight: 700, fontSize: isMobile ? '12px' : '14px', color: C.text, marginBottom: '4px', lineHeight: 1.3 }}>{product.name}</div>
+                  {!isMobile && <p style={{ fontSize: '12px', color: C.textMid, lineHeight: 1.6, marginBottom: '12px' }}>{product.desc}</p>}
                   <a href="#contacto" onClick={onClose} style={{ fontSize: '12px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
                     Consultar →
                   </a>
@@ -169,33 +195,35 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 export function Categories() {
+  const { isMobile } = useBreakpoint()
   const [openCat, setOpenCat] = useState<typeof categories[number] | null>(null)
 
   return (
-    <section id="categorias" style={{ padding: '96px 48px', background: C.offWhite }}>
+    <section id="categorias" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.offWhite }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '52px' }}>
+        <div style={{ marginBottom: isMobile ? '32px' : '52px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: C.blue, marginBottom: '14px' }}>
             <span style={{ width: '24px', height: '2px', background: C.blue, display: 'inline-block' }} />
             Lo que ofrecemos
           </div>
-          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: '34px', color: C.text, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: isMobile ? '26px' : '34px', color: C.text, letterSpacing: '-0.02em' }}>
             Categorías de productos
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: isMobile ? '10px' : '14px' }}>
           {categories.map((cat, i) => (
             <div key={i} onClick={() => setOpenCat(cat)} style={{
               background: C.white, border: `1.5px solid ${C.border}`,
-              padding: '24px 16px', textAlign: 'center', borderRadius: '16px',
+              padding: isMobile ? '18px 12px' : '24px 16px',
+              textAlign: 'center', borderRadius: '16px',
               cursor: 'pointer', transition: 'all 0.25s',
             }}
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 36px rgba(43,123,184,0.1)' }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
             >
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-                <CategoryIcon name={cat.name} size={24} color={C.blue} />
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <CategoryIcon name={cat.name} size={22} color={C.blue} />
               </div>
               <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '4px', lineHeight: 1.25 }}>{cat.name}</div>
               <div style={{ fontSize: '11px', color: C.blue, fontWeight: 600 }}>{cat.count} productos</div>
@@ -211,52 +239,72 @@ export function Categories() {
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 export function Products() {
+  const { isMobile, isTablet } = useBreakpoint()
   const { productos } = useProductos()
   const displayCats = categories
   const [activeCat, setActiveCat] = useState('Todos')
   const filtered = activeCat === 'Todos' ? products : products.filter(p => p.category === activeCat)
   const shown = filtered.slice(0, 6)
 
+  const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)'
+
   return (
-    <section id="productos" style={{ padding: '96px 48px', background: C.white }}>
+    <section id="productos" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.white }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '24px', marginBottom: '40px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'flex-start' : 'flex-end',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: '20px',
+          marginBottom: '40px',
+        }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: C.gold, marginBottom: '14px' }}>
               <span style={{ width: '24px', height: '2px', background: C.gold, display: 'inline-block' }} />
               Catálogo
             </div>
-            <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: '34px', color: C.text, letterSpacing: '-0.02em' }}>Productos destacados</h2>
+            <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: isMobile ? '26px' : '34px', color: C.text, letterSpacing: '-0.02em' }}>Productos destacados</h2>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+
+          {/* Filtros: scroll horizontal en mobile */}
+          <div style={{
+            display: 'flex', gap: '8px',
+            overflowX: isMobile ? 'auto' : 'visible',
+            flexWrap: isMobile ? 'nowrap' : 'wrap',
+            width: isMobile ? '100%' : 'auto',
+            paddingBottom: isMobile ? '4px' : '0',
+            WebkitOverflowScrolling: 'touch' as any,
+          }}>
             {['Todos', ...displayCats.map(c => c.name)].map(cat => (
               <button key={cat} onClick={() => setActiveCat(cat)} style={{
                 background: activeCat === cat ? C.blue : C.white,
                 border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
                 color: activeCat === cat ? 'white' : C.textMid,
-                padding: '7px 16px', borderRadius: '20px',
+                padding: '7px 14px', borderRadius: '20px',
                 fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 500,
                 cursor: 'pointer', transition: 'all 0.2s',
                 boxShadow: activeCat === cat ? '0 4px 12px rgba(43,123,184,0.3)' : 'none',
+                flexShrink: 0,
               }}>{cat}</button>
             ))}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', marginBottom: '40px' }} className="products-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: isMobile ? '14px' : '20px', marginBottom: '40px' }}>
           {shown.map(product => {
             const p = product as any
             return (
               <GlowCard key={product.id} style={{ padding: '0' }}>
                 <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
-                  <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={140} />
+                  <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={isMobile ? 120 : 140} />
                   <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
                     {product.category.toUpperCase()}
                   </div>
                 </div>
-                <div style={{ padding: '20px 22px 22px' }}>
-                  <h3 style={{ fontWeight: 700, fontSize: '16px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.name}</h3>
+                <div style={{ padding: isMobile ? '14px 16px 18px' : '20px 22px 22px' }}>
+                  <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.name}</h3>
                   <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.65, marginBottom: '18px' }}>{product.desc}</p>
                   <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
                     Consultar →
@@ -296,19 +344,21 @@ const fabricantes = [
 ]
 
 export function Fabricantes() {
+  const { isMobile } = useBreakpoint()
+
   return (
-    <section style={{ padding: '96px 48px', background: `linear-gradient(160deg, ${C.blueDark} 0%, #0d1f35 100%)`, position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: `linear-gradient(160deg, ${C.blueDark} 0%, #0d1f35 100%)`, position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: `radial-gradient(circle, ${C.gold}18 0%, transparent 70%)`, pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '-60px', left: '10%', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${C.blue}22 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '36px' : '60px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: C.gold, marginBottom: '14px' }}>
             <span style={{ width: '24px', height: '2px', background: C.gold, display: 'inline-block' }} />
             Línea propia
             <span style={{ width: '24px', height: '2px', background: C.gold, display: 'inline-block' }} />
           </div>
-          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 800, fontSize: '38px', color: 'white', letterSpacing: '-0.025em', marginBottom: '14px' }}>
+          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 800, fontSize: isMobile ? '28px' : '38px', color: 'white', letterSpacing: '-0.025em', marginBottom: '14px' }}>
             Somos <span style={{ color: C.gold }}>Fabricantes</span>
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', maxWidth: '480px', margin: '0 auto', lineHeight: 1.65 }}>
@@ -316,18 +366,18 @@ export function Fabricantes() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
           {fabricantes.map((item, i) => (
-            <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '28px 24px', transition: 'all 0.3s', cursor: 'default', backdropFilter: 'blur(8px)' }}
+            <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: isMobile ? '20px 18px' : '28px 24px', transition: 'all 0.3s', cursor: 'default', backdropFilter: 'blur(8px)' }}
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.09)'; d.style.borderColor = `${C.gold}55`; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = `0 20px 40px rgba(0,0,0,0.3)` }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.05)'; d.style.borderColor = 'rgba(255,255,255,0.1)'; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
             >
-              <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: 'rgba(231,167,63,0.12)', border: '1px solid rgba(231,167,63,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', marginBottom: '18px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(231,167,63,0.12)', border: '1px solid rgba(231,167,63,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', marginBottom: '14px' }}>
                 {item.emoji}
               </div>
-              <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '8px' }}>{item.name}</div>
+              <div style={{ fontWeight: 700, fontSize: '15px', color: 'white', marginBottom: '6px' }}>{item.name}</div>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.65, margin: 0 }}>{item.desc}</p>
-              <div style={{ marginTop: '18px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: C.gold, fontWeight: 600 }}>
+              <div style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: C.gold, fontWeight: 600 }}>
                 <span style={{ width: '16px', height: '1.5px', background: C.gold, display: 'inline-block' }} />
                 Fabricación propia
               </div>

@@ -1,11 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { GlowCard, WhatsAppIcon } from './ui'
 
-// ─── SVG icons para "Por qué elegirnos" ──────────────────────────────────────
+// ─── Breakpoint hook ──────────────────────────────────────────────────────────
+function useBreakpoint() {
+  const [width, setWidth] = useState(1200)
+  useEffect(() => {
+    const update = () => setWidth(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return { isMobile: width < 768, isTablet: width < 1024, width }
+}
+
+// ─── SVG icons ────────────────────────────────────────────────────────────────
 function IconCertified() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,14 +59,16 @@ const reasons = [
 
 // ─── WhyUs ────────────────────────────────────────────────────────────────────
 export function WhyUs() {
+  const { isMobile } = useBreakpoint()
+
   return (
     <section id="nosotros" style={{
-      padding: '96px 48px',
+      padding: isMobile ? '56px 20px' : '96px 48px',
       background: `linear-gradient(160deg, ${C.blueLight} 0%, ${C.white} 55%)`,
       borderTop: `1px solid ${C.border}`,
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '36px' : '60px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em',
@@ -64,23 +78,26 @@ export function WhyUs() {
             Por qué elegirnos
             <span style={{ width: '24px', height: '2px', background: C.blue, display: 'inline-block' }} />
           </div>
-          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: '34px', color: C.text, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: isMobile ? '26px' : '34px', color: C.text, letterSpacing: '-0.02em' }}>
             Calidad que respalda cada entrega
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px' }} className="reasons-grid">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '12px' : '20px',
+        }}>
           {reasons.map(({ Icon, title, desc, color, bg }, i) => (
-            <GlowCard key={i} style={{ padding: '32px' }} glowColor={color}>
-              {/* Reemplazá el SVG con <Image src={`/icons/${i}.png`} ... /> cuando tengas imágenes */}
+            <GlowCard key={i} style={{ padding: isMobile ? '20px 16px' : '32px' }} glowColor={color}>
               <div style={{
-                width: '56px', height: '56px', borderRadius: '14px', background: bg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px',
+                width: '48px', height: '48px', borderRadius: '12px', background: bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px',
               }}>
                 <Icon />
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: '16px', color: C.text, marginBottom: '10px' }}>{title}</h3>
-              <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.7 }}>{desc}</p>
+              <h3 style={{ fontWeight: 700, fontSize: isMobile ? '14px' : '16px', color: C.text, marginBottom: '8px', lineHeight: 1.3 }}>{title}</h3>
+              <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>{desc}</p>
             </GlowCard>
           ))}
         </div>
@@ -93,6 +110,7 @@ export function WhyUs() {
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 export function Contact() {
+  const { isMobile } = useBreakpoint()
   const [formData, setFormData] = useState({ nombre: '', telefono: '', producto_interes: '', mensaje: '' })
   const [status, setStatus] = useState<FormStatus>('idle')
 
@@ -114,37 +132,42 @@ export function Contact() {
     border: '1.5px solid rgba(255,255,255,0.12)', color: 'white',
     padding: '10px 14px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px',
     outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s, box-shadow 0.2s',
+    boxSizing: 'border-box' as const,
   }
 
   return (
     <section id="contacto" style={{ padding: '0', background: C.white }}>
 
-      {/* Banner naranja */}
+      {/* Banner */}
       <div style={{
         background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
-        padding: '56px 48px', textAlign: 'center',
+        padding: isMobile ? '40px 20px' : '56px 48px',
+        textAlign: 'center',
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.75)', marginBottom: '12px' }}>
             — Contacto —
           </div>
-          <h2 style={{ fontWeight: 700, fontSize: '38px', color: 'white', lineHeight: 1.15, marginBottom: '12px', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontWeight: 700, fontSize: isMobile ? '28px' : '38px', color: 'white', lineHeight: 1.15, marginBottom: '12px', letterSpacing: '-0.02em' }}>
             ¿Necesitás un producto?
           </h2>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.65 }}>
+          <p style={{ fontSize: isMobile ? '14px' : '15px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.65 }}>
             Completá el formulario y te respondemos en menos de 24 horas hábiles.
           </p>
         </div>
       </div>
 
-      {/* Cuerpo oscuro */}
-      <div style={{ background: C.text, padding: '56px 48px' }}>
+      {/* Cuerpo */}
+      <div style={{ background: C.text, padding: isMobile ? '40px 20px' : '56px 48px' }}>
         <div style={{
           maxWidth: '1000px', margin: '0 auto',
-          display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '48px', alignItems: 'stretch',
-        }} className="contact-grid">
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '1.25fr 1fr',
+          gap: isMobile ? '32px' : '48px',
+          alignItems: 'stretch',
+        }}>
 
-          {/* Columna izquierda — info */}
+          {/* Info */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between' }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: '18px', color: 'white', marginBottom: '6px' }}>Hablemos directamente</h3>
@@ -153,7 +176,6 @@ export function Contact() {
               </p>
             </div>
 
-            {/* Datos de contacto */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
                 {
@@ -193,13 +215,12 @@ export function Contact() {
                   <div style={{
                     width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0,
                     background: item.bg, border: `1px solid ${item.border}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginTop: '2px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2px',
                   }}>{item.icon}</div>
                   <div>
                     <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: '1px' }}>{item.label}</div>
                     {item.value.split('\n').map((line, j) => (
-                      <div key={j} style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>{line}</div>
+                      <div key={j} style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>{line}</div>
                     ))}
                   </div>
                 </div>
@@ -223,12 +244,12 @@ export function Contact() {
             </a>
           </div>
 
-          {/* Columna derecha — formulario */}
+          {/* Formulario */}
           <div style={{
             background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
-            padding: '32px', border: '1px solid rgba(255,255,255,0.1)',
-            display: 'flex', flexDirection: 'column', gap: '16px',
-            height: 'fit-content',
+            padding: isMobile ? '24px 20px' : '32px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', flexDirection: 'column', gap: '14px',
           }}>
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '2px' }}>Envianos tu consulta</div>
@@ -237,32 +258,28 @@ export function Contact() {
 
             <input
               style={inputStyle} placeholder="Nombre y apellido *"
-              value={formData.nombre}
-              maxLength={25}
+              value={formData.nombre} maxLength={25}
               onChange={e => setFormData({ ...formData, nombre: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <input
               style={inputStyle} placeholder="Teléfono *"
-              value={formData.telefono}
-              maxLength={13}
+              value={formData.telefono} maxLength={13}
               onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^0-9+\-\s]/g, '') })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <input
               style={inputStyle} placeholder="Producto de interés"
-              value={formData.producto_interes}
-              maxLength={25}
+              value={formData.producto_interes} maxLength={25}
               onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
             />
             <textarea
               style={{ ...inputStyle, resize: 'none' }} placeholder="Mensaje o consulta" rows={3}
-              value={formData.mensaje}
-              maxLength={250}
+              value={formData.mensaje} maxLength={250}
               onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
               onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
@@ -301,24 +318,29 @@ export function Contact() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 export function Footer() {
+  const { isMobile } = useBreakpoint()
+
   return (
     <footer style={{ background: C.dark, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
 
-      {/* Top */}
-      <div style={{ padding: '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px' }} className="footer-grid">
+      <div style={{ padding: isMobile ? '40px 20px 32px' : '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 1.5fr',
+          gap: isMobile ? '32px 20px' : '40px',
+        }}>
 
-          {/* Brand */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '8px', overflow: 'hidden', background: 'white' }}>
-                <Image src="/logo_qm.jpg" alt="Quimica Clean" width={38} height={38} style={{ objectFit: 'contain' }} />
+          {/* Brand — ocupa 2 columnas en mobile */}
+          <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '8px', overflow: 'hidden', background: 'white', flexShrink: 0 }}>
+                <Image src="/logo_qm.jpg" alt="Quimica Clean" width={36} height={36} style={{ objectFit: 'contain' }} />
               </div>
-              <span style={{ fontWeight: 700, fontSize: '16px', color: 'white' }}>
+              <span style={{ fontWeight: 700, fontSize: '15px', color: 'white' }}>
                 QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, maxWidth: '260px', marginBottom: '24px' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, maxWidth: '280px', marginBottom: '20px' }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
             <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{
@@ -337,9 +359,9 @@ export function Footer() {
 
           {/* Productos */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.gold, textTransform: 'uppercase' as const, marginBottom: '20px' }}>Productos</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.gold, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Productos</div>
             {['Materias Primas', 'Solventes', 'Concentrados', 'Jabones', 'Contenedores', 'Higiene'].map(p => (
-              <a key={p} href="#productos" style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '10px', transition: 'color 0.2s' }}
+              <a key={p} href="#productos" style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '9px', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
               >{p}</a>
@@ -348,18 +370,18 @@ export function Footer() {
 
           {/* Empresa */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '20px' }}>Empresa</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Empresa</div>
             {['Nosotros', 'Calidad', 'Distribución', 'Contacto'].map(l => (
-              <a key={l} href={`#${l.toLowerCase()}`} style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '10px', transition: 'color 0.2s' }}
+              <a key={l} href={`#${l.toLowerCase()}`} style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '9px', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
               >{l}</a>
             ))}
           </div>
 
-          {/* Contacto */}
-          <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '20px' }}>Contacto</div>
+          {/* Contacto — ocupa 2 columnas en mobile cuando hay espacio */}
+          <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
+            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Contacto</div>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.9 }}>
               <div>admquimicaclean@gmail.com</div>
               <div>Tucumán, Argentina</div>
@@ -373,44 +395,21 @@ export function Footer() {
       {/* Bottom */}
       <div style={{
         borderTop: '1px solid rgba(255,255,255,0.06)',
-        padding: '20px 48px',
+        padding: isMobile ? '16px 20px' : '20px 48px',
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         alignItems: 'center',
+        gap: isMobile ? '8px' : '0',
+        textAlign: 'center',
       }}>
-
-        {/* izquierda (vacío o algo futuro) */}
         <div style={{ flex: 1 }} />
-
-        {/* centro */}
-        <div style={{
-          flex: 1,
-          textAlign: 'center',
-          fontSize: '12px',
-          color: 'rgba(255,255,255,0.25)'
-        }}>
+        <div style={{ flex: 1, fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
           © 2026 Química Clean · Tucumán, Argentina. Todos los derechos reservados.
         </div>
-
-        {/* derecha */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '6px',
-          alignItems: 'center'
-        }}>
-          <div style={{
-            width: '7px',
-            height: '7px',
-            borderRadius: '50%',
-            background: '#22c55e',
-            boxShadow: '0 0 6px #22c55e'
-          }} />
-          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
-            Sistema operativo
-          </span>
+        <div style={{ flex: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end', gap: '6px', alignItems: 'center' }}>
+          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
+          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>Sistema operativo</span>
         </div>
-
       </div>
     </footer>
   )
