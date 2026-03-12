@@ -117,7 +117,7 @@ export function Hero() {
 
         {/* Fondo */}
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, animation: 'bgFade 0.6s ease forwards' }}>
-          <Image src={sl.bg} alt="" fill priority style={{ objectFit: 'cover', objectPosition: 'center' }} />
+          <Image src={sl.bg} alt="" fill priority style={{ objectFit: 'cover', objectPosition: 'center', }} />
         </div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
