@@ -1,9 +1,20 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { MoleculeCanvas, WhatsAppIcon } from './ui'
+
+function useBreakpoint() {
+  const [width, setWidth] = useState(1200)
+  useEffect(() => {
+    const update = () => setWidth(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return { isMobile: width < 768 }
+}
 
 const slides = [
   {
@@ -56,6 +67,7 @@ export function Hero() {
   const [dir, setDir] = useState<'left' | 'right'>('left')
   const [animating, setAnimating] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { isMobile } = useBreakpoint()
 
   const goTo = (next: number, direction: 'left' | 'right' = 'left') => {
     if (animating) return
@@ -154,7 +166,14 @@ export function Hero() {
               {sl.connector && (
                 <span style={{ fontSize: 'clamp(20px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.45)' }}>y</span>
               )}
-              <span style={{ fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 0.95, WebkitTextStroke: `2px ${C.gold}`, color: 'transparent' }}>
+              <span style={{
+                fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 900,
+                letterSpacing: '-0.03em', lineHeight: 0.95,
+                ...(isMobile
+                  ? { color: C.gold }
+                  : { WebkitTextStroke: `2px ${C.gold}`, color: 'transparent' }
+                ),
+              }}>
                 {sl.line3}
               </span>
             </div>
