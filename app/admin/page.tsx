@@ -29,7 +29,7 @@ type FormData = Omit<Producto, 'id' | 'activo' | 'orden'>
 function ProductModal({
   product, onSave, onClose,
 }: {
-  product: Producto | null   // null = nuevo
+  product: Producto | null
   onSave: (data: FormData & { id?: number }) => Promise<void>
   onClose: () => void
 }) {
@@ -74,21 +74,16 @@ function ProductModal({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Nombre */}
           <div>
             <label style={label}>Nombre</label>
             <input style={input} value={form.nombre} onChange={e => set('nombre', e.target.value)} placeholder="Ej: Jabón tipo Ariel" />
           </div>
-
-          {/* Categoría */}
           <div>
             <label style={label}>Categoría</label>
             <select style={{ ...input, cursor: 'pointer' }} value={form.categoria} onChange={e => set('categoria', e.target.value)}>
               {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-
-          {/* Color */}
           <div>
             <label style={label}>Color</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -98,8 +93,6 @@ function ProductModal({
               <ColorDot color={form.color} color2={useColor2 ? form.color2 : null} size={36} />
             </div>
           </div>
-
-          {/* Color 2 (mitad y mitad) */}
           <div>
             <label style={{ ...label, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
               <input type="checkbox" checked={useColor2} onChange={e => setUseColor2(e.target.checked)}
@@ -172,6 +165,9 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           }}>
             {loading ? 'Entrando…' : 'Ingresar'}
           </button>
+          <a href="/" style={{ display: 'block', textAlign: 'center', fontSize: '13px', color: C.textMid, textDecoration: 'none' }}>
+            ← Volver al sitio
+          </a>
         </div>
       </div>
     </div>
@@ -190,14 +186,10 @@ export default function AdminPage() {
   const [toast, setToast]         = useState('')
   const sb = createClient()
 
-  // Check auth
   useEffect(() => {
-    sb.auth.getSession().then(({ data }) => {
-      setAuthed(!!data.session)
-    })
+    sb.auth.getSession().then(({ data }) => { setAuthed(!!data.session) })
   }, [])
 
-  // Load products
   const loadProducts = useCallback(async () => {
     setLoading(true)
     const { data } = await sb.from('productos').select('*').order('categoria').order('orden')
@@ -207,7 +199,6 @@ export default function AdminPage() {
 
   useEffect(() => { if (authed) loadProducts() }, [authed, loadProducts])
 
-  // Filter
   useEffect(() => {
     let f = products
     if (catFilter !== 'Todos') f = f.filter(p => p.categoria === catFilter)
@@ -217,7 +208,6 @@ export default function AdminPage() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
 
-  // Save (create or update)
   const handleSave = async (data: FormData & { id?: number }) => {
     const { id, ...rest } = data as any
     if (id) {
@@ -230,7 +220,6 @@ export default function AdminPage() {
     await loadProducts()
   }
 
-  // Delete
   const handleDelete = async (id: number, nombre: string) => {
     if (!confirm(`¿Eliminar "${nombre}"?`)) return
     await sb.from('productos').delete().eq('id', id)
@@ -238,13 +227,11 @@ export default function AdminPage() {
     await loadProducts()
   }
 
-  // Toggle activo
   const handleToggle = async (p: Producto) => {
     await sb.from('productos').update({ activo: !p.activo }).eq('id', p.id)
     setProducts(prev => prev.map(x => x.id === p.id ? { ...x, activo: !x.activo } : x))
   }
 
-  // Logout
   const handleLogout = async () => { await sb.auth.signOut(); setAuthed(false) }
 
   if (authed === null) return null
@@ -255,7 +242,6 @@ export default function AdminPage() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: 'DM Sans, sans-serif', color: C.text }}>
 
-      {/* Toast */}
       {toast && (
         <div style={{ position: 'fixed', top: '20px', right: '20px', background: '#1e3a1e', border: '1px solid #22c55e', color: '#4ade80', padding: '12px 20px', borderRadius: '10px', zIndex: 100, fontWeight: 500, fontSize: '14px' }}>
           {toast}
@@ -270,6 +256,11 @@ export default function AdminPage() {
           <span style={{ color: C.textMid, fontSize: '13px' }}>Panel de productos</span>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <button style={{ background: 'transparent', border: `1px solid ${C.border}`, color: C.textMid, padding: '8px 14px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontFamily: 'DM Sans, sans-serif' }}>
+              ← Sitio web
+            </button>
+          </a>
           <button onClick={() => setModal('new')} style={{ background: C.gold, color: 'white', border: 'none', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '13px', fontFamily: 'DM Sans, sans-serif' }}>
             + Nuevo producto
           </button>
@@ -321,7 +312,6 @@ export default function AdminPage() {
           <div style={{ textAlign: 'center', padding: '60px', color: C.textMid }}>Cargando…</div>
         ) : (
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden' }}>
-            {/* Header tabla */}
             <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 160px 80px 100px', padding: '12px 20px', borderBottom: `1px solid ${C.border}`, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: C.textMid }}>
               <div></div>
               <div>Nombre</div>
@@ -330,7 +320,6 @@ export default function AdminPage() {
               <div style={{ textAlign: 'right' }}>Acciones</div>
             </div>
 
-            {/* Filas */}
             {filtered.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px', color: C.textMid }}>Sin resultados</div>
             ) : (
@@ -346,15 +335,12 @@ export default function AdminPage() {
                   onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}
                 >
                   <ColorDot color={p.color} color2={p.color2} size={26} />
-
                   <div style={{ fontWeight: 500, fontSize: '14px', paddingRight: '12px' }}>{p.nombre}</div>
-
                   <div>
                     <span style={{ background: 'rgba(43,123,184,0.15)', color: '#60a5fa', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
                       {p.categoria}
                     </span>
                   </div>
-
                   <div>
                     <button onClick={() => handleToggle(p)} style={{
                       background: p.activo ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
@@ -364,7 +350,6 @@ export default function AdminPage() {
                       {p.activo ? 'Activo' : 'Oculto'}
                     </button>
                   </div>
-
                   <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                     <button onClick={() => setModal(p)} style={{ background: 'rgba(43,123,184,0.15)', border: 'none', color: '#60a5fa', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }} title="Editar">✏️</button>
                     <button onClick={() => handleDelete(p.id, p.nombre)} style={{ background: 'rgba(239,68,68,0.12)', border: 'none', color: '#f87171', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }} title="Eliminar">🗑️</button>
@@ -376,7 +361,6 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Modal */}
       {modal && (
         <ProductModal
           product={modal === 'new' ? null : modal as Producto}
