@@ -1,22 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const body = await request.json()
   const { nombre, telefono, producto_interes, mensaje } = body
 
-  // Validación básica
   if (!nombre || !telefono) {
     return NextResponse.json({ error: 'Nombre y teléfono son obligatorios' }, { status: 400 })
   }
 
-  // Validación anti-spam
   if (nombre.length > 100 || telefono.length > 20) {
     return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 })
   }
+
   if (mensaje && mensaje.length > 500) {
     return NextResponse.json({ error: 'Mensaje demasiado largo' }, { status: 400 })
   }
+
   if (/(.)\1{10,}/.test(nombre + telefono + (mensaje || ''))) {
     return NextResponse.json({ error: 'Mensaje inválido' }, { status: 400 })
   }
