@@ -56,7 +56,7 @@ export function WhatsAppChat() {
     setProgress(0)
     requestAnimationFrame(() => setTimeout(() => setProgress(100), 50))
     setTimeout(() => {
-      const msg = `Hola, te escribo desde el sitio web. Mi consulta es: ${text}`
+      const msg = text
       window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
       setTimeout(() => {
         if (inputRef.current) { inputRef.current.value = ''; inputRef.current.disabled = false }

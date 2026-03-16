@@ -243,7 +243,9 @@ export function Products() {
   const { productos } = useProductos()
   const displayCats = categories
   const [activeCat, setActiveCat] = useState('Todos')
-  const filtered = activeCat === 'Todos' ? products : products.filter(p => p.category === activeCat)
+  const filtered = activeCat === 'Todos'
+    ? productos
+    : productos.filter(p => p.categoria === activeCat)
   const shown = filtered.slice(0, 6)
 
   const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)'
