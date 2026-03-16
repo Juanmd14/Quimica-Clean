@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { C, stats, categories, products } from './constants'
+import { C, stats, categories } from './constants'
 import { CountUp, GlowCard } from './ui'
 import { useProductos } from '@/lib/useProductos'
 
@@ -123,7 +123,8 @@ export function Stats() {
 // ─── Category Modal ───────────────────────────────────────────────────────────
 function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClose: () => void }) {
   const { isMobile } = useBreakpoint()
-  const catProducts = products.filter(p => p.category === cat.name)
+  const { productos } = useProductos()
+  const catProducts = productos.filter(p => p.categoria === cat.name)
 
   return (
     <>
@@ -160,27 +161,29 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
           gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(210px, 1fr))',
           gap: isMobile ? '10px' : '14px',
         }}>
-          {catProducts.map(product => {
-            const p = product as any
-            return (
-              <div key={product.id} style={{
-                border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden',
-                transition: 'all 0.22s', position: 'relative',
-              }}
-                onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
-                onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
-              >
-                <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={isMobile ? 64 : 80} />
-                <div style={{ padding: isMobile ? '10px 12px 12px' : '14px 16px 16px' }}>
-                  <div style={{ fontWeight: 700, fontSize: isMobile ? '12px' : '14px', color: C.text, marginBottom: '4px', lineHeight: 1.3 }}>{product.name}</div>
-                  {!isMobile && <p style={{ fontSize: '12px', color: C.textMid, lineHeight: 1.6, marginBottom: '12px' }}>{product.desc}</p>}
-                  <a href="#contacto" onClick={onClose} style={{ fontSize: '12px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                    Consultar →
-                  </a>
-                </div>
+          {catProducts.map(product => (
+            <div key={product.id} style={{
+              border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden',
+              transition: 'all 0.22s', position: 'relative',
+            }}
+              onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
+              onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
+            >
+              <ProductThumb
+                id={product.id}
+                color={product.color ?? undefined}
+                color2={product.color2 ?? undefined}
+                emoji={product.emoji ?? undefined}
+                height={isMobile ? 64 : 80}
+              />
+              <div style={{ padding: isMobile ? '10px 12px 12px' : '14px 16px 16px' }}>
+                <div style={{ fontWeight: 700, fontSize: isMobile ? '12px' : '14px', color: C.text, marginBottom: '4px', lineHeight: 1.3 }}>{product.nombre}</div>
+                <a href="#contacto" onClick={onClose} style={{ fontSize: '12px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
+                  Consultar →
+                </a>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </div>
       <style>{`
@@ -241,7 +244,6 @@ export function Categories() {
 export function Products() {
   const { isMobile, isTablet } = useBreakpoint()
   const { productos } = useProductos()
-  const displayCats = categories
   const [activeCat, setActiveCat] = useState('Todos')
   const filtered = activeCat === 'Todos'
     ? productos
@@ -270,7 +272,6 @@ export function Products() {
             <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: isMobile ? '26px' : '34px', color: C.text, letterSpacing: '-0.02em' }}>Productos destacados</h2>
           </div>
 
-          {/* Filtros: scroll horizontal en mobile */}
           <div style={{
             display: 'flex', gap: '8px',
             overflowX: isMobile ? 'auto' : 'visible',
@@ -279,7 +280,7 @@ export function Products() {
             paddingBottom: isMobile ? '4px' : '0',
             WebkitOverflowScrolling: 'touch' as any,
           }}>
-            {['Todos', ...displayCats.map(c => c.name)].map(cat => (
+            {['Todos', ...categories.map(c => c.name)].map(cat => (
               <button key={cat} onClick={() => setActiveCat(cat)} style={{
                 background: activeCat === cat ? C.blue : C.white,
                 border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
@@ -295,26 +296,28 @@ export function Products() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: isMobile ? '14px' : '20px', marginBottom: '40px' }}>
-          {shown.map(product => {
-            const p = product as any
-            return (
-              <GlowCard key={product.id} style={{ padding: '0' }}>
-                <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
-                  <ProductThumb id={product.id} color={p.color} color2={p.color2} emoji={product.emoji} height={isMobile ? 120 : 140} />
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
-                    {product.category.toUpperCase()}
-                  </div>
+          {shown.map(product => (
+            <GlowCard key={product.id} style={{ padding: '0' }}>
+              <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
+                <ProductThumb
+                  id={product.id}
+                  color={product.color ?? undefined}
+                  color2={product.color2 ?? undefined}
+                  emoji={product.emoji ?? undefined}
+                  height={isMobile ? 120 : 140}
+                />
+                <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
+                  {product.categoria.toUpperCase()}
                 </div>
-                <div style={{ padding: isMobile ? '14px 16px 18px' : '20px 22px 22px' }}>
-                  <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.name}</h3>
-                  <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.65, marginBottom: '18px' }}>{product.desc}</p>
-                  <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                    Consultar →
-                  </a>
-                </div>
-              </GlowCard>
-            )
-          })}
+              </div>
+              <div style={{ padding: isMobile ? '14px 16px 18px' : '20px 22px 22px' }}>
+                <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.nombre}</h3>
+                <a href="#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
+                  Consultar →
+                </a>
+              </div>
+            </GlowCard>
+          ))}
         </div>
 
         <div style={{ textAlign: 'center' }}>
