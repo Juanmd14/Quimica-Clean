@@ -109,9 +109,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
   }
 
   // Determinar color de fondo
-  const bgColor = producto.color2
-    ? `linear-gradient(135deg, ${producto.color} 50%, ${producto.color2} 50%)`
-    : producto.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+  const bgColor = producto.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
 
   return (
     <main style={{ minHeight: '100vh', background: C.offWhite, paddingTop: '88px' }}>
@@ -287,14 +285,14 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                 Más en esta categoría
                 <span style={{ width: '24px', height: '2px', background: C.blue }} />
               </div>
-              <h2 style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: 800, color: C.text, margin: 0 }}>
+              <h2 style={{ fontSize: '32px', fontWeight: 800, color: C.text, margin: 0 }}>
                 Productos relacionados
               </h2>
             </div>
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
               gap: '20px',
             }}>
               {relacionados.map(p => (
@@ -318,9 +316,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                     }}>
                     {/* Imagen */}
                     <div style={{
-                      height: '160px', background: p.color2
-                        ? `linear-gradient(135deg, ${p.color} 50%, ${p.color2} 50%)`
-                        : p.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
+                      height: '160px', background: p.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <span style={{ fontSize: '48px' }}>{p.emoji || '🧴'}</span>
