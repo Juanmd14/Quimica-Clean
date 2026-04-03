@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     openGraph: {
       title: `${producto.nombre} | Química Clean`,
       description: `${producto.nombre} - Distribuidora mayorista de productos de limpieza.`,
-      type: 'product',
+      type: 'website',
       url: `https://quimica-clean.com/productos/${id}`,
     },
   }
