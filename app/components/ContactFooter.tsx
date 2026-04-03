@@ -11,7 +11,6 @@ type FormError = { nombre?: string; telefono?: string; email?: string }
 const initialFormData = {
   nombre: '',
   telefono: '',
-  email: '',
   producto_interes: '',
   mensaje: '',
 }
@@ -148,18 +147,6 @@ export function Contact() {
             style={getInputStyle('telefono')}
           />
           {errors.telefono && touched.telefono && <p style={{ color: '#f87171', fontSize: '12px', marginTop: '4px', margin: 0 }}>{errors.telefono}</p>}
-        </div>
-
-        {/* Email */}
-        <div>
-          <label style={{ display: 'block', color: 'white', fontSize: '12px', fontWeight: 600, marginBottom: '6px', textTransform: 'uppercase' }}>Email</label>
-          <input
-            type="email"
-            placeholder="tu@email.com"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            style={inputStyle}
-          />
         </div>
 
         {/* Producto de interés */}
