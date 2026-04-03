@@ -115,7 +115,7 @@ export default function PoliticaPrivacidad() {
   )
 }
 
-function Section({ number, title, text }) {
+function Section({ number, title, text }: { number: number; title: string; text: string[] }) {
   return (
     <div style={{
       borderTop: '1px solid #ddd8d0',
