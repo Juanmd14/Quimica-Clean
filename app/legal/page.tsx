@@ -44,10 +44,7 @@ const sections = [
       </ul>
       <p>Para ejercer estos derechos, contacta a admquimicaclean@gmail.com</p>
 
-      <h3>7. COOKIES Y TECNOLOGÍAS SIMILARES</h3>
-      <p>Utilizamos cookies y tecnologías similares para mejorar tu experiencia. Ver nuestra política de cookies para más información.</p>
-
-      <h3>8. CAMBIOS EN ESTA POLÍTICA</h3>
+      <h3>7. CAMBIOS EN ESTA POLÍTICA</h3>
       <p>Nos reservamos el derecho de actualizar esta política. Notificaremos cambios significativos mediante email o publicación en el sitio.</p>
 
       <p><strong>Última actualización: 3 de Abril de 2026</strong></p>
