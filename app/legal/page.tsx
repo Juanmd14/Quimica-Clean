@@ -133,25 +133,51 @@ const sections = [
     id: 'cookies',
     title: 'Política de Cookies',
     content: `
-      <h3>1. ¿QUÉ SON LAS COOKIES?</h3>
-      <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas nuestro sitio. Nos ayudan a mejorar tu experiencia de navegación.</p>
+      <h3>1. POLÍTICA DE COOKIES SIMPLE Y TRANSPARENTE</h3>
+      <p>En <strong>Química Clean</strong> creemos en la transparencia. Este sitio web es una plataforma informativa sobre nuestros productos y servicios, y queremos que sepas exactamente qué datos recopilamos.</p>
 
-      <h3>2. TIPOS DE COOKIES QUE UTILIZAMOS</h3>
-      <p><strong>Cookies Esenciales:</strong> Necesarias para el funcionamiento básico del sitio (autenticación, seguridad)</p>
-      <p><strong>Cookies Analíticas:</strong> Nos ayudan a entender cómo usas el sitio mediante Google Analytics</p>
-      <p><strong>Cookies de Funcionalidad:</strong> Recuerdan tus preferencias y configuración</p>
+      <h3>2. COOKIES EN NUESTRO SITIO WEB PARA VISITANTES</h3>
+      <p><strong>La realidad: NO utilizamos cookies en el sitio web público.</strong></p>
+      <p>Cuando visitas chemistryquimica-clean.vercel.app, tu navegador no recibe ni almacena cookies propias del sitio. Esto significa:</p>
+      <ul>
+        <li>✓ No hay rastreo de tu comportamiento de navegación</li>
+        <li>✓ No hay análisis de datos mediante Google Analytics ni servicios similares</li>
+        <li>✓ No hay identificadores persistentes que nos permitan reconocerte en futuras visitas</li>
+        <li>✓ No hay cookies de publicidad o remarketing</li>
+      </ul>
 
-      <h3>3. GESTIÓN DE COOKIES</h3>
-      <p>Puedes controlar y eliminar cookies mediante la configuración de tu navegador. Sin embargo, desactivar cookies esenciales puede afectar la funcionalidad del sitio.</p>
+      <h3>3. SERVICIOS EXTERNOS</h3>
+      <p>El único servicio externo disponible en el sitio es un <strong>enlace a WhatsApp</strong> para comunicarte directamente con nosotros. Este enlace es completamente opcional y no genera cookies. Al hacer clic, eres redirigido al servidor de WhatsApp donde se aplica su propia política de privacidad.</p>
 
-      <h3>4. COOKIES DE TERCEROS</h3>
-      <p>Permitimos que socios confiables (Google Analytics, etc.) coloquen cookies para análisis y marketing. Consulta sus políticas de privacidad para más información.</p>
+      <h3>4. INFORMACIÓN TÉCNICA QUE RECOPILAMOS</h3>
+      <p>Tu servidor web (independiente de nosotros) puede registrar automáticamente:</p>
+      <ul>
+        <li>Tu dirección IP</li>
+        <li>Tipo y versión del navegador</li>
+        <li>Sistema operativo</li>
+        <li>Páginas visitadas</li>
+        <li>Fecha y hora de acceso</li>
+      </ul>
+      <p>Estos datos se usan exclusivamente para seguridad del servidor y diagnóstico de problemas técnicos, <strong>no para marketing ni perfilado.</strong></p>
 
-      <h3>5. CONSENTIMIENTO</h3>
-      <p>Al continuar usando este sitio, consientes el uso de cookies según esta política. Puedes revocar tu consentimiento en cualquier momento ajustando la configuración de tu navegador.</p>
+      <h3>6. CONTACTO A TRAVÉS DE FORMULARIOS</h3>
+      <p>Si completas un formulario de contacto o consulta, los datos que proporcionas (nombre, teléfono, email, mensaje) se procesan según nuestra <strong>Política de Privacidad</strong>. Esta información no genera cookies; se almacena en nuestros servidores seguros para responder a tu consulta.</p>
 
-      <h3>6. CAMBIOS EN ESTA POLÍTICA</h3>
-      <p>Podemos actualizar esta política ocasionalmente. Te recomendamos revisarla regularmente.</p>
+      <h3>7. TECNOLOGÍAS DE RASTREO RECHAZADAS</h3>
+      <p>Explícitamente <strong>no utilizamos</strong>:</p>
+      <ul>
+        <li>Google Analytics o similares</li>
+        <li>Pixel tracking o web beacons</li>
+        <li>Cookies de perfilado</li>
+        <li>Identificadores de sesión para visitantes</li>
+        <li>Servicios de retargeting o publicidad programática</li>
+      </ul>
+
+      <h3>8. DERECHO A PRIVACIDAD</h3>
+      <p>Tu privacidad es importante. Puedes visitar nuestro sitio con total confianza en que no estamos recopilando datos sobre tu comportamiento. Si en algún momento esto cambia, actualizaremos esta política y notificaremos los cambios significativos.</p>
+
+      <h3>9. PREGUNTAS</h3>
+      <p>Si tienes dudas sobre nuestra política de cookies o privacidad, contáctanos a <strong>admquimicaclean@gmail.com</strong>.</p>
 
       <p><strong>Última actualización: 3 de Abril de 2026</strong></p>
     `
