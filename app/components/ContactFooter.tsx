@@ -108,23 +108,94 @@ export function WhyUs() {
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
+type FormError = { [key in keyof typeof initialFormData]?: string }
+
+const initialFormData = { nombre: '', email: '', telefono: '', producto_interes: '', mensaje: '' }
 
 export function Contact() {
   const { isMobile } = useBreakpoint()
-  const [formData, setFormData] = useState({ nombre: '', telefono: '', producto_interes: '', mensaje: '' })
+  const [formData, setFormData] = useState(initialFormData)
   const [status, setStatus] = useState<FormStatus>('idle')
+  const [errors, setErrors] = useState<FormError>({})
+  const [touched, setTouched] = useState<{ [key: string]: boolean }>({})
 
-  const handleSubmit = async () => {
-    if (!formData.nombre || !formData.telefono) return
+  // Validaciones
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
+
+  const validatePhone = (phone: string) => {
+    const re = /^[\d\s\+\-\(\)]{7,}$/
+    return re.test(phone)
+  }
+
+  const validateForm = () => {
+    const newErrors: FormError = {}
+    
+    if (!formData.nombre.trim()) newErrors.nombre = 'Nombre requerido'
+    else if (formData.nombre.trim().length < 3) newErrors.nombre = 'Mínimo 3 caracteres'
+    
+    if (!formData.telefono.trim()) newErrors.telefono = 'Teléfono requerido'
+    else if (!validatePhone(formData.telefono)) newErrors.telefono = 'Teléfono inválido'
+    
+    if (formData.email && !validateEmail(formData.email)) newErrors.email = 'Email inválido'
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validateForm()) return
+    
     setStatus('loading')
     try {
       const res = await fetch('/api/leads', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: formData.nombre.trim(),
+          telefono: formData.telefono.trim(),
+          email: formData.email.trim() || undefined,
+          producto_interes: formData.producto_interes.trim(),
+          mensaje: formData.mensaje.trim(),
+        }),
       })
-      if (res.ok) { setStatus('success'); setFormData({ nombre: '', telefono: '', producto_interes: '', mensaje: '' }) }
-      else setStatus('error')
-    } catch { setStatus('error') }
+      
+      if (res.ok) {
+        setStatus('success')
+        setFormData(initialFormData)
+        setTouched({})
+        setErrors({})
+        // Auto-clear success message after 5 seconds
+        setTimeout(() => setStatus('idle'), 5000)
+      } else {
+        setStatus('error')
+      }
+    } catch (err) {
+      setStatus('error')
+    }
+  }
+
+  const handleFieldBlur = (field: string) => {
+    setTouched({ ...touched, [field]: true })
+    // Validate single field
+    const newErrors = { ...errors }
+    
+    if (field === 'nombre') {
+      if (!formData.nombre.trim()) newErrors.nombre = 'Nombre requerido'
+      else if (formData.nombre.trim().length < 3) newErrors.nombre = 'Mínimo 3 caracteres'
+      else delete newErrors.nombre
+    } else if (field === 'telefono') {
+      if (!formData.telefono.trim()) newErrors.telefono = 'Teléfono requerido'
+      else if (!validatePhone(formData.telefono)) newErrors.telefono = 'Teléfono inválido'
+      else delete newErrors.telefono
+    } else if (field === 'email') {
+      if (formData.email && !validateEmail(formData.email)) newErrors.email = 'Email inválido'
+      else delete newErrors.email
+    }
+    setErrors(newErrors)
   }
 
   const inputStyle: React.CSSProperties = {
@@ -134,6 +205,11 @@ export function Contact() {
     outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s, box-shadow 0.2s',
     boxSizing: 'border-box' as const,
   }
+
+  const getInputStyle = (field: string): React.CSSProperties => ({
+    ...inputStyle,
+    borderColor: errors[field as keyof FormError] && touched[field] ? '#f87171' : inputStyle.borderColor,
+  })
 
   return (
     <section id="contacto" style={{ padding: '0', background: C.white }}>
@@ -256,57 +332,111 @@ export function Contact() {
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Te respondemos en menos de 24hs hábiles</div>
             </div>
 
-            <input
-              style={inputStyle} placeholder="Nombre y apellido *"
-              value={formData.nombre} maxLength={25}
-              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-              onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-            />
-            <input
-              style={inputStyle} placeholder="Teléfono *"
-              value={formData.telefono} maxLength={13}
-              onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^0-9+\-\s]/g, '') })}
-              onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-            />
-            <input
-              style={inputStyle} placeholder="Producto de interés"
-              value={formData.producto_interes} maxLength={25}
-              onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
-              onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-            />
-            <textarea
-              style={{ ...inputStyle, resize: 'none' }} placeholder="Mensaje o consulta" rows={3}
-              value={formData.mensaje} maxLength={250}
-              onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
-              onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-            />
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Nombre */}
+              <div>
+                <input
+                  type="text"
+                  placeholder="Nombre y apellido *"
+                  maxLength={50}
+                  value={formData.nombre}
+                  onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+                  onBlur={() => handleFieldBlur('nombre')}
+                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
+                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.nombre && touched.nombre ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                  style={getInputStyle('nombre')}
+                />
+                {errors.nombre && touched.nombre && (
+                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.nombre}</div>
+                )}
+              </div>
 
-            <button
-              onClick={handleSubmit} disabled={status === 'loading'}
-              style={{
-                width: '100%', padding: '11px', background: C.gold, color: 'white',
-                border: 'none', borderRadius: '8px', fontFamily: 'DM Sans, sans-serif',
-                fontWeight: 600, fontSize: '14px', cursor: status === 'loading' ? 'not-allowed' : 'pointer',
-                opacity: status === 'loading' ? 0.7 : 1, transition: 'all 0.25s',
-              }}
-              onMouseEnter={e => { if (status !== 'loading') { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' } }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
-            >
-              {status === 'loading' ? 'Enviando...' : 'Enviar consulta →'}
-            </button>
+              {/* Teléfono */}
+              <div>
+                <input
+                  type="tel"
+                  placeholder="Teléfono *"
+                  maxLength={20}
+                  value={formData.telefono}
+                  onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^\d\s\+\-\(\)]/g, '') })}
+                  onBlur={() => handleFieldBlur('telefono')}
+                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
+                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.telefono && touched.telefono ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                  style={getInputStyle('telefono')}
+                />
+                {errors.telefono && touched.telefono && (
+                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.telefono}</div>
+                )}
+              </div>
 
+              {/* Email (opcional) */}
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email (opcional)"
+                  maxLength={50}
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  onBlur={() => handleFieldBlur('email')}
+                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
+                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.email && touched.email ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                  style={getInputStyle('email')}
+                />
+                {errors.email && touched.email && (
+                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.email}</div>
+                )}
+              </div>
+
+              {/* Producto de interés */}
+              <input
+                type="text"
+                placeholder="Producto de interés"
+                maxLength={50}
+                value={formData.producto_interes}
+                onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
+                onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                style={inputStyle}
+              />
+
+              {/* Mensaje */}
+              <textarea
+                placeholder="Mensaje o consulta"
+                rows={3}
+                maxLength={300}
+                value={formData.mensaje}
+                onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
+                onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                style={{ ...inputStyle, resize: 'none' }}
+              />
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                style={{
+                  width: '100%', padding: '11px', background: C.gold, color: 'white',
+                  border: 'none', borderRadius: '8px', fontFamily: 'DM Sans, sans-serif',
+                  fontWeight: 600, fontSize: '14px', cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+                  opacity: status === 'loading' ? 0.7 : 1, transition: 'all 0.25s',
+                }}
+                onMouseEnter={e => { if (status !== 'loading') { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' } }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
+              >
+                {status === 'loading' ? '⏳ Enviando...' : '✓ Enviar consulta'}
+              </button>
+            </form>
+
+            {/* Messages */}
             {status === 'success' && (
-              <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: '8px', padding: '13px 16px', fontSize: '14px', color: '#4ade80', fontWeight: 500 }}>
-                ✅ ¡Consulta enviada! Te contactamos pronto.
+              <div style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#86efac', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span>✅</span> ¡Consulta enviada exitosamente! Nos pondremos en contacto pronto.
               </div>
             )}
             {status === 'error' && (
-              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '8px', padding: '13px 16px', fontSize: '14px', color: '#f87171', fontWeight: 500 }}>
-                ❌ Error al enviar. Intentá por WhatsApp.
+              <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#fca5a5', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span>❌</span> Error al enviar. Intentá por WhatsApp o email.
               </div>
             )}
           </div>
@@ -395,20 +525,61 @@ export function Footer() {
       {/* Bottom */}
       <div style={{
         borderTop: '1px solid rgba(255,255,255,0.06)',
-        padding: isMobile ? '16px 20px' : '20px 48px',
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        alignItems: 'center',
-        gap: isMobile ? '8px' : '0',
-        textAlign: 'center',
+        padding: isMobile ? '24px 20px' : '32px 48px',
       }}>
-        <div style={{ flex: 1 }} />
-        <div style={{ flex: 1, fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
-          © 2026 Química Clean · Tucumán, Argentina. Todos los derechos reservados.
-        </div>
-        <div style={{ flex: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end', gap: '6px', alignItems: 'center' }}>
-          <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
-          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>Sistema operativo</span>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Legal Links */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: isMobile ? '12px 20px' : '24px',
+            marginBottom: '16px',
+            paddingBottom: '16px',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+          }}>
+            {[
+              { label: 'Política de Privacidad', href: '/legal#privacidad' },
+              { label: 'Términos de Uso', href: '/legal#terminos' },
+              { label: 'Aviso Legal', href: '/legal#aviso-legal' },
+              { label: 'Cookies', href: '/legal#cookies' },
+            ].map(link => (
+              <a
+                key={link.label}
+                href={link.href}
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.5)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.gold)}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Copyright & Status */}
+          <div style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'center' : 'flex-start',
+            justifyContent: 'space-between',
+            gap: isMobile ? '12px' : '0',
+            textAlign: isMobile ? 'center' : 'left',
+          }}>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+              © 2026 Química Clean · San Miguel de Tucumán, Argentina
+              <br />
+              Todos los derechos reservados.
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'center' : 'flex-end' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Sistema en línea</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
