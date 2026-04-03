@@ -192,7 +192,7 @@ const sections = [
   {
     title: 'Por cuánto tiempo guardamos tus datos',
     text: [
-      'Conservamos tus datos el tiempo necesario para gestionar tu consulta y hasta un máximo de 2 años, salvo que la normativa vigente exija un plazo diferente.',
+      'Conservamos tus datos el tiempo necesario para gestionar tu consulta.',
     ],
   },
   {
