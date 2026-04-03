@@ -48,7 +48,8 @@ button, a {
 
 /* Prevent FOUC */
 html {
-  display: flex;
+  scroll-behavior: smooth;
+  width: 100%;
 }
 
 /* Optimize form inputs */
