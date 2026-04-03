@@ -223,29 +223,21 @@ export function Contact() {
 
 // ─── WhyUs Component ──────────────────────────────────────────────────────────
 export function WhyUs() {
-  const { isMobile } = useBreakpoint()
-  
   return (
-    <section style={{ background: C.blueDark, padding: isMobile ? '32px 16px' : '56px 40px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2 style={{ color: C.gold, fontSize: isMobile ? '20px' : '28px', fontWeight: 700, marginBottom: '32px', textAlign: 'center' }}>¿Por qué elegirnos?</h2>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '24px' }}>
-        <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '12px', textAlign: 'center' }}>
+    <section style={{ background: C.blueDark, padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h2 style={{ color: C.gold, fontSize: '28px', fontWeight: 700, marginBottom: '32px', textAlign: 'center' }}>¿Por qué elegirnos?</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+        <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '32px', marginBottom: '12px' }}>🚀</div>
           <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>Rápido</h3>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>Entrega ágil en San Miguel de Tucumán</p>
         </div>
-        
-        <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '12px', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '32px', marginBottom: '12px' }}>💰</div>
           <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>Precios Competitivos</h3>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>Las mejores opciones del mercado</p>
         </div>
-        
-        <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '12px', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '32px', marginBottom: '12px' }}>✅</div>
-          <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>Calidad Garantizada</h3>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>Productos verificados y confiables</p>
+          <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>Calidad</h3>
         </div>
       </div>
     </section>
@@ -254,46 +246,9 @@ export function WhyUs() {
 
 // ─── Footer Component ─────────────────────────────────────────────────────────
 export function Footer() {
-  const { isMobile } = useBreakpoint()
-  
   return (
-    <footer style={{ background: '#0f1822', border: `1px solid ${C.border}`, padding: isMobile ? '32px 16px' : '40px', marginTop: '40px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '32px', marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${C.border}` }}>
-          {/* Empresa */}
-          <div>
-            <h4 style={{ color: C.gold, fontSize: '14px', fontWeight: 700, marginBottom: '12px', textTransform: 'uppercase' }}>Empresa</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '8px' }}><a href="/" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Inicio</a></li>
-              <li style={{ marginBottom: '8px' }}><a href="/#productos" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Productos</a></li>
-              <li><a href="/#contacto" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Contacto</a></li>
-            </ul>
-          </div>
-          
-          {/* Legal */}
-          <div>
-            <h4 style={{ color: C.gold, fontSize: '14px', fontWeight: 700, marginBottom: '12px', textTransform: 'uppercase' }}>Legal</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '8px' }}><a href="/legal" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Privacidad</a></li>
-              <li style={{ marginBottom: '8px' }}><a href="/legal" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Términos</a></li>
-              <li><a href="/legal" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '13px' }}>Aviso Legal</a></li>
-            </ul>
-          </div>
-          
-          {/* Contacto */}
-          <div>
-            <h4 style={{ color: C.gold, fontSize: '14px', fontWeight: 700, marginBottom: '12px', textTransform: 'uppercase' }}>Contacto</h4>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', margin: '0 0 8px 0' }}>📍 San Miguel de Tucumán, Argentina</p>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', margin: '0 0 8px 0' }}>📞 +54 9 381 304-6228</p>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', margin: 0 }}>📧 admquimicaclean@gmail.com</p>
-          </div>
-        </div>
-        
-        {/* Copyright */}
-        <div style={{ textAlign: 'center', paddingTop: '16px' }}>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', margin: 0 }}>© 2026 Química Clean. Todos los derechos reservados.</p>
-        </div>
-      </div>
+    <footer style={{ background: '#0f1822', padding: '40px', marginTop: '40px', textAlign: 'center' }}>
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', margin: 0 }}>© 2026 Química Clean. Todos los derechos reservados.</p>
     </footer>
   )
 }
