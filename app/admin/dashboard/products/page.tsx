@@ -1,7 +1,25 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient, type Producto, CATEGORIAS } from '@/lib/supabase'
+
+type Producto = {
+  id: number
+  categoria: string
+  nombre: string
+  color: string | null
+  color2: string | null
+  emoji: string | null
+  activo: boolean
+  orden: number
+}
+
+const CATEGORIAS = [
+  'Jabones',
+  'Suavizantes',
+  'Detergentes',
+  'Desinfectantes',
+]
+
 
 const C = {
   bg: '#0f1623', card: '#1a2436', border: '#2a3a54',
@@ -143,15 +161,15 @@ export default function ProductsManagement() {
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<Producto | null | 'new'>(null)
   const [toast, setToast] = useState('')
-  const sb = createClient()
 
-  const loadProducts = useCallback(async () => {
-    setLoading(true)
-    const { data, error } = await sb.from('productos').select('*').order('categoria').order('orden')
-    if (error) setError('Error al cargar productos')
-    else setProducts(data || [])
-    setLoading(false)
-  }, [])
+const loadProducts = useCallback(async () => {
+  setLoading(true)
+  const res = await fetch('/api/products')
+  const result = await res.json()
+  if (result.success) setProducts(result.data || [])
+  else setError('Error al cargar productos')
+  setLoading(false)
+}, [])
 
   useEffect(() => { loadProducts() }, [loadProducts])
 
@@ -164,30 +182,41 @@ export default function ProductsManagement() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
 
-  const handleSave = async (data: FormData & { id?: number }) => {
-    const { id, ...rest } = data as any
-    if (id) {
-      await sb.from('productos').update(rest).eq('id', id)
-      showToast('✓ Producto actualizado')
-    } else {
-      await sb.from('productos').insert([{ ...rest, activo: true, orden: products.length }])
-      showToast('✓ Producto creado')
-    }
-    await loadProducts()
+const handleSave = async (data: FormData & { id?: number }) => {
+  const { id, ...rest } = data as any
+  if (id) {
+    await fetch(`/api/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(rest),
+    })
+    showToast('✓ Producto actualizado')
+  } else {
+    await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...rest, activo: true, orden: products.length }),
+    })
+    showToast('✓ Producto creado')
   }
+  await loadProducts()
+}
 
-  const handleDelete = async (id: number, nombre: string) => {
-    if (!confirm(`¿Eliminar "${nombre}"?`)) return
-    await sb.from('productos').delete().eq('id', id)
-    showToast('Producto eliminado')
-    await loadProducts()
-  }
+const handleDelete = async (id: number, nombre: string) => {
+  if (!confirm(`¿Eliminar "${nombre}"?`)) return
+  await fetch(`/api/products/${id}`, { method: 'DELETE' })
+  showToast('Producto eliminado')
+  await loadProducts()
+}
 
-  const handleToggle = async (p: Producto) => {
-    await sb.from('productos').update({ activo: !p.activo }).eq('id', p.id)
-    setProducts(prev => prev.map(x => x.id === p.id ? { ...x, activo: !x.activo } : x))
-  }
-
+ const handleToggle = async (p: Producto) => {
+  await fetch(`/api/products/${p.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ activo: !p.activo }),
+  })
+  setProducts(prev => prev.map(x => x.id === p.id ? { ...x, activo: !x.activo } : x))
+}
   const cats = ['Todos', ...Array.from(new Set(products.map(p => p.categoria))).sort()]
 
   return (
