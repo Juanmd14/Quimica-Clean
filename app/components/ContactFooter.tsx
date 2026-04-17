@@ -369,24 +369,6 @@ export function Contact() {
                 )}
               </div>
 
-              {/* Email (opcional) */}
-              <div>
-                <input
-                  type="email"
-                  placeholder="Email (opcional)"
-                  maxLength={50}
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  onBlur={() => handleFieldBlur('email')}
-                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.email && touched.email ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-                  style={getInputStyle('email')}
-                />
-                {errors.email && touched.email && (
-                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.email}</div>
-                )}
-              </div>
-
               {/* Producto de interés */}
               <input
                 type="text"
