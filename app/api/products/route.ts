@@ -1,37 +1,58 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { productSchema } from '@/lib/validations'
+import { requireAdminAuth } from '@/lib/adminMiddleware'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
+  const authCheck = await requireAdminAuth()
+  if (authCheck.error) {
+    return authCheck.response
+  }
+
   try {
-    const searchParams = request.nextUrl.searchParams
-    const category = searchParams.get('category')
+    const body = await request.json()
 
-    let query = supabase
-      .from('productos')
-      .select('*')
-      .eq('activo', true)
-      .order('categoria')
-      .order('orden')
-
-    if (category) {
-      query = query.eq('categoria', category)
+    const validationResult = productSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Datos inválidos',
+          details: validationResult.error.flatten(),
+        },
+        { status: 400 }
+      )
     }
 
-    const { data, error } = await query
+    const productData = validationResult.data
+
+    const { data, error } = await supabaseAdmin
+      .from('productos')
+      .insert([productData])
+      .select()
 
     if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: 'Error al obtener productos' }, { status: 500 })
+      console.error('Supabase insert error:', error)
+      return NextResponse.json(
+        { error: 'Error al crear el producto' },
+        { status: 500 }
+      )
     }
 
-    return NextResponse.json({ success: true, data })
+    return NextResponse.json(
+      { success: true, data: data[0] },
+      { status: 201 }
+    )
   } catch (error) {
-    console.error('GET /api/products error:', error)
-    return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
+    console.error('POST /api/products error:', error)
+    return NextResponse.json(
+      { error: 'Error en el servidor' },
+      { status: 500 }
+    )
   }
 }
