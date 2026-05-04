@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/Users/User/OneDrive/Escritorio/Juan cosas/Prog/**)",
+      "Bash(npx tsc *)",
+      "PowerShell(supabase *)"
+    ]
+  }
+}

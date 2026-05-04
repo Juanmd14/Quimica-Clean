@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { C, categories } from '@/app/components/constants'
 import { WhatsAppIcon } from '@/app/components/ui'
+import { CONFIG } from '@/lib/config'
 
 // Importar productos directamente de constants
 const PRODUCTOS = [
-  { id: 1, nombre: 'Limpiador Multiusos Premium', categoria: 'Desengrasantes', color: '#E8F4F8', emoji: '🧽' },
-  { id: 2, nombre: 'Jabón Líquido Antibacterial', categoria: 'Jabones', color: '#FFF4E6', emoji: '🧼' },
-  { id: 3, nombre: 'Desinfectante x5L', categoria: 'Desinfectantes', color: '#E8F5E9', emoji: '✨' },
-  { id: 4, nombre: 'Detergente Concentrado', categoria: 'Detergentes', color: '#FCE4EC', emoji: '🧴' },
+  { id: 1, nombre: 'Limpiador Multiusos Premium', categoria: 'Desengrasantes', color: '#E8F4F8', emoji: '🧽', descripcion: null },
+  { id: 2, nombre: 'Jabón Líquido Antibacterial', categoria: 'Jabones', color: '#FFF4E6', emoji: '🧼', descripcion: null },
+  { id: 3, nombre: 'Desinfectante x5L', categoria: 'Desinfectantes', color: '#E8F5E9', emoji: '✨', descripcion: null },
+  { id: 4, nombre: 'Detergente Concentrado', categoria: 'Detergentes', color: '#FCE4EC', emoji: '🧴', descripcion: null },
 ]
 
 // Generate metadata
@@ -198,9 +199,13 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                 {producto.nombre}
               </h1>
               <p style={{ fontSize: '15px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>
-                Producto especializado en limpieza industrial y comercial. Parte del catálogo mayorista de{' '}
-                <span style={{ fontWeight: 600, color: C.text }}>Química Clean</span>
-                , tu distribuidor de confianza en Tucumán, Argentina.
+                {producto.descripcion || (
+                  <>
+                    Producto especializado en limpieza industrial y comercial. Parte del catálogo mayorista de{' '}
+                    <span style={{ fontWeight: 600, color: C.text }}>Química Clean</span>
+                    , tu distribuidor de confianza en Tucumán, Argentina.
+                  </>
+                )}
               </p>
             </div>
 
@@ -247,7 +252,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                   Solicitar cotización
                 </button>
               </a>
-              <a href="https://wa.me/5493815554488?text=Hola%20me%20interesa%20el%20producto%20ID:%20" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <a href={`https://wa.me/${(CONFIG.WHATSAPP_NUMBER || '').replace('+', '')}?text=${encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre} (ID: ${producto.id}). ¿Me pueden dar más información?`)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                 <button style={{
                   width: '100%', background: '#25d366', color: 'white', border: 'none',
                   padding: '16px',

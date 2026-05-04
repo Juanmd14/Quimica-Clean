@@ -6,6 +6,7 @@ type Producto = {
   id: number
   categoria: string
   nombre: string
+  descripcion: string | null
   color: string | null
   color2: string | null
   emoji: string | null
@@ -17,7 +18,16 @@ const CATEGORIAS = [
   'Jabones',
   'Suavizantes',
   'Detergentes',
+  'Desengrasantes',
   'Desinfectantes',
+  'Pisos',
+  'Piletas',
+  'Automotor',
+  'Hogar',
+  'Concentrados',
+  'Materia Prima',
+  'Bouquets',
+  'Contenedores',
 ]
 
 
@@ -47,11 +57,12 @@ function ProductModal({ product, onSave, onClose }: {
   onClose: () => void
 }) {
   const [form, setForm] = useState<FormData>({
-    categoria: product?.categoria ?? 'Jabones',
-    nombre:    product?.nombre    ?? '',
-    color:     product?.color     ?? '#ffffff',
-    color2:    product?.color2    ?? null,
-    emoji:     product?.emoji     ?? null,
+    categoria:   product?.categoria   ?? 'Jabones',
+    nombre:      product?.nombre      ?? '',
+    descripcion: product?.descripcion ?? null,
+    color:       product?.color       ?? '#ffffff',
+    color2:      product?.color2      ?? null,
+    emoji:       product?.emoji       ?? null,
   })
   const [saving, setSaving] = useState(false)
   const [useColor2, setUseColor2] = useState(!!product?.color2)
@@ -103,6 +114,16 @@ function ProductModal({ product, onSave, onClose }: {
             <select style={{ ...inputStyle, cursor: 'pointer' }} value={form.categoria} onChange={e => set('categoria', e.target.value)}>
               {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
+          </div>
+
+          <div>
+            <label style={label}>Descripción (opcional)</label>
+            <textarea
+              style={{ ...inputStyle, resize: 'vertical' as const, minHeight: '72px' }}
+              value={form.descripcion || ''}
+              onChange={e => set('descripcion', e.target.value || null)}
+              placeholder="Descripción del producto..."
+            />
           </div>
 
           <div>

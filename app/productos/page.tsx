@@ -40,6 +40,7 @@ function CategoryPageContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeCategory, setActiveCategory] = useState(categoryParam)
+  const [busqueda, setBusqueda] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -84,19 +85,34 @@ function CategoryPageContent() {
 
       {/* Filtros */}
       <div style={{ background: C.white, padding: '20px 48px', borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {cats.map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat)} style={{
-              background: activeCategory === cat ? C.blue : C.white,
-              border: `1.5px solid ${activeCategory === cat ? C.blue : C.border}`,
-              color: activeCategory === cat ? 'white' : C.textMid,
-              padding: '8px 16px', borderRadius: '20px',
-              fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 500,
-              cursor: 'pointer', transition: 'all 0.2s',
-            }}>
-              {cat}
-            </button>
-          ))}
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <input
+            type="text"
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+            placeholder="🔍 Buscar producto..."
+            style={{
+              width: '100%', maxWidth: '360px', padding: '10px 16px',
+              border: `1.5px solid ${C.border}`, borderRadius: '24px',
+              fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: C.text,
+              outline: 'none', marginBottom: '16px', display: 'block',
+              boxSizing: 'border-box' as const,
+            }}
+          />
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {cats.map(cat => (
+              <button key={cat} onClick={() => { setActiveCategory(cat); setBusqueda('') }} style={{
+                background: activeCategory === cat ? C.blue : C.white,
+                border: `1.5px solid ${activeCategory === cat ? C.blue : C.border}`,
+                color: activeCategory === cat ? 'white' : C.textMid,
+                padding: '8px 16px', borderRadius: '20px',
+                fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 500,
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}>
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -108,44 +124,53 @@ function CategoryPageContent() {
           <div style={{ textAlign: 'center', padding: '60px', color: '#e74c3c', background: 'rgba(231,76,60,0.08)', borderRadius: '12px', border: '1px solid rgba(231,76,60,0.2)' }}>
             {error}
           </div>
-        ) : productos.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: C.textMid }}>
-            <p>No hay productos en esta categoría</p>
-            <Link href="/" style={{ color: C.blue, fontWeight: 600, textDecoration: 'none' }}>Volver al inicio</Link>
-          </div>
         ) : (
           <>
-            <div style={{ marginBottom: '28px', fontSize: '14px', color: C.textMid }}>
-              <strong>{productos.length}</strong> producto(s) encontrado(s)
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
-              {productos.map(p => (
-                <GlowCard key={p.id} style={{ padding: 0 }}>
-                  {/* Color swatch */}
-                  <div style={{ height: '120px', borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
-                    <ColorDot color={p.color} color2={p.color2} />
-                    {p.emoji && (
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '44px' }}>
-                        {p.emoji}
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: C.blueLight, padding: '3px 10px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700 }}>
-                      {p.categoria.toUpperCase()}
-                    </div>
+            {(() => {
+              const filtrados = productos.filter(p =>
+                p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+              )
+              return filtrados.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '80px 0', color: C.textMid }}>
+                  <p>{busqueda ? `Sin resultados para "${busqueda}"` : 'No hay productos en esta categoría'}</p>
+                  <Link href="/" style={{ color: C.blue, fontWeight: 600, textDecoration: 'none' }}>Volver al inicio</Link>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: '28px', fontSize: '14px', color: C.textMid }}>
+                    <strong>{filtrados.length}</strong> producto(s) encontrado(s)
+                    {busqueda && <span style={{ marginLeft: '8px' }}>para "<strong>{busqueda}</strong>"</span>}
                   </div>
-
-                  {/* Info */}
-                  <div style={{ padding: '18px 20px 20px' }}>
-                    <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, margin: '0 0 14px', lineHeight: 1.35 }}>
-                      {p.nombre}
-                    </h3>
-                    <a href="/#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                      Consultar precio →
-                    </a>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+                    {filtrados.map(p => (
+                      <GlowCard key={p.id} style={{ padding: 0 }}>
+                        {/* Color swatch */}
+                        <div style={{ height: '120px', borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
+                          <ColorDot color={p.color} color2={p.color2} />
+                          {p.emoji && (
+                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '44px' }}>
+                              {p.emoji}
+                            </div>
+                          )}
+                          <div style={{ position: 'absolute', top: '10px', left: '10px', background: C.blueLight, padding: '3px 10px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700 }}>
+                            {p.categoria.toUpperCase()}
+                          </div>
+                        </div>
+                        {/* Info */}
+                        <div style={{ padding: '18px 20px 20px' }}>
+                          <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, margin: '0 0 14px', lineHeight: 1.35 }}>
+                            {p.nombre}
+                          </h3>
+                          <a href="/#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
+                            Consultar precio →
+                          </a>
+                        </div>
+                      </GlowCard>
+                    ))}
                   </div>
-                </GlowCard>
-              ))}
-            </div>
+                </>
+              )
+            })()}
           </>
         )}
       </div>

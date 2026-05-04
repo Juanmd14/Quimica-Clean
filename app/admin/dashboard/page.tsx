@@ -23,7 +23,7 @@ export default function AdminDashboard() {
   const navItems = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
     { label: 'Productos', href: '/admin/dashboard/products', icon: '📦' },
-    { label: 'Pedidos', href: '/admin/dashboard/orders', icon: '📋' },
+    { label: 'Leads / Consultas', href: '/admin/dashboard/leads', icon: '📋' },
     { label: 'Usuarios', href: '/admin/dashboard/users', icon: '👥' },
     { label: 'Configuración', href: '/admin/dashboard/settings', icon: '⚙️' },
   ]
@@ -170,25 +170,29 @@ export default function AdminDashboard() {
                 <p style={{ margin: '0', fontSize: '20px', fontWeight: 'bold' }}>Ir</p>
               </Link>
 
-              {/* Card: Orders */}
-              <div style={{
-                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                padding: '20px',
-                borderRadius: '8px',
-                color: 'white',
-                cursor: 'pointer',
-                transition: 'transform 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-              }}>
+              {/* Card: Leads */}
+              <Link
+                href="/admin/dashboard/leads"
+                style={{
+                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  color: 'white',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
+                }}
+              >
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>📋</h3>
-                <p style={{ margin: '0 0 5px 0', fontSize: '14px', opacity: 0.9 }}>Ver Pedidos</p>
-                <p style={{ margin: '0', fontSize: '20px', fontWeight: 'bold' }}>Próximamente</p>
-              </div>
+                <p style={{ margin: '0 0 5px 0', fontSize: '14px', opacity: 0.9 }}>Leads / Consultas</p>
+                <p style={{ margin: '0', fontSize: '20px', fontWeight: 'bold' }}>Ir</p>
+              </Link>
 
               {/* Card: Users */}
               <div style={{
