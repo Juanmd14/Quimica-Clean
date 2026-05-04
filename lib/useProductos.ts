@@ -1,21 +1,18 @@
 import { useEffect, useState } from 'react'
-import { createClient, type Producto } from '@/lib/supabase'
+import { type Producto } from '@/lib/supabase'
 
 export function useProductos() {
   const [productos, setProductos] = useState<Producto[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    createClient()
-      .from('productos')
-      .select('*')
-      .eq('activo', true)
-      .order('categoria')
-      .order('orden')
-      .then(({ data }) => {
-        setProductos(data || [])
-        setLoading(false)
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) setProductos(result.data || [])
       })
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [])
 
   return { productos, loading }
