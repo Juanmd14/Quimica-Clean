@@ -1,17 +1,19 @@
+import { useEffect, useState } from 'react'
 import { type Producto } from '@/lib/supabase'
-import { products } from '@/app/components/constants'
-
-const staticProductos: Producto[] = products.map((p, i) => ({
-  id: p.id,
-  categoria: p.category,
-  nombre: p.name,
-  color: p.color ?? null,
-  color2: p.color2 ?? null,
-  emoji: p.emoji ?? null,
-  activo: true,
-  orden: i,
-}))
 
 export function useProductos() {
-  return { productos: staticProductos, loading: false }
+  const [productos, setProductos] = useState<Producto[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) setProductos(result.data || [])
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [])
+
+  return { productos, loading }
 }
