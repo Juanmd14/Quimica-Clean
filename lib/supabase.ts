@@ -13,9 +13,11 @@ export type Producto = {
   id: number
   categoria: string
   nombre: string
+  descripcion: string | null
   color: string | null
   color2: string | null
   emoji: string | null
+  imagen_url: string | null
   activo: boolean
   orden: number
 }

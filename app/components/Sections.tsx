@@ -55,26 +55,27 @@ function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?
 }
 
 // ─── ProductThumb ─────────────────────────────────────────────────────────────
-function ProductThumb({ id, color, color2, emoji, height = 140 }: {
-  id: number; color?: string; color2?: string; emoji?: string; height?: number
+function ProductThumb({ id, imageUrl, color, color2, emoji, height = 140 }: {
+  id: number; imageUrl?: string; color?: string; color2?: string; emoji?: string; height?: number
 }) {
   const [imgError, setImgError] = useState(false)
   const bg = color2
     ? `linear-gradient(135deg, ${color} 50%, ${color2} 50%)`
     : color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+  const src = imageUrl || `/products/${id}.jpg`
 
   return (
     <div style={{ height, position: 'relative', overflow: 'hidden', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {!imgError && (
         <img
-          src={`/products/${id}.jpg`}
+          src={src}
           alt="Producto"
           loading="lazy"
           onError={() => setImgError(true)}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
       )}
-      {(imgError || !color) && emoji && (
+      {imgError && emoji && (
         <span style={{ fontSize: height > 100 ? '42px' : '28px', position: 'relative', zIndex: 1 }}>
           {emoji}
         </span>
@@ -173,6 +174,7 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
               >
                 <ProductThumb
                   id={product.id}
+                  imageUrl={product.imagen_url ?? undefined}
                   color={product.color ?? undefined}
                   color2={product.color2 ?? undefined}
                   emoji={product.emoji ?? undefined}
@@ -305,6 +307,7 @@ export function Products() {
                 <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
                   <ProductThumb
                     id={product.id}
+                    imageUrl={product.imagen_url ?? undefined}
                     color={product.color ?? undefined}
                     color2={product.color2 ?? undefined}
                     emoji={product.emoji ?? undefined}

@@ -34,11 +34,13 @@ function ProductModal({
   onClose: () => void
 }) {
   const [form, setForm] = useState<FormData>({
-    categoria: product?.categoria ?? 'Jabones',
-    nombre:    product?.nombre    ?? '',
-    color:     product?.color     ?? '#ffffff',
-    color2:    product?.color2    ?? null,
-    emoji:     product?.emoji     ?? null,
+    categoria:   product?.categoria   ?? 'Jabones',
+    nombre:      product?.nombre      ?? '',
+    descripcion: product?.descripcion ?? null,
+    color:       product?.color       ?? '#ffffff',
+    color2:      product?.color2      ?? null,
+    emoji:       product?.emoji       ?? null,
+    imagen_url:  product?.imagen_url  ?? null,
   })
   const [saving, setSaving] = useState(false)
   const [useColor2, setUseColor2] = useState(!!product?.color2)

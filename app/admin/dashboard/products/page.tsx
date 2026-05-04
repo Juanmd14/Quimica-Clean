@@ -10,6 +10,7 @@ type Producto = {
   color: string | null
   color2: string | null
   emoji: string | null
+  imagen_url: string | null
   activo: boolean
   orden: number
 }
@@ -51,6 +52,23 @@ function ColorDot({ color, color2, size = 28 }: { color?: string | null; color2?
 
 type FormData = Omit<Producto, 'id' | 'activo' | 'orden'>
 
+async function compressImg(file: File): Promise<Blob> {
+  return new Promise(resolve => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 800
+      let w = img.width, h = img.height
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX }
+      const canvas = document.createElement('canvas')
+      canvas.width = w; canvas.height = h
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+      URL.revokeObjectURL(img.src)
+      canvas.toBlob(b => resolve(b!), 'image/webp', 0.82)
+    }
+    img.src = URL.createObjectURL(file)
+  })
+}
+
 function ProductModal({ product, onSave, onClose }: {
   product: Producto | null
   onSave: (data: FormData & { id?: number }) => Promise<void>
@@ -63,16 +81,42 @@ function ProductModal({ product, onSave, onClose }: {
     color:       product?.color       ?? '#ffffff',
     color2:      product?.color2      ?? null,
     emoji:       product?.emoji       ?? null,
+    imagen_url:  product?.imagen_url  ?? null,
   })
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [useColor2, setUseColor2] = useState(!!product?.color2)
+  const [imgFile, setImgFile] = useState<File | null>(null)
+  const [imgPreview, setImgPreview] = useState<string | null>(product?.imagen_url ?? null)
 
   const set = (k: keyof FormData, v: string | null) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleImgSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImgFile(file)
+    setImgPreview(URL.createObjectURL(file))
+  }
 
   const handleSave = async () => {
     if (!form.nombre.trim()) return
     setSaving(true)
-    await onSave({ ...form, color2: useColor2 ? form.color2 : null, id: product?.id })
+    let imagen_url = form.imagen_url
+
+    if (imgFile) {
+      setUploading(true)
+      try {
+        const blob = await compressImg(imgFile)
+        const fd = new FormData()
+        fd.append('file', blob, `${product?.id ?? Date.now()}.webp`)
+        const res = await fetch('/api/products/upload', { method: 'POST', body: fd })
+        const json = await res.json()
+        if (json.url) imagen_url = json.url
+      } catch (e) { console.error(e) }
+      setUploading(false)
+    }
+
+    await onSave({ ...form, imagen_url, color2: useColor2 ? form.color2 : null, id: product?.id })
     setSaving(false)
     onClose()
   }
@@ -151,8 +195,41 @@ function ProductModal({ product, onSave, onClose }: {
           </div>
 
           <div>
-            <label style={label}>Emoji (opcional)</label>
+            <label style={label}>Emoji (opcional, se usa si no hay imagen)</label>
             <input style={inputStyle} value={form.emoji || ''} onChange={e => set('emoji', e.target.value || null)} placeholder="🧴" />
+          </div>
+
+          <div>
+            <label style={label}>Imagen del producto</label>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{
+                width: '88px', height: '66px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0,
+                background: form.color || '#1e2d42', border: `1.5px solid ${C.border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px',
+              }}>
+                {imgPreview
+                  ? <img src={imgPreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                  : (form.emoji || '📷')}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+                <label style={{
+                  background: C.blue, color: 'white', padding: '7px 0', borderRadius: '8px',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: 600, textAlign: 'center', display: 'block',
+                }}>
+                  {uploading ? 'Subiendo…' : imgPreview ? 'Cambiar imagen' : 'Subir imagen'}
+                  <input type="file" accept="image/*" onChange={handleImgSelect} style={{ display: 'none' }} disabled={uploading} />
+                </label>
+                {imgPreview && (
+                  <button onClick={() => { setImgPreview(null); setImgFile(null); set('imagen_url', null) }}
+                    style={{ background: 'transparent', border: `1.5px solid ${C.border}`, color: C.textMid, padding: '5px 0', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontFamily: 'DM Sans, sans-serif' }}>
+                    Quitar imagen
+                  </button>
+                )}
+              </div>
+            </div>
+            <p style={{ fontSize: '11px', color: C.textMid, marginTop: '6px', margin: '6px 0 0' }}>
+              Se comprime automáticamente a WebP ≤ 800 px
+            </p>
           </div>
         </div>
 
@@ -160,12 +237,12 @@ function ProductModal({ product, onSave, onClose }: {
           <button onClick={onClose} style={{ flex: 1, padding: '10px', background: 'transparent', border: `1.5px solid ${C.border}`, color: C.textMid, borderRadius: '8px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
             Cancelar
           </button>
-          <button onClick={handleSave} disabled={saving || !form.nombre.trim()} style={{
+          <button onClick={handleSave} disabled={saving || uploading || !form.nombre.trim()} style={{
             flex: 2, padding: '10px', background: C.blue, border: 'none', color: 'white',
-            borderRadius: '8px', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
+            borderRadius: '8px', cursor: (saving || uploading) ? 'not-allowed' : 'pointer', opacity: (saving || uploading) ? 0.7 : 1,
             fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
           }}>
-            {saving ? 'Guardando…' : 'Guardar'}
+            {uploading ? 'Subiendo imagen…' : saving ? 'Guardando…' : 'Guardar'}
           </button>
         </div>
       </div>
@@ -185,7 +262,7 @@ export default function ProductsManagement() {
 
 const loadProducts = useCallback(async () => {
   setLoading(true)
-  const res = await fetch('/api/products')
+  const res = await fetch('/api/products?all=true')
   const result = await res.json()
   if (result.success) setProducts(result.data || [])
   else setError('Error al cargar productos')

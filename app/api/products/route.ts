@@ -1,88 +1,52 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { productSchema } from '@/lib/validations'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
 
-    let query = supabase
+    let query = supabaseAdmin
       .from('productos')
-      .select('id, nombre, categoria, color, color2, emoji, activo, orden')
-      .eq('activo', true)
+      .select('id, nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo, orden')
       .order('categoria')
       .order('orden')
 
-    if (category) {
-      query = query.eq('categoria', category)
-    }
+    if (category) query = query.eq('categoria', category)
+
+    // Admin panel pide todos; público solo los activos
+    const onlyActive = searchParams.get('all') !== 'true'
+    if (onlyActive) query = query.eq('activo', true)
 
     const { data, error } = await query
-
-    if (error) {
-      console.error('Supabase fetch error:', error)
-      return NextResponse.json({ error: 'Error al obtener productos' }, { status: 500 })
-    }
-
+    if (error) return NextResponse.json({ error: 'Error al obtener productos' }, { status: 500 })
     return NextResponse.json({ success: true, data: data || [] })
-  } catch (error) {
-    console.error('GET /api/products error:', error)
+  } catch {
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   const authCheck = await requireAdminAuth()
-  if (authCheck.error) {
-    return authCheck.response
-  }
+  if (authCheck.error) return authCheck.response
 
   try {
-    const body = await request.json()
+    const { nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo, orden } = await request.json()
 
-    const validationResult = productSchema.safeParse(body)
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: 'Datos inválidos',
-          details: validationResult.error.flatten(),
-        },
-        { status: 400 }
-      )
+    if (!nombre?.trim() || !categoria?.trim()) {
+      return NextResponse.json({ error: 'Nombre y categoría son requeridos' }, { status: 400 })
     }
-
-    const productData = validationResult.data
 
     const { data, error } = await supabaseAdmin
       .from('productos')
-      .insert([productData])
+      .insert([{ nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo: activo ?? true, orden: orden ?? 0 }])
       .select()
+      .single()
 
-    if (error) {
-      console.error('Supabase insert error:', error)
-      return NextResponse.json(
-        { error: 'Error al crear el producto' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json(
-      { success: true, data: data[0] },
-      { status: 201 }
-    )
-  } catch (error) {
-    console.error('POST /api/products error:', error)
-    return NextResponse.json(
-      { error: 'Error en el servidor' },
-      { status: 500 }
-    )
+    if (error) return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
+    return NextResponse.json({ success: true, data }, { status: 201 })
+  } catch {
+    return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
