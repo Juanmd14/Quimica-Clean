@@ -167,12 +167,8 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
-              {cat.imagen_url ? (
-                <Image src={cat.imagen_url} alt={cat.nombre} fill style={{ objectFit: 'cover' }} />
-              ) : (
-                <span style={{ fontSize: '24px' }}>{cat.emoji}</span>
-              )}
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px' }}>
+              {cat.emoji}
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.nombre}</div>
