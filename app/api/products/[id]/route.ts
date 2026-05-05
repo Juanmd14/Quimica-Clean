@@ -38,9 +38,10 @@ export async function PUT(
       if (key in body) updates[key] = body[key]
     }
 
-    const { data, error } = await getSupabaseAdmin()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (getSupabaseAdmin() as any)
       .from('productos')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id)
       .select()
       .single()
