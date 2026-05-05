@@ -30,6 +30,17 @@ async function fetchRelacionados(categoria: string, excludeId: number): Promise<
   return (data as unknown as Producto[]) || []
 }
 
+type CategoriaRow = { nombre: string; emoji: string | null; imagen_url: string | null }
+
+async function fetchCategoriaPorNombre(nombre: string): Promise<CategoriaRow | null> {
+  const { data } = await getSupabaseAdmin()
+    .from('categorias')
+    .select('nombre, emoji, imagen_url')
+    .eq('nombre', nombre)
+    .single()
+  return (data as unknown as CategoriaRow) || null
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const producto = await fetchProducto(parseInt(id, 10))
@@ -101,7 +112,10 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
   if (!producto) notFound()
 
   const categoria = categories.find(c => c.name === producto.categoria)
-  const relacionados = await fetchRelacionados(producto.categoria, producto.id)
+  const [relacionados, categoriaDB] = await Promise.all([
+    fetchRelacionados(producto.categoria, producto.id),
+    fetchCategoriaPorNombre(producto.categoria),
+  ])
 
   const waNumber = (CONFIG.WHATSAPP_NUMBER || '').replace('+', '')
   const waMsg = encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre}. ¿Me pueden dar más información?`)
@@ -159,18 +173,27 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
 
           {/* Detalles */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {categoria && (
+            {producto.categoria && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
                   width: '40px', height: '40px', borderRadius: '10px',
-                  background: categoria.name === 'Bouquets' || categoria.name === 'Materia Prima' ? C.goldLight : C.blueLight,
+                  background: producto.categoria === 'Bouquets' || producto.categoria === 'Materia Prima' ? C.goldLight : C.blueLight,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  position: 'relative', overflow: 'hidden',
                 }}>
-                  <CategoryIcon name={categoria.name} size={20} color={categoria.name === 'Bouquets' || categoria.name === 'Materia Prima' ? C.gold : C.blue} />
+                  {categoriaDB?.imagen_url ? (
+                    <Image src={categoriaDB.imagen_url} alt={producto.categoria} fill sizes="40px" style={{ objectFit: 'cover' }} />
+                  ) : categoriaDB?.emoji ? (
+                    <span style={{ fontSize: '22px' }}>{categoriaDB.emoji}</span>
+                  ) : categoria ? (
+                    <CategoryIcon name={categoria.name} size={20} color={producto.categoria === 'Bouquets' || producto.categoria === 'Materia Prima' ? C.gold : C.blue} />
+                  ) : (
+                    <span style={{ fontSize: '22px' }}>📦</span>
+                  )}
                 </div>
                 <div>
                   <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: C.blue }}>Categoría</div>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: C.text }}>{categoria.name}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 600, color: C.text }}>{producto.categoria}</div>
                 </div>
               </div>
             )}
