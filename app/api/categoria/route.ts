@@ -4,17 +4,21 @@ import { requireAdminAuth } from '@/lib/adminMiddleware'
 
 export async function GET() {
   try {
-    const { data, error } = await getSupabaseAdmin()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = getSupabaseAdmin() as any
+    const { data, error } = await supabase
       .from('categoria')
       .select('*')
       .order('orden')
 
     if (error) {
+      console.error('Supabase error category:', error)
       return NextResponse.json({ error: 'Error al obtener categorías', details: error.message }, { status: 500 })
     }
     return NextResponse.json({ success: true, data: data || [] })
-  } catch {
-    return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
+  } catch (err) {
+    console.error('Catch error:', err)
+    return NextResponse.json({ error: 'Error en el servidor', details: String(err) }, { status: 500 })
   }
 }
 
