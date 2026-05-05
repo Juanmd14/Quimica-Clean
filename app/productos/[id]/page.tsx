@@ -104,7 +104,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
   const relacionados = await fetchRelacionados(producto.categoria, producto.id)
 
   const waNumber = (CONFIG.WHATSAPP_NUMBER || '').replace('+', '')
-  const waMsg = encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre} (ID: ${producto.id}). ¿Me pueden dar más información?`)
+  const waMsg = encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre}. ¿Me pueden dar más información?`)
 
   // JSON-LD structured data for SEO
   const jsonLd = {
@@ -185,22 +185,6 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
                   <span style={{ fontWeight: 600, color: C.text }}>Química Clean</span>, tu distribuidor de confianza en Tucumán, Argentina.</>
                 )}
               </p>
-            </div>
-
-            <div style={{ background: C.white, padding: '24px', borderRadius: '14px', border: `1.5px solid ${C.border}` }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: C.blue, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: '14px' }}>
-                Detalles
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <div style={{ fontSize: '12px', color: C.textMid, fontWeight: 500, marginBottom: '4px' }}>Código</div>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: C.text }}>{producto.id}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '12px', color: C.textMid, fontWeight: 500, marginBottom: '4px' }}>Categoría</div>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: C.text }}>{producto.categoria}</div>
-                </div>
-              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
