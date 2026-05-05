@@ -30,15 +30,26 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const authCheck = await requireAdminAuth()
-  if (authCheck.error) return authCheck.response
+  try {
+    const authCheck = await requireAdminAuth()
+    if (authCheck.error) {
+      console.error('Auth error:', authCheck.response)
+      return authCheck.response
+    }
+  } catch (authErr) {
+    console.error('requireAdminAuth error:', authErr)
+    return NextResponse.json({ error: 'Error en autenticación', details: String(authErr) }, { status: 500 })
+  }
 
   try {
-    const { nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo, orden } = await request.json()
+    const body = await request.json()
+    const { nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo, orden } = body
 
     if (!nombre?.trim() || !categoria?.trim()) {
       return NextResponse.json({ error: 'Nombre y categoría son requeridos' }, { status: 400 })
     }
+
+    console.log('Creating product:', { nombre, categoria })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (getSupabaseAdmin() as any)
@@ -47,9 +58,13 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (error) return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
+    if (error) {
+      console.error('Supabase insert error:', error)
+      return NextResponse.json({ error: 'Error al crear el producto', details: error.message }, { status: 500 })
+    }
     return NextResponse.json({ success: true, data }, { status: 201 })
-  } catch {
-    return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
+  } catch (err) {
+    console.error('POST products error:', err)
+    return NextResponse.json({ error: 'Error en el servidor', details: String(err) }, { status: 500 })
   }
 }
