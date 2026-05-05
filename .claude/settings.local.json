@@ -5,7 +5,18 @@
       "Bash(npx tsc *)",
       "PowerShell(supabase *)",
       "Bash(Get-ChildItem -Recurse -Depth 2)",
-      "Bash(Select-Object FullName, PSIsContainer)"
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Test-Path *)",
+      "Bash(findstr /i \"\\\\.env\")",
+      "Bash(Select-String \"env\")",
+      "PowerShell(head *)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Escritorio\\\\Juan cosas\\\\Prog\\\\quimica-clean\\\\app\" -File -Name | Where-Object { $_ -match \"page|layout\" })",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(powershell -Command \"\\(Get-Content 'app/api/products/route.ts'\\) -replace 'import \\\\{ supabaseAdmin \\\\} from ''@/lib/supabaseAdmin''', 'import { getSupabaseAdmin } from ''@/lib/supabaseAdmin''' | Set-Content 'app/api/products/route.ts'\")"
     ]
   }
 }
