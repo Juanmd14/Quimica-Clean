@@ -145,8 +145,8 @@ export default function CategoriasPage() {
               </button>
 
               {editingId === cat.id && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-                  <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '24px', width: '360px', maxHeight: '80vh', overflowY: 'auto' }}>
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, overflow: 'auto' }}>
+                  <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '24px', width: '360px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
                     <h3 style={{ marginBottom: '20px', fontSize: '18px' }}>Editar {cat.nombre}</h3>
                     
                     <div style={{ marginBottom: '16px' }}>
@@ -165,11 +165,12 @@ export default function CategoriasPage() {
                           background: C.bg, border: `1.5px dashed ${C.border}`, 
                           borderRadius: '8px', cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          overflow: 'hidden'
+                          overflow: 'hidden',
+                          position: 'relative'
                         }}
                       >
                         {editForm.imgPreview ? (
-                          <Image src={editForm.imgPreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                          <Image src={editForm.imgPreview} alt="Preview" fill sizes="100px" style={{ objectFit: 'cover' }} />
                         ) : (
                           <span style={{ color: C.textMid, fontSize: '14px' }}>Click para subir imagen</span>
                         )}
