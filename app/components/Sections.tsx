@@ -146,7 +146,7 @@ export function Stats() {
 }
 
 // ─── Category Modal ───────────────────────────────────────────────────────────
-function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClose: () => void }) {
+function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => void }) {
   const { isMobile } = useBreakpoint()
   const { productos } = useProductos()
   const catProducts = productos.filter(p => p.categoria === cat.name)
@@ -260,7 +260,7 @@ export function Categories() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: isMobile ? '10px' : '14px' }}>
-          {categories.map((cat, i) => (
+          {categorias.map((cat, i) => (
             <div key={i} onClick={() => setOpenCat(cat)} style={{
               background: C.white, border: `1.5px solid ${C.border}`,
               padding: isMobile ? '18px 12px' : '24px 16px',
@@ -270,11 +270,10 @@ export function Categories() {
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 36px rgba(43,123,184,0.1)' }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                <CategoryIcon name={cat.name} size={22} color={C.blue} />
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '24px' }}>
+                {cat.emoji}
               </div>
-              <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '4px', lineHeight: 1.25 }}>{cat.name}</div>
-              <div style={{ fontSize: '11px', color: C.blue, fontWeight: 600 }}>{cat.count} productos</div>
+              <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '4px', lineHeight: 1.25 }}>{cat.nombre}</div>
             </div>
           ))}
         </div>
@@ -325,7 +324,7 @@ export function Products() {
             paddingBottom: isMobile ? '4px' : '0',
             WebkitOverflowScrolling: 'touch' as any,
           }}>
-            {['Todos', ...categories.map(c => c.name)].map(cat => (
+            {['Todos', ...categorias.map(c => c.nombre)].map(cat => (
               <button key={cat} onClick={() => setActiveCat(cat)} style={{
                 background: activeCat === cat ? C.blue : C.white,
                 border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
