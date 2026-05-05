@@ -289,6 +289,19 @@ export function Products() {
   const { isMobile, isTablet } = useBreakpoint()
   const { productos } = useProductos()
   const [activeCat, setActiveCat] = useState('Todos')
+  const [categoriaList, setCategoriaList] = useState<string[]>([])
+
+  useEffect(() => {
+    fetch('/api/categorias')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.length) {
+          setCategoriaList(data.data.map((c: { nombre: string }) => c.nombre))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   const filtered = activeCat === 'Todos'
     ? productos
     : productos.filter(p => p.categoria === activeCat)
@@ -324,7 +337,7 @@ export function Products() {
             paddingBottom: isMobile ? '4px' : '0',
             WebkitOverflowScrolling: 'touch' as any,
           }}>
-            {['Todos', ...categorias.map(c => c.nombre)].map(cat => (
+            {['Todos', ...categoriaList].map(cat => (
               <button key={cat} onClick={() => setActiveCat(cat)} style={{
                 background: activeCat === cat ? C.blue : C.white,
                 border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
