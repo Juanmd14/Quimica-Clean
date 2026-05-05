@@ -26,9 +26,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nombre es requerido' }, { status: 400 })
     }
 
+    const insertData: Record<string, unknown> = { nombre }
+    if (emoji) insertData.emoji = emoji
+    if (orden != null) insertData.orden = orden
+
     const { data, error } = await getSupabaseAdmin()
       .from('categoria')
-      .insert([{ nombre, emoji: emoji ?? '📦', orden: orden ?? 0 }])
+      .insert([insertData])
       .select()
       .single()
 
