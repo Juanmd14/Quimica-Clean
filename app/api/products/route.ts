@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
     if (onlyActive) query = query.eq('activo', true)
 
     const { data, error } = await query
-    if (error) return NextResponse.json({ error: 'Error al obtener productos' }, { status: 500 })
+    if (error) {
+      console.error('Supabase error:', error)
+      return NextResponse.json({ error: 'Error al obtener productos', details: error.message }, { status: 500 })
+    }
     return NextResponse.json({ success: true, data: data || [] })
   } catch {
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
