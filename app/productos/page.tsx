@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { C, categories } from '@/app/components/constants'
@@ -10,24 +11,54 @@ interface Producto {
   id: number
   nombre: string
   categoria: string
+  descripcion: string | null
   color: string | null
   color2: string | null
   emoji: string | null
+  imagen_url: string | null
   activo: boolean
   orden: number
 }
 
-function ColorDot({ color, color2 }: { color?: string | null; color2?: string | null }) {
+function ProductMedia({ p }: { p: Producto }) {
+  const bg = p.color2
+    ? `linear-gradient(135deg, ${p.color} 50%, ${p.color2} 50%)`
+    : p.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+
+  if (p.imagen_url) {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <Image
+          src={p.imagen_url}
+          alt={p.nombre}
+          fill
+          sizes="(max-width: 768px) 50vw, 240px"
+          style={{ objectFit: 'cover' }}
+        />
+      </div>
+    )
+  }
+
   return (
     <div style={{
-      width: '100%', height: '100%',
-      background: color2
-        ? `linear-gradient(135deg, ${color} 50%, ${color2} 50%)`
-        : color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
+      width: '100%', height: '100%', background: bg,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: '48px',
+      fontSize: '44px',
     }}>
-      {!color && !color2 ? '🧴' : null}
+      {p.emoji || '🧴'}
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div style={{ background: C.white, borderRadius: '14px', overflow: 'hidden', border: `1.5px solid ${C.border}` }}>
+      <div className="qc-skeleton" style={{ height: '120px', borderRadius: 0 }} />
+      <div style={{ padding: '18px 20px 20px' }}>
+        <div className="qc-skeleton" style={{ height: '14px', width: '85%', marginBottom: '10px' }} />
+        <div className="qc-skeleton" style={{ height: '14px', width: '60%', marginBottom: '14px' }} />
+        <div className="qc-skeleton" style={{ height: '12px', width: '40%' }} />
+      </div>
     </div>
   )
 }
@@ -71,11 +102,11 @@ function CategoryPageContent() {
     <div style={{ minHeight: '100vh', background: C.offWhite }}>
 
       {/* Header */}
-      <div style={{ background: C.blueDark, padding: '40px 48px', textAlign: 'center' }}>
+      <div className="qc-page-pad" style={{ background: C.blueDark, padding: '40px 48px', textAlign: 'center' }}>
         <Link href="/" style={{ color: C.gold, textDecoration: 'none', fontSize: '14px', fontWeight: 600, display: 'inline-block', marginBottom: '20px' }}>
           ← Volver al inicio
         </Link>
-        <h1 style={{ fontSize: '48px', fontWeight: 700, color: 'white', margin: '0 0 12px', letterSpacing: '-0.02em' }}>
+        <h1 className="qc-h1" style={{ fontWeight: 700, color: 'white', margin: '0 0 12px', letterSpacing: '-0.02em' }}>
           {activeCategory === 'Todos' ? 'Todos los Productos' : activeCategory}
         </h1>
         <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
@@ -84,7 +115,7 @@ function CategoryPageContent() {
       </div>
 
       {/* Filtros */}
-      <div style={{ background: C.white, padding: '20px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div className="qc-page-pad" style={{ background: C.white, padding: '20px 48px', borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <input
             type="text"
@@ -117,9 +148,11 @@ function CategoryPageContent() {
       </div>
 
       {/* Contenido */}
-      <div style={{ padding: '48px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="qc-page-pad qc-section-pad" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: C.textMid }}>Cargando productos...</div>
+          <div className="qc-grid-cards">
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '60px', color: '#e74c3c', background: 'rgba(231,76,60,0.08)', borderRadius: '12px', border: '1px solid rgba(231,76,60,0.2)' }}>
             {error}
@@ -139,33 +172,28 @@ function CategoryPageContent() {
                 <>
                   <div style={{ marginBottom: '28px', fontSize: '14px', color: C.textMid }}>
                     <strong>{filtrados.length}</strong> producto(s) encontrado(s)
-                    {busqueda && <span style={{ marginLeft: '8px' }}>para "<strong>{busqueda}</strong>"</span>}
+                    {busqueda && <span style={{ marginLeft: '8px' }}>para &quot;<strong>{busqueda}</strong>&quot;</span>}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+                  <div className="qc-grid-cards">
                     {filtrados.map(p => (
-                      <GlowCard key={p.id} style={{ padding: 0 }}>
-                        {/* Color swatch */}
-                        <div style={{ height: '120px', borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
-                          <ColorDot color={p.color} color2={p.color2} />
-                          {p.emoji && (
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '44px' }}>
-                              {p.emoji}
+                      <Link key={p.id} href={`/productos/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                        <GlowCard style={{ padding: 0, height: '100%' }}>
+                          <div style={{ height: '120px', borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
+                            <ProductMedia p={p} />
+                            <div style={{ position: 'absolute', top: '10px', left: '10px', background: C.blueLight, padding: '3px 10px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700 }}>
+                              {p.categoria.toUpperCase()}
                             </div>
-                          )}
-                          <div style={{ position: 'absolute', top: '10px', left: '10px', background: C.blueLight, padding: '3px 10px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700 }}>
-                            {p.categoria.toUpperCase()}
                           </div>
-                        </div>
-                        {/* Info */}
-                        <div style={{ padding: '18px 20px 20px' }}>
-                          <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, margin: '0 0 14px', lineHeight: 1.35 }}>
-                            {p.nombre}
-                          </h3>
-                          <a href="/#contacto" style={{ fontSize: '13px', color: C.gold, fontWeight: 600, textDecoration: 'none' }}>
-                            Consultar precio →
-                          </a>
-                        </div>
-                      </GlowCard>
+                          <div style={{ padding: '18px 20px 20px' }}>
+                            <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, margin: '0 0 14px', lineHeight: 1.35 }}>
+                              {p.nombre}
+                            </h3>
+                            <span style={{ fontSize: '13px', color: C.gold, fontWeight: 600 }}>
+                              Ver detalle →
+                            </span>
+                          </div>
+                        </GlowCard>
+                      </Link>
                     ))}
                   </div>
                 </>
@@ -176,8 +204,8 @@ function CategoryPageContent() {
       </div>
 
       {/* CTA */}
-      <div style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`, padding: '48px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: 700, color: 'white', marginBottom: '10px' }}>
+      <div className="qc-page-pad qc-section-pad" style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`, textAlign: 'center' }}>
+        <h2 className="qc-h2" style={{ fontWeight: 700, color: 'white', marginBottom: '10px' }}>
           ¿No encontrás lo que buscas?
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '24px' }}>

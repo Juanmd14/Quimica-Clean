@@ -1,178 +1,164 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { C, categories } from '@/app/components/constants'
 import { WhatsAppIcon } from '@/app/components/ui'
 import { CONFIG } from '@/lib/config'
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
+import type { Producto } from '@/lib/supabase'
 
-// Importar productos directamente de constants
-const PRODUCTOS = [
-  { id: 1, nombre: 'Limpiador Multiusos Premium', categoria: 'Desengrasantes', color: '#E8F4F8', emoji: '🧽', descripcion: null },
-  { id: 2, nombre: 'Jabón Líquido Antibacterial', categoria: 'Jabones', color: '#FFF4E6', emoji: '🧼', descripcion: null },
-  { id: 3, nombre: 'Desinfectante x5L', categoria: 'Desinfectantes', color: '#E8F5E9', emoji: '✨', descripcion: null },
-  { id: 4, nombre: 'Detergente Concentrado', categoria: 'Detergentes', color: '#FCE4EC', emoji: '🧴', descripcion: null },
-]
+async function fetchProducto(id: number): Promise<Producto | null> {
+  const { data, error } = await getSupabaseAdmin()
+    .from('productos')
+    .select('*')
+    .eq('id', id)
+    .eq('activo', true)
+    .single()
+  if (error || !data) return null
+  return data as unknown as Producto
+}
 
-// Generate metadata
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const id = parseInt(params.id, 10)
-  const producto = PRODUCTOS.find(p => p.id === id)
-  
+async function fetchRelacionados(categoria: string, excludeId: number): Promise<Producto[]> {
+  const { data } = await getSupabaseAdmin()
+    .from('productos')
+    .select('*')
+    .eq('categoria', categoria)
+    .eq('activo', true)
+    .neq('id', excludeId)
+    .limit(4)
+  return (data as unknown as Producto[]) || []
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const producto = await fetchProducto(parseInt(id, 10))
   if (!producto) {
-    return {
-      title: 'Producto no encontrado | Química Clean',
-      description: 'El producto que buscas no existe.',
-    }
+    return { title: 'Producto no encontrado | Química Clean' }
   }
-  
+  const url = `https://quimica-clean.com/productos/${producto.id}`
+  const desc = producto.descripcion ||
+    `${producto.nombre} - Distribuidora mayorista de productos de limpieza. Categoría: ${producto.categoria}. Cotizá con Química Clean.`
   return {
-    title: `${producto.nombre} | Química Clean - Distribuidora Mayorista`,
-    description: `${producto.nombre} - Distribuidor mayorista de productos de limpieza. Categoría: ${producto.categoria}. Cotizá con Química Clean.`,
+    title: `${producto.nombre} | Química Clean`,
+    description: desc,
+    alternates: { canonical: url },
     openGraph: {
       title: `${producto.nombre} | Química Clean`,
-      description: `${producto.nombre} - Distribuidora mayorista de productos de limpieza.`,
+      description: desc,
       type: 'website',
-      url: `https://quimica-clean.com/productos/${id}`,
+      url,
+      images: producto.imagen_url ? [{ url: producto.imagen_url }] : undefined,
     },
   }
 }
 
-
-
 function CategoryIcon({ name, size = 32, color = C.blue }: { name: string; size?: number; color?: string }) {
   const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   switch (name) {
-    case 'Suavizantes':
-      return <svg {...s}><path d="M12 2C8 2 5 5 5 9c0 3 2 5 4 7l3 4 3-4c2-2 4-4 4-7 0-4-3-7-7-7z" /><path d="M9 9c0-1.7 1.3-3 3-3" /></svg>
-    case 'Jabones':
-      return <svg {...s}><circle cx="12" cy="10" r="4" /><path d="M8 10c0 0-3 1-3 5s2 5 7 5 7-1 7-5-3-5-3-5" /><path d="M12 6V3" /><circle cx="12" cy="2.5" r="0.5" fill={color} /></svg>
-    case 'Detergentes':
-      return <svg {...s}><path d="M8 3h8l1 4H7L8 3z" /><path d="M7 7v11a2 2 0 002 2h6a2 2 0 002-2V7" /><path d="M10 11h4" /><path d="M10 15h4" /></svg>
-    case 'Desengrasantes':
-      return <svg {...s}><path d="M5 3h14" /><path d="M5 3v2l2 2v12a1 1 0 001 1h8a1 1 0 001-1V7l2-2V3" /><path d="M9 11l2 2 4-4" /></svg>
-    case 'Desinfectantes':
-      return <svg {...s}><path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6l-8-4z" /><path d="M9 12l2 2 4-4" /></svg>
-    case 'Pisos':
-      return <svg {...s}><rect x="2" y="14" width="9" height="8" rx="1" /><rect x="13" y="14" width="9" height="8" rx="1" /><rect x="2" y="4" width="9" height="8" rx="1" /><rect x="13" y="4" width="9" height="8" rx="1" /></svg>
-    case 'Piletas':
-      return <svg {...s}><path d="M2 12c1-2 2-3 4-3s3 2 4 2 3-2 4-2 3 1 4 3" /><path d="M2 17c1-2 2-3 4-3s3 2 4 2 3-2 4-2 3 1 4 3" /><path d="M6 5h12v4H6z" /><path d="M9 5V3m6 2V3" /></svg>
-    case 'Automotor':
-      return <svg {...s}><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h14l3 5v5a2 2 0 01-2 2h-2" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path d="M7 12V7" /></svg>
-    case 'Hogar':
-      return <svg {...s}><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" /><path d="M9 21V12h6v9" /></svg>
-    case 'Concentrados':
-      return <svg {...s}><path d="M9 3h6m-5 0v4l-4 8a2 2 0 001.73 3h8.54A2 2 0 0018 15L14 7V3" /><line x1="6.5" y1="13" x2="17.5" y2="13" /><circle cx="12" cy="18" r="1" fill={color} /></svg>
-    case 'Materia Prima':
-      return <svg {...s}><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /><path d="M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" /></svg>
-    case 'Contenedores':
-      return <svg {...s}><path d="M2 6l10-4 10 4v12l-10 4L2 18V6z" /><path d="M12 2v18" /><path d="M2 6l10 4 10-4" /></svg>
-    case 'Bouquets':
-      return <svg {...s}><path d="M12 2C8 2 5 5 5 9c0 2.5 1.5 4.5 3 6l4 5 4-5c1.5-1.5 3-3.5 3-6 0-4-3-7-7-7z" /><circle cx="12" cy="9" r="2" /></svg>
-    default:
-      return <svg {...s}><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>
+    case 'Suavizantes':   return <svg {...s}><path d="M12 2C8 2 5 5 5 9c0 3 2 5 4 7l3 4 3-4c2-2 4-4 4-7 0-4-3-7-7-7z" /></svg>
+    case 'Jabones':       return <svg {...s}><circle cx="12" cy="10" r="4" /><path d="M8 10c0 0-3 1-3 5s2 5 7 5 7-1 7-5-3-5-3-5" /></svg>
+    case 'Detergentes':   return <svg {...s}><path d="M8 3h8l1 4H7L8 3z" /><path d="M7 7v11a2 2 0 002 2h6a2 2 0 002-2V7" /></svg>
+    case 'Desengrasantes':return <svg {...s}><path d="M5 3h14M5 3v2l2 2v12a1 1 0 001 1h8a1 1 0 001-1V7l2-2V3M9 11l2 2 4-4" /></svg>
+    case 'Desinfectantes':return <svg {...s}><path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6l-8-4zM9 12l2 2 4-4" /></svg>
+    default:              return <svg {...s}><circle cx="12" cy="12" r="9" /></svg>
   }
 }
 
-export default function ProductoPage({ params }: { params: { id: string } }) {
-  const id = parseInt(params.id, 10)
-  const producto = PRODUCTOS.find(p => p.id === id)
-  const categoria = producto ? categories.find(c => c.name === producto.categoria) : null
-  
-  // Productos relacionados (misma categoría)
-  const relacionados = producto 
-    ? PRODUCTOS.filter(p => p.categoria === producto.categoria && p.id !== producto.id).slice(0, 4)
-    : []
-
-  if (!producto) {
+function ProductImage({ producto }: { producto: Producto }) {
+  if (producto.imagen_url) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.offWhite }}>
-        <div style={{ maxWidth: '500px', padding: '20px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-          <h1 style={{ fontSize: '32px', fontWeight: 700, color: C.text, marginBottom: '12px' }}>
-            Producto no encontrado
-          </h1>
-          <p style={{ fontSize: '14px', color: C.textMid, marginBottom: '24px', lineHeight: 1.6 }}>
-            El producto que buscas no existe o ha sido descontinuado.
-          </p>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <button style={{
-              background: C.blue, color: 'white', border: 'none',
-              padding: '12px 28px', borderRadius: '8px',
-              fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-              cursor: 'pointer',
-            }}>
-              Volver al inicio
-            </button>
-          </Link>
-        </div>
-      </div>
+      <Image
+        src={producto.imagen_url}
+        alt={producto.nombre}
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        style={{ objectFit: 'cover' }}
+        priority
+      />
     )
   }
+  const bg = producto.color2
+    ? `linear-gradient(135deg, ${producto.color} 50%, ${producto.color2} 50%)`
+    : producto.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 'clamp(80px, 20vw, 140px)',
+    }}>
+      {producto.emoji || '🧴'}
+    </div>
+  )
+}
 
-  // Determinar color de fondo
-  const bgColor = producto.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`
+export default async function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: idParam } = await params
+  const id = parseInt(idParam, 10)
+  if (isNaN(id)) notFound()
+
+  const producto = await fetchProducto(id)
+  if (!producto) notFound()
+
+  const categoria = categories.find(c => c.name === producto.categoria)
+  const relacionados = await fetchRelacionados(producto.categoria, producto.id)
+
+  const waNumber = (CONFIG.WHATSAPP_NUMBER || '').replace('+', '')
+  const waMsg = encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre} (ID: ${producto.id}). ¿Me pueden dar más información?`)
+
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: producto.nombre,
+    description: producto.descripcion || `${producto.nombre} - Productos de limpieza mayorista`,
+    category: producto.categoria,
+    brand: { '@type': 'Brand', name: 'Química Clean' },
+    image: producto.imagen_url || undefined,
+    offers: {
+      '@type': 'Offer',
+      availability: 'https://schema.org/InStock',
+      url: `https://quimica-clean.com/productos/${producto.id}`,
+      priceCurrency: 'ARS',
+    },
+  }
 
   return (
     <main style={{ minHeight: '100vh', background: C.offWhite, paddingTop: '88px' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* Breadcrumb */}
-      <nav style={{ padding: '20px 48px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ fontSize: '13px', color: C.textMid, display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <Link href="/" style={{ color: C.blue, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span>Inicio</span>
-          </Link>
+      <nav className="qc-page-pad" style={{ padding: '20px 48px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ fontSize: '13px', color: C.textMid, display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Link href="/" style={{ color: C.blue, textDecoration: 'none' }}>Inicio</Link>
           <span>/</span>
-          <Link href="/#productos" style={{ color: C.blue, textDecoration: 'none' }}>
-            Productos
-          </Link>
+          <Link href="/productos" style={{ color: C.blue, textDecoration: 'none' }}>Productos</Link>
           <span>/</span>
           <span style={{ color: C.text, fontWeight: 600 }}>{producto.nombre}</span>
         </div>
       </nav>
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 48px' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '48px',
-          alignItems: 'start',
-        }}>
+      <div className="qc-page-pad qc-section-pad" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="qc-grid-2" style={{ alignItems: 'start' }}>
           {/* Imagen */}
           <div style={{
-            height: '400px',
-            background: bgColor,
+            position: 'relative',
+            aspectRatio: '1 / 1',
+            maxHeight: '500px',
+            background: C.offWhite,
             borderRadius: '16px',
             overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             boxShadow: '0 12px 36px rgba(0,0,0,0.1)',
-            position: 'relative',
           }}>
-            <img
-              src={`/products/${producto.id}.jpg`}
-              alt={producto.nombre}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-            {producto.emoji && (
-              <span style={{
-                fontSize: '120px',
-                position: 'absolute',
-                zIndex: 1,
-              }}>
-                {producto.emoji}
-              </span>
-            )}
+            <ProductImage producto={producto} />
+            <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '12px', fontSize: '11px', color: C.blue, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              {producto.categoria}
+            </div>
           </div>
 
           {/* Detalles */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {/* Categoría */}
             {categoria && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
@@ -183,43 +169,31 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                   <CategoryIcon name={categoria.name} size={20} color={categoria.name === 'Bouquets' || categoria.name === 'Materia Prima' ? C.gold : C.blue} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: C.blue }}>
-                    Categoría
-                  </div>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: C.text }}>
-                    {categoria.name}
-                  </div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: C.blue }}>Categoría</div>
+                  <div style={{ fontSize: '15px', fontWeight: 600, color: C.text }}>{categoria.name}</div>
                 </div>
               </div>
             )}
 
-            {/* Nombre y Descripción */}
             <div>
-              <h1 style={{ fontSize: '36px', fontWeight: 800, color: C.text, marginBottom: '12px', lineHeight: 1.2 }}>
+              <h1 className="qc-h1" style={{ fontWeight: 800, color: C.text, marginBottom: '12px', lineHeight: 1.15 }}>
                 {producto.nombre}
               </h1>
               <p style={{ fontSize: '15px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>
                 {producto.descripcion || (
-                  <>
-                    Producto especializado en limpieza industrial y comercial. Parte del catálogo mayorista de{' '}
-                    <span style={{ fontWeight: 600, color: C.text }}>Química Clean</span>
-                    , tu distribuidor de confianza en Tucumán, Argentina.
-                  </>
+                  <>Producto especializado en limpieza industrial y comercial. Parte del catálogo mayorista de{' '}
+                  <span style={{ fontWeight: 600, color: C.text }}>Química Clean</span>, tu distribuidor de confianza en Tucumán, Argentina.</>
                 )}
               </p>
             </div>
 
-            {/* Características */}
-            <div style={{
-              background: C.white, padding: '28px',
-              borderRadius: '14px', border: `1.5px solid ${C.border}`,
-            }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: C.blue, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: '16px' }}>
+            <div style={{ background: C.white, padding: '24px', borderRadius: '14px', border: `1.5px solid ${C.border}` }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: C.blue, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: '14px' }}>
                 Detalles
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
-                  <div style={{ fontSize: '12px', color: C.textMid, fontWeight: 500, marginBottom: '4px' }}>ID Producto</div>
+                  <div style={{ fontSize: '12px', color: C.textMid, fontWeight: 500, marginBottom: '4px' }}>Código</div>
                   <div style={{ fontSize: '15px', fontWeight: 700, color: C.text }}>{producto.id}</div>
                 </div>
                 <div>
@@ -229,46 +203,23 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            {/* CTA Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', paddingTop: '8px' }}>
-              <a href="#contacto" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <Link href="/#contacto" style={{ textDecoration: 'none' }}>
                 <button style={{
                   width: '100%', background: C.gold, color: 'white', border: 'none',
-                  padding: '16px',
-                  borderRadius: '10px', fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
-                  fontSize: '15px', cursor: 'pointer',
-                  transition: 'all 0.25s',
-                }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = C.goldDark
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(231, 167, 63, 0.3)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = C.gold
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}>
+                  padding: '16px', borderRadius: '10px', fontFamily: 'DM Sans, sans-serif',
+                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                }}>
                   Solicitar cotización
                 </button>
-              </a>
-              <a href={`https://wa.me/${(CONFIG.WHATSAPP_NUMBER || '').replace('+', '')}?text=${encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre} (ID: ${producto.id}). ¿Me pueden dar más información?`)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              </Link>
+              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                 <button style={{
                   width: '100%', background: '#25d366', color: 'white', border: 'none',
-                  padding: '16px',
-                  borderRadius: '10px', fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
-                  fontSize: '15px', cursor: 'pointer',
+                  padding: '16px', borderRadius: '10px', fontFamily: 'DM Sans, sans-serif',
+                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  transition: 'all 0.25s',
-                }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = '#1da851'
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = '#25d366'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                  }}>
+                }}>
                   <WhatsAppIcon size={18} color="white" />
                   WhatsApp
                 </button>
@@ -279,8 +230,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
 
         {/* Productos Relacionados */}
         {relacionados.length > 0 && (
-          <div style={{ marginTop: '80px', paddingTop: '60px', borderTop: `1px solid ${C.border}` }}>
-            <div style={{ textAlign: 'center', marginBottom: '44px' }}>
+          <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: `1px solid ${C.border}` }}>
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em',
@@ -290,54 +241,38 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                 Más en esta categoría
                 <span style={{ width: '24px', height: '2px', background: C.blue }} />
               </div>
-              <h2 style={{ fontSize: '32px', fontWeight: 800, color: C.text, margin: 0 }}>
+              <h2 className="qc-h2" style={{ fontWeight: 800, color: C.text, margin: 0 }}>
                 Productos relacionados
               </h2>
             </div>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '20px',
-            }}>
-              {relacionados.map(p => (
-                <Link key={p.id} href={`/productos/${p.id}`} style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    background: C.white, borderRadius: '14px',
-                    overflow: 'hidden', border: `1.5px solid ${C.border}`,
-                    transition: 'all 0.3s', cursor: 'pointer',
-                  }}
-                    onMouseEnter={e => {
-                      const el = e.currentTarget as HTMLElement
-                      el.style.transform = 'translateY(-8px)'
-                      el.style.boxShadow = '0 20px 44px rgba(0,0,0,0.1)'
-                      el.style.borderColor = C.blue
-                    }}
-                    onMouseLeave={e => {
-                      const el = e.currentTarget as HTMLElement
-                      el.style.transform = 'translateY(0)'
-                      el.style.boxShadow = 'none'
-                      el.style.borderColor = C.border
-                    }}>
-                    {/* Imagen */}
+            <div className="qc-grid-cards">
+              {relacionados.map(p => {
+                const bg = p.color2 ? `linear-gradient(135deg, ${p.color} 50%, ${p.color2} 50%)` : (p.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`)
+                return (
+                  <Link key={p.id} href={`/productos/${p.id}`} style={{ textDecoration: 'none' }}>
                     <div style={{
-                      height: '160px', background: p.color || `linear-gradient(135deg, ${C.blueLight}, ${C.goldLight})`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: C.white, borderRadius: '14px',
+                      overflow: 'hidden', border: `1.5px solid ${C.border}`,
+                      transition: 'all 0.25s', height: '100%',
                     }}>
-                      <span style={{ fontSize: '48px' }}>{p.emoji || '🧴'}</span>
-                    </div>
-                    {/* Info */}
-                    <div style={{ padding: '16px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 600, color: C.blue, marginBottom: '6px' }}>
-                        {p.categoria}
+                      <div style={{ position: 'relative', aspectRatio: '4 / 3', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {p.imagen_url
+                          ? <Image src={p.imagen_url} alt={p.nombre} fill sizes="(max-width: 768px) 50vw, 25vw" style={{ objectFit: 'cover' }} />
+                          : <span style={{ fontSize: '48px' }}>{p.emoji || '🧴'}</span>}
                       </div>
-                      <div style={{ fontSize: '15px', fontWeight: 700, color: C.text, lineHeight: 1.3 }}>
-                        {p.nombre}
+                      <div style={{ padding: '14px 16px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: 600, color: C.blue, marginBottom: '4px' }}>
+                          {p.categoria}
+                        </div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: C.text, lineHeight: 1.3 }}>
+                          {p.nombre}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}

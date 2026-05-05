@@ -61,3 +61,58 @@ input, textarea, select {
 html {
   scroll-behavior: smooth;
 }
+
+/* ---- Responsive helpers ---- */
+.qc-page-pad {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+.qc-section-pad {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+.qc-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+.qc-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+.qc-h1 { font-size: 48px; }
+.qc-h2 { font-size: 32px; }
+
+@media (max-width: 768px) {
+  .qc-page-pad {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .qc-section-pad {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+  .qc-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .qc-grid-cards {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .qc-h1 { font-size: 32px; }
+  .qc-h2 { font-size: 24px; }
+}
+
+/* ---- Skeleton shimmer ---- */
+@keyframes qc-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.qc-skeleton {
+  background: linear-gradient(90deg, #ececec 0%, #f6f6f6 50%, #ececec 100%);
+  background-size: 800px 100%;
+  animation: qc-shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
