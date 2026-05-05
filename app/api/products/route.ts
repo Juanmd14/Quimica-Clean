@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nombre y categoría son requeridos' }, { status: 400 })
     }
 
-    const { data, error } = await getSupabaseAdmin()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (getSupabaseAdmin() as any)
       .from('productos')
       .insert([{ nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo: activo ?? true, orden: orden ?? 0 }])
       .select()
