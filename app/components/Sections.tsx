@@ -91,12 +91,13 @@ function ProductThumb({ id, imageUrl, color, color2, emoji, height = 140 }: {
   return (
     <div style={{ height, position: 'relative', overflow: 'hidden', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {!imgError && (
-        <img
+        <Image
           src={src}
           alt="Producto"
-          loading="lazy"
+          fill
+          sizes="(max-width: 768px) 50vw, 220px"
           onError={() => setImgError(true)}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ objectFit: 'cover' }}
         />
       )}
       {imgError && emoji && (
@@ -167,8 +168,12 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px' }}>
-              {cat.emoji}
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px', position: 'relative', overflow: 'hidden' }}>
+              {cat.imagen_url ? (
+                <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="44px" style={{ objectFit: 'cover' }} />
+              ) : (
+                <span>{cat.emoji}</span>
+              )}
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.nombre}</div>
@@ -245,7 +250,7 @@ export function Categories() {
           setCategorias(cats)
         }
       })
-      .catch(() => {})
+      .catch(err => console.error('fetch categorias falló:', err))
   }, [])
 
   return (
@@ -305,7 +310,7 @@ export function Products() {
           setCategoriaList(data.data.map((c: { nombre: string }) => c.nombre))
         }
       })
-      .catch(() => {})
+      .catch(err => console.error('fetch categorias falló:', err))
   }, [])
 
   const filtered = activeCat === 'Todos'

@@ -41,7 +41,7 @@ Edita `.env.local` con tus valores:
 NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
 SUPABASE_SECRET_KEY=tu_secret_key_de_supabase
-NEXT_PUBLIC_ADMIN_PASSWORD=tu_contraseña_admin_segura
+ADMIN_PASSWORD=tu_contraseña_admin_segura
 NEXT_PUBLIC_WHATSAPP_NUMBER=+5493811234567
 ```
 

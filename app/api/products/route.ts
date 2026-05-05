@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Error al obtener productos', details: error.message }, { status: 500 })
     }
     return NextResponse.json({ success: true, data: data || [] })
-  } catch {
+  } catch (err) {
+    console.error('GET products error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
@@ -49,10 +50,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nombre y categoría son requeridos' }, { status: 400 })
     }
 
-    console.log('Creating product:', { nombre, categoria })
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (getSupabaseAdmin() as any)
+    const { data, error } = await getSupabaseAdmin()
       .from('productos')
       .insert([{ nombre, categoria, descripcion, color, color2, emoji, imagen_url, activo: activo ?? true, orden: orden ?? 0 }])
       .select()

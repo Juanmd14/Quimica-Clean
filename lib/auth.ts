@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers'
 
 const ADMIN_SESSION_COOKIE = 'admin_session'
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
 /**
  * Verifies if the user has a valid admin session
@@ -64,7 +64,7 @@ export async function destroyAdminSession(): Promise<void> {
   try {
     const cookieStore = await cookies()
     cookieStore.delete(ADMIN_SESSION_COOKIE)
-  } catch {
-    // Silent fail
+  } catch (err) {
+    console.error('destroyAdminSession failed:', err)
   }
 }

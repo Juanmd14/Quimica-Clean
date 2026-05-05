@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
       .getPublicUrl(data.path)
 
     return NextResponse.json({ url: publicUrl })
-  } catch {
+  } catch (err) {
+    console.error('Upload error:', err)
     return NextResponse.json({ error: 'Error al subir imagen' }, { status: 500 })
   }
 }

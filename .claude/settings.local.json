@@ -16,7 +16,14 @@
       "Bash(git push *)",
       "Bash(git pull *)",
       "Bash(git stash *)",
-      "Bash(powershell -Command \"\\(Get-Content 'app/api/products/route.ts'\\) -replace 'import \\\\{ supabaseAdmin \\\\} from ''@/lib/supabaseAdmin''', 'import { getSupabaseAdmin } from ''@/lib/supabaseAdmin''' | Set-Content 'app/api/products/route.ts'\")"
+      "Bash(powershell -Command \"\\(Get-Content 'app/api/products/route.ts'\\) -replace 'import \\\\{ supabaseAdmin \\\\} from ''@/lib/supabaseAdmin''', 'import { getSupabaseAdmin } from ''@/lib/supabaseAdmin''' | Set-Content 'app/api/products/route.ts'\")",
+      "Bash(dir -Recurse -Depth 2)",
+      "Bash(Get-ChildItem -Force)",
+      "Bash(grep -E \"\\(\\\\\\\\{\\\\\\\\s*\\\\\\\\}|=>\\\\\\\\s*\\\\\\\\{\\\\\\\\s*\\\\\\\\}\\)\")",
+      "Bash(npm run *)",
+      "Bash(cp \"/c/Users/User/OneDrive/Escritorio/icono page.jpeg\" \"/c/Users/User/OneDrive/Escritorio/Juan cosas/Prog/quimica-clean/app/icon.jpg\")",
+      "Bash(cp \"/c/Users/User/OneDrive/Escritorio/apple-touch-icon.png\" \"/c/Users/User/OneDrive/Escritorio/Juan cosas/Prog/quimica-clean/app/apple-icon.png\")",
+      "Bash(git ls-files *)"
     ]
   }
 }

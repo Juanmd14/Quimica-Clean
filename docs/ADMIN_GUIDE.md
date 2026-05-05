@@ -22,7 +22,7 @@ Para ingresar al panel de administración necesitas:
 2. **Ingresar la contraseña** que configuraste en tu archivo `.env.local`
 
 ```env
-NEXT_PUBLIC_ADMIN_PASSWORD=tu_contraseña_aqui
+ADMIN_PASSWORD=tu_contraseña_aqui
 ```
 
 ## 📊 Funcionalidades del Admin
@@ -105,7 +105,7 @@ Eliminar producto (**requiere autenticación**)
 
 2. **Edita las variables**
    ```env
-   NEXT_PUBLIC_ADMIN_PASSWORD=contraseña_fuerte_123
+   ADMIN_PASSWORD=contraseña_fuerte_123
    NEXT_PUBLIC_SUPABASE_URL=tu_url_supabase
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
    SUPABASE_SECRET_KEY=tu_secret_key

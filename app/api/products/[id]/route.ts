@@ -16,7 +16,8 @@ export async function GET(
 
     if (error || !data) return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     return NextResponse.json({ success: true, data })
-  } catch {
+  } catch (err) {
+    console.error('GET product[id] error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
@@ -38,8 +39,7 @@ export async function PUT(
       if (key in body) updates[key] = body[key]
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (getSupabaseAdmin() as any)
+    const { data, error } = await getSupabaseAdmin()
       .from('productos')
       .update(updates)
       .eq('id', id)
@@ -48,7 +48,8 @@ export async function PUT(
 
     if (error) return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
     return NextResponse.json({ success: true, data })
-  } catch {
+  } catch (err) {
+    console.error('PUT product[id] error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
@@ -65,7 +66,8 @@ export async function DELETE(
     const { error } = await getSupabaseAdmin().from('productos').delete().eq('id', id)
     if (error) return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (err) {
+    console.error('DELETE product[id] error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }

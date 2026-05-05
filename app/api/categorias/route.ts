@@ -4,9 +4,7 @@ import { requireAdminAuth } from '@/lib/adminMiddleware'
 
 export async function GET() {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = getSupabaseAdmin() as any
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseAdmin()
       .from('categorias')
       .select('*')
       .order('orden')
@@ -26,7 +24,8 @@ export async function POST(request: NextRequest) {
   try {
     const authCheck = await requireAdminAuth()
     if (authCheck.error) return authCheck.response
-  } catch {
+  } catch (err) {
+    console.error('Auth error en categorias:', err)
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
@@ -42,8 +41,7 @@ export async function POST(request: NextRequest) {
 
     const insertData = { nombre, emoji: emoji ?? null, orden: orden ?? 0 }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (getSupabaseAdmin() as any)
+    const { data, error } = await getSupabaseAdmin()
       .from('categorias')
       .insert([insertData])
       .select()
@@ -51,7 +49,8 @@ export async function POST(request: NextRequest) {
 
     if (error) return NextResponse.json({ error: 'Error al crear categoría', details: error.message }, { status: 500 })
     return NextResponse.json({ success: true, data }, { status: 201 })
-  } catch {
+  } catch (err) {
+    console.error('POST categorias error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }
@@ -60,7 +59,8 @@ export async function PUT(request: NextRequest) {
   try {
     const authCheck = await requireAdminAuth()
     if (authCheck.error) return authCheck.response
-  } catch {
+  } catch (err) {
+    console.error('Auth error en categorias:', err)
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
@@ -75,8 +75,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (getSupabaseAdmin() as any)
+    const { data, error } = await getSupabaseAdmin()
       .from('categorias')
       .update({ emoji, imagen_url, orden })
       .eq('id', id)
@@ -85,7 +84,8 @@ export async function PUT(request: NextRequest) {
 
     if (error) return NextResponse.json({ error: 'Error al actualizar categoría', details: error.message }, { status: 500 })
     return NextResponse.json({ success: true, data })
-  } catch {
+  } catch (err) {
+    console.error('PUT categorias error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
   }
 }

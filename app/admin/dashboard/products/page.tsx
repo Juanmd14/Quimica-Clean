@@ -210,6 +210,7 @@ function ProductModal({ product, onSave, onClose }: {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px',
               }}>
                 {imgPreview
+                  // eslint-disable-next-line @next/next/no-img-element -- preview de blob URL local en admin, no necesita optimización
                   ? <img src={imgPreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
                   : (form.emoji || '📷')}
               </div>
@@ -283,7 +284,7 @@ const loadProducts = useCallback(async () => {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
 
 const handleSave = async (data: FormData & { id?: number }) => {
-  const { id, ...rest } = data as any
+  const { id, ...rest } = data
   if (id) {
     await fetch(`/api/products/${id}`, {
       method: 'PUT',

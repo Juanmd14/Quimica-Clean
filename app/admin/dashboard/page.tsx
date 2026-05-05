@@ -2,12 +2,59 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
 import { CONFIG } from '@/lib/config'
+
+type Stats = {
+  productos: number | null
+  categorias: number | null
+  leadsHoy: number | null
+  leadsSemana: number | null
+}
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false)
+  const [stats, setStats] = useState<Stats>({ productos: null, categorias: null, leadsHoy: null, leadsSemana: null })
   const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    )
+
+    type LeadCount = { hoy: number | null; semana: number | null }
+
+    const productsPromise: Promise<number | null> = fetch('/api/products')
+      .then(r => r.json())
+      .then(j => j.success ? j.data.length : null)
+      .catch(() => null)
+
+    const catsPromise: Promise<number | null> = fetch('/api/categorias')
+      .then(r => r.json())
+      .then(j => j.success ? j.data.length : null)
+      .catch(() => null)
+
+    const leadsPromise: Promise<LeadCount> = Promise.resolve(
+      supabase.from('leads').select('created_at')
+    ).then(({ data, error }) => {
+      if (error || !data) return { hoy: null, semana: null }
+      const ahora = new Date()
+      const hace7 = new Date(); hace7.setDate(hace7.getDate() - 7)
+      let hoy = 0, semana = 0
+      for (const l of data) {
+        const d = new Date(l.created_at)
+        if (d.toDateString() === ahora.toDateString()) hoy++
+        if (d >= hace7) semana++
+      }
+      return { hoy, semana }
+    }).catch(() => ({ hoy: null, semana: null }))
+
+    Promise.all([productsPromise, catsPromise, leadsPromise]).then(([productos, categorias, leads]) => {
+      setStats({ productos, categorias, leadsHoy: leads.hoy, leadsSemana: leads.semana })
+    })
+  }, [])
 
   const handleLogout = async () => {
     setLoading(true)
@@ -164,6 +211,34 @@ export default function AdminDashboard() {
               Panel de Control
             </h2>
 
+            {/* Métricas */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '16px',
+              marginBottom: '32px',
+            }}>
+              {[
+                { label: 'Productos activos', value: stats.productos, color: '#2b7bb8' },
+                { label: 'Categorías', value: stats.categorias, color: '#7c3aed' },
+                { label: 'Leads (hoy)', value: stats.leadsHoy, color: '#16a34a' },
+                { label: 'Leads (7 días)', value: stats.leadsSemana, color: '#e7a73f' },
+              ].map((s, i) => (
+                <div key={i} style={{
+                  background: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '10px',
+                  padding: '18px 20px',
+                  borderLeft: `4px solid ${s.color}`,
+                }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#111827', lineHeight: 1 }}>
+                    {s.value === null ? '—' : s.value}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '6px', fontWeight: 500 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -259,20 +334,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div style={{
-              background: '#f9f9f9',
-              padding: '20px',
-              borderRadius: '6px',
-              borderLeft: `4px solid ${CONFIG.PRIMARY_COLOR}`,
-            }}>
-              <h3 style={{ marginTop: 0, color: '#333' }}>
-                Bienvenido al Panel de Administración
-              </h3>
-              <p style={{ color: '#666', lineHeight: 1.6 }}>
-                Este es tu panel de control. Aquí podrás gestionar productos, pedidos, usuarios y más.
-                Usa el menú lateral para navegar entre las diferentes secciones.
-              </p>
-            </div>
           </div>
         </div>
       </main>

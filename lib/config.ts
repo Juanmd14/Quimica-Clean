@@ -13,9 +13,6 @@ export const CONFIG = {
   SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   
-  // Admin
-  ADMIN_PASSWORD: process.env.NEXT_PUBLIC_ADMIN_PASSWORD,
-  
   // API
   API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
 }
