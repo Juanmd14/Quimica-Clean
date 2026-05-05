@@ -122,9 +122,9 @@ export default function CategoriasPage() {
               borderRadius: '12px', padding: '16px 20px',
               display: 'flex', alignItems: 'center', gap: '16px',
             }}>
-              <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', background: C.border, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', background: C.border, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
                 {cat.imagen_url ? (
-                  <Image src={cat.imagen_url} alt={cat.nombre} fill style={{ objectFit: 'cover' }} />
+                  <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="50px" style={{ objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontSize: '24px' }}>{cat.emoji || '📦'}</span>
                 )}
