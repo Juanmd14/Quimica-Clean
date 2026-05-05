@@ -20,13 +20,17 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { nombre, emoji, orden } = await request.json()
+    const body = await request.json()
+    const nombre = body.nombre as string
+    const emoji = body.emoji as string | undefined
+    const orden = body.orden as number | undefined
 
     if (!nombre?.trim()) {
       return NextResponse.json({ error: 'Nombre es requerido' }, { status: 400 })
     }
 
-    const insertData: Record<string, unknown> = { nombre }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const insertData: any = { nombre }
     if (emoji) insertData.emoji = emoji
     if (orden != null) insertData.orden = orden
 
