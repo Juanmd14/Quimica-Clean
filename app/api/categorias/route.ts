@@ -68,6 +68,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const id = body.id as number
     const emoji = body.emoji
+    const imagen_url = body.imagen_url
     const orden = body.orden
 
     if (!id) {
@@ -77,7 +78,7 @@ export async function PUT(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (getSupabaseAdmin() as any)
       .from('categorias')
-      .update({ emoji, orden })
+      .update({ emoji, imagen_url, orden })
       .eq('id', id)
       .select()
       .single()
