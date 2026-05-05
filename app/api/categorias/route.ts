@@ -7,7 +7,7 @@ export async function GET() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const supabase = getSupabaseAdmin() as any
     const { data, error } = await supabase
-      .from('categoria')
+      .from('categorias')
       .select('*')
       .order('orden')
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (getSupabaseAdmin() as any)
-      .from('categoria')
+      .from('categorias')
       .insert([insertData])
       .select()
       .single()
@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (getSupabaseAdmin() as any)
-      .from('categoria')
+      .from('categorias')
       .update({ emoji, orden })
       .eq('id', id)
       .select()

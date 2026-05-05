@@ -23,7 +23,7 @@ export default function CategoriasPage() {
   const [editForm, setEditForm] = useState({ emoji: '', orden: 0 })
 
   useEffect(() => {
-    fetch('/api/categoria')
+    fetch('/api/categorias')
       .then(res => res.json())
       .then(data => {
         if (data.success) setCategorias(data.data)
@@ -34,7 +34,7 @@ export default function CategoriasPage() {
   const handleSave = async (cat: Categoria) => {
     setSaving(true)
     try {
-      const res = await fetch('/api/categoria', {
+      const res = await fetch('/api/categorias', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: cat.id, emoji: editForm.emoji || null, orden: editForm.orden }),

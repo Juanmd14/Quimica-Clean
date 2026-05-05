@@ -28,7 +28,7 @@ export function useCategorias() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/categoria')
+    fetch('/api/categorias')
       .then(res => res.json())
       .then(result => {
         if (result.success && result.data?.length) {
