@@ -16,19 +16,19 @@ type CategoriaData = {
 
 const fallbackCategories: CategoriaData[] = [
   { nombre: 'Jabones', emoji: '🧴', imagen_url: null, count: 7 },
-  { nombre: 'Suavizantes', emoji: '🌸', count: 3 },
-  { nombre: 'Detergentes', emoji: '🧼', count: 3 },
-  { nombre: 'Desengrasantes', emoji: '🧹', count: 8 },
-  { nombre: 'Desinfectantes', emoji: '🦠', count: 9 },
-  { nombre: 'Pisos', emoji: '🏠', count: 4 },
-  { nombre: 'Piletas', emoji: '🏊', count: 7 },
-  { nombre: 'Automotor', emoji: '🚗', count: 4 },
-  { nombre: 'Hogar', emoji: '🏡', count: 5 },
-  { nombre: 'Concentrados', emoji: '🔬', count: 10 },
-  { nombre: 'Materia Prima', emoji: '⚗️', count: 20 },
-  { nombre: 'Bouquets', emoji: '🌺', count: 21 },
-  { nombre: 'Contenedores', emoji: '📦', count: 6 },
-  { nombre: 'Jabon de manos', emoji: '🧼', count: 5 },
+  { nombre: 'Suavizantes', emoji: '🌸', imagen_url: null, count: 3 },
+  { nombre: 'Detergentes', emoji: '🧼', imagen_url: null, count: 3 },
+  { nombre: 'Desengrasantes', emoji: '🧹', imagen_url: null, count: 8 },
+  { nombre: 'Desinfectantes', emoji: '🦠', imagen_url: null, count: 9 },
+  { nombre: 'Pisos', emoji: '🏠', imagen_url: null, count: 4 },
+  { nombre: 'Piletas', emoji: '🏊', imagen_url: null, count: 7 },
+  { nombre: 'Automotor', emoji: '🚗', imagen_url: null, count: 4 },
+  { nombre: 'Hogar', emoji: '🏡', imagen_url: null, count: 5 },
+  { nombre: 'Concentrados', emoji: '🔬', imagen_url: null, count: 10 },
+  { nombre: 'Materia Prima', emoji: '⚗️', imagen_url: null, count: 20 },
+  { nombre: 'Bouquets', emoji: '🌺', imagen_url: null, count: 21 },
+  { nombre: 'Contenedores', emoji: '📦', imagen_url: null, count: 6 },
+  { nombre: 'Jabon de manos', emoji: '🧼', imagen_url: null, count: 5 },
 ]
 
 // ─── Breakpoint hook ──────────────────────────────────────────────────────────

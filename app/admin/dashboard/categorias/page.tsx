@@ -18,8 +18,8 @@ const C = {
 }
 
 async function compressImg(file: File): Promise<Blob> {
-  return new Promise(resolve => {
-    const img = new Image()
+  return new Promise((resolve) => {
+    const img = new window.Image()
     img.onload = () => {
       const MAX = 400
       let w = img.width, h = img.height
