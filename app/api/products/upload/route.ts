@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
 
 export async function POST(request: NextRequest) {
@@ -14,13 +14,13 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const filename = `${Date.now()}-${file.name}`
 
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await getSupabaseAdmin().storage
       .from('productos')
       .upload(filename, bytes, { contentType: 'image/webp', upsert: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    const { data: { publicUrl } } = supabaseAdmin.storage
+    const { data: { publicUrl } } = getSupabaseAdmin().storage
       .from('productos')
       .getPublicUrl(data.path)
 

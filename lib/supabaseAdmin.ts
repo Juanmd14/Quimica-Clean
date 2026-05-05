@@ -12,8 +12,3 @@ export function getSupabaseAdmin() {
   }
   return _client
 }
-
-// backwards compat — prefer getSupabaseAdmin() in new code
-export const supabaseAdmin = new Proxy({} as ReturnType<typeof createClient>, {
-  get: (_, prop) => getSupabaseAdmin()[prop as keyof ReturnType<typeof createClient>],
-})

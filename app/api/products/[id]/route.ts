@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from('productos')
       .select('*')
       .eq('id', id)
@@ -38,9 +38,9 @@ export async function PUT(
       if (key in body) updates[key] = body[key]
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from('productos')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single()
@@ -61,7 +61,7 @@ export async function DELETE(
 
   try {
     const { id } = await params
-    const { error } = await supabaseAdmin.from('productos').delete().eq('id', id)
+    const { error } = await getSupabaseAdmin().from('productos').delete().eq('id', id)
     if (error) return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
     return NextResponse.json({ success: true })
   } catch {
