@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
 
 type Producto = {
   id: number
@@ -329,7 +330,12 @@ const handleDelete = async (id: number, nombre: string) => {
       <div style={{ padding: '28px 32px', maxWidth: '1300px', margin: '0 auto' }}>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-          <h2 style={{ color: C.text, fontWeight: 700, fontSize: '22px', margin: 0 }}>Gestionar Productos</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Link href="/admin/dashboard" style={{ color: C.textMid, textDecoration: 'none', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              ← Volver
+            </Link>
+            <h2 style={{ color: C.text, fontWeight: 700, fontSize: '22px', margin: 0 }}>Gestionar Productos</h2>
+          </div>
           <button onClick={() => setModal('new')} style={{ background: C.gold, color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', fontFamily: 'DM Sans, sans-serif' }}>
             + Nuevo producto
           </button>

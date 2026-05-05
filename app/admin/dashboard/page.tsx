@@ -106,6 +106,29 @@ export default function AdminDashboard() {
         >
           {loading ? 'Saliendo...' : '🚪 Cerrar Sesión'}
         </button>
+
+        <Link
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100%',
+            padding: '12px',
+            marginTop: '12px',
+            background: '#2b7bb8',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '600',
+            textDecoration: 'none',
+            justifyContent: 'center',
+          }}
+        >
+          🏠 Volver al inicio
+        </Link>
       </aside>
 
       {/* Main Content */}
