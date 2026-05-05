@@ -3,9 +3,32 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { C, stats, categories } from './constants'
+import { C, stats } from './constants'
 import { CountUp, GlowCard } from './ui'
 import { useProductos } from '@/lib/useProductos'
+
+type CategoriaData = {
+  nombre: string
+  emoji: string
+  count: number
+}
+
+const fallbackCategories: CategoriaData[] = [
+  { nombre: 'Jabones', emoji: '🧴', count: 7 },
+  { nombre: 'Suavizantes', emoji: '🌸', count: 3 },
+  { nombre: 'Detergentes', emoji: '🧼', count: 3 },
+  { nombre: 'Desengrasantes', emoji: '🧹', count: 8 },
+  { nombre: 'Desinfectantes', emoji: '🦠', count: 9 },
+  { nombre: 'Pisos', emoji: '🏠', count: 4 },
+  { nombre: 'Piletas', emoji: '🏊', count: 7 },
+  { nombre: 'Automotor', emoji: '🚗', count: 4 },
+  { nombre: 'Hogar', emoji: '🏡', count: 5 },
+  { nombre: 'Concentrados', emoji: '🔬', count: 10 },
+  { nombre: 'Materia Prima', emoji: '⚗️', count: 20 },
+  { nombre: 'Bouquets', emoji: '🌺', count: 21 },
+  { nombre: 'Contenedores', emoji: '📦', count: 6 },
+  { nombre: 'Jabon de manos', emoji: '🧼', count: 5 },
+]
 
 // ─── Breakpoint hook ──────────────────────────────────────────────────────────
 function useBreakpoint() {
@@ -204,7 +227,24 @@ function CategoryModal({ cat, onClose }: { cat: typeof categories[number]; onClo
 // ─── Categories ───────────────────────────────────────────────────────────────
 export function Categories() {
   const { isMobile } = useBreakpoint()
-  const [openCat, setOpenCat] = useState<typeof categories[number] | null>(null)
+  const [openCat, setOpenCat] = useState<CategoriaData | null>(null)
+  const [categorias, setCategorias] = useState<CategoriaData[]>(fallbackCategories)
+
+  useEffect(() => {
+    fetch('/api/categorias')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.length) {
+          const cats = data.data.map((c: { nombre: string; emoji: string | null }) => ({
+            nombre: c.nombre,
+            emoji: c.emoji || '📦',
+            count: 0,
+          }))
+          setCategorias(cats)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <section id="categorias" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.offWhite }}>
