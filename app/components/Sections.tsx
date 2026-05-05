@@ -149,7 +149,7 @@ export function Stats() {
 function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => void }) {
   const { isMobile } = useBreakpoint()
   const { productos } = useProductos()
-  const catProducts = productos.filter(p => p.categoria === cat.name)
+  const catProducts = productos.filter(p => p.categoria === cat.nombre)
 
   return (
     <>
@@ -166,11 +166,11 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <CategoryIcon name={cat.name} size={22} color={C.blue} />
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px' }}>
+              {cat.emoji}
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.name}</div>
+              <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.nombre}</div>
               <div style={{ fontSize: '12px', color: C.textMid }}>{catProducts.length} productos</div>
             </div>
           </div>
