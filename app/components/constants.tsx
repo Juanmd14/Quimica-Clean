@@ -29,6 +29,7 @@ export const categories = [
   { name: 'Materia Prima',  count: 20, emoji: '⚗️' },
   { name: 'Bouquets',       count: 21, emoji: '🌺' },
   { name: 'Contenedores',   count: 6,  emoji: '📦' },
+  { name: 'Jabon de manos', count: 5,  emoji: '🧼' },
 ] as const
 
 export type Category = typeof categories[number]

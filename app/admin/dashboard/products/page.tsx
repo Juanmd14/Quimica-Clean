@@ -30,6 +30,7 @@ const CATEGORIAS = [
   'Materia Prima',
   'Bouquets',
   'Contenedores',
+  'Jabon de manos',
 ]
 
 

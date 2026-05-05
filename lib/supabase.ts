@@ -26,5 +26,6 @@ export const CATEGORIAS = [
   'Jabones', 'Suavizantes', 'Detergentes', 'Desengrasantes',
   'Desinfectantes', 'Pisos', 'Piletas', 'Automotor',
   'Hogar', 'Concentrados', 'Materia Prima', 'Bouquets', 'Contenedores',
+  'Jabon de manos',
 ] as const
 
