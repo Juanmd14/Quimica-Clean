@@ -3,17 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
-
-function useBreakpoint() {
-  const [width, setWidth] = useState(1200)
-  useEffect(() => {
-    const update = () => setWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-  return { isMobile: width < 768 }
-}
+import { useBreakpoint } from '@/lib/hooks'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -29,7 +19,7 @@ export function Navbar() {
   // Cerrar menu al hacer scroll
   useEffect(() => {
     if (scrolled && menuOpen) setMenuOpen(false)
-  }, [scrolled])
+  }, [scrolled, menuOpen])
 
   const handleNavClick = () => setMenuOpen(false)
 
@@ -64,7 +54,7 @@ export function Navbar() {
           />
           {/* Nombre visible solo en mobile */}
           {isMobile && (
-            <span style={{ fontWeight: 800, fontSize: '15px', color: C.text, letterSpacing: '-0.01em' }}>
+            <span style={{ fontWeight: 800, fontSize: '15px', color: C.blue, letterSpacing: '-0.01em' }}>
               QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
             </span>
           )}
@@ -159,10 +149,11 @@ export function Navbar() {
           borderBottom: `1px solid ${C.border}`,
           backdropFilter: 'blur(12px)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          padding: menuOpen ? '20px 24px 28px' : '0 24px',
-          maxHeight: menuOpen ? '300px' : '0',
-          overflow: 'hidden',
-          transition: 'max-height 0.35s ease, padding 0.35s ease',
+          padding: '20px 24px 28px',
+          opacity: menuOpen ? 1 : 0,
+          transform: menuOpen ? 'translateY(0)' : 'translateY(-6px)',
+          pointerEvents: menuOpen ? 'auto' : 'none',
+          transition: 'opacity 0.25s ease, transform 0.25s ease',
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {links.map(({ label, href }) => (

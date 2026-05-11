@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { C, stats } from './constants'
 import { CountUp, GlowCard } from './ui'
 import { useProductos } from '@/lib/useProductos'
+import { useBreakpoint } from '@/lib/hooks'
 
 type CategoriaData = {
   nombre: string
@@ -30,18 +31,6 @@ const fallbackCategories: CategoriaData[] = [
   { nombre: 'Contenedores', emoji: '📦', imagen_url: null, count: 6 },
   { nombre: 'Jabon de manos', emoji: '🧼', imagen_url: null, count: 5 },
 ]
-
-// ─── Breakpoint hook ──────────────────────────────────────────────────────────
-function useBreakpoint() {
-  const [width, setWidth] = useState(1200)
-  useEffect(() => {
-    const update = () => setWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-  return { isMobile: width < 768, isTablet: width < 1024, width }
-}
 
 // ─── SVG icons por categoría ──────────────────────────────────────────────────
 function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?: number; color?: string }) {

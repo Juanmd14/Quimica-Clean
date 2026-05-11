@@ -4,18 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { GlowCard, WhatsAppIcon } from './ui'
-
-// ─── Breakpoint hook ──────────────────────────────────────────────────────────
-function useBreakpoint() {
-  const [width, setWidth] = useState(1200)
-  useEffect(() => {
-    const update = () => setWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-  return { isMobile: width < 768, isTablet: width < 1024, width }
-}
+import { useBreakpoint } from '@/lib/hooks'
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
 function IconCertified() {

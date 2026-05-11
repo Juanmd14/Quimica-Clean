@@ -4,17 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { MoleculeCanvas, WhatsAppIcon } from './ui'
-
-function useBreakpoint() {
-  const [width, setWidth] = useState(1200)
-  useEffect(() => {
-    const update = () => setWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-  return { isMobile: width < 768 }
-}
+import { useBreakpoint } from '@/lib/hooks'
 
 const slides = [
   {
