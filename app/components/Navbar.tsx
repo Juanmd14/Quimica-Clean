@@ -36,9 +36,11 @@ export function Navbar() {
         height: '68px', padding: '0 24px',
         background: scrolled || menuOpen ? 'rgba(255,255,255,0.97)' : C.white,
         borderBottom: `1px solid ${C.border}`,
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none',
-        transition: 'all 0.35s',
+        backdropFilter: scrolled ? 'blur(12px)' : 'blur(0px)',
+        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'blur(0px)',
+        boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : '0 2px 20px rgba(0,0,0,0)',
+        transition: 'background 0.35s, backdrop-filter 0.35s, box-shadow 0.35s',
+        willChange: 'box-shadow, backdrop-filter',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
 

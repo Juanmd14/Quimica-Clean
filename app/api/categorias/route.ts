@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
 
+export const revalidate = 3600
+
 export async function GET() {
   try {
     const { data, error } = await getSupabaseAdmin()

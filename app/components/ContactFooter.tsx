@@ -7,32 +7,32 @@ import { GlowCard, WhatsAppIcon } from './ui'
 import { useBreakpoint } from '@/lib/hooks'
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
-function IconCertified() {
+function IconCertified({ size = 34 }: { size?: number }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="6" />
       <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
     </svg>
   )
 }
-function IconTruck() {
+function IconTruck({ size = 34 }: { size?: number }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 3h15v13H1z" /><path d="M16 8h4l3 3v5h-7V8z" />
       <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
     </svg>
   )
 }
-function IconHandshake() {
+function IconHandshake({ size = 34 }: { size?: number }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 7.65l1.06 1.06L12 21.23l7.77-7.77 1.06-1.06a5.4 5.4 0 000-7.65v0z" />
     </svg>
   )
 }
-function IconFlask() {
+function IconFlask({ size = 34 }: { size?: number }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 3h6m-5 0v6l-5 9a2 2 0 001.73 3h10.54A2 2 0 0018 18L13 9V3" />
       <line x1="6.5" y1="14" x2="17.5" y2="14" />
     </svg>
@@ -78,15 +78,19 @@ export function WhyUs() {
           gap: isMobile ? '12px' : '20px',
         }}>
           {reasons.map(({ Icon, title, desc, color, bg }, i) => (
-            <GlowCard key={i} style={{ padding: isMobile ? '20px 16px' : '32px' }} glowColor={color}>
+            <GlowCard key={i} style={{ padding: isMobile ? '22px 18px' : '32px' }} glowColor={color}>
               <div style={{
-                width: '48px', height: '48px', borderRadius: '12px', background: bg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px',
+                width: isMobile ? '52px' : '60px', height: isMobile ? '52px' : '60px',
+                borderRadius: '14px',
+                background: `linear-gradient(135deg, ${bg} 0%, ${C.white} 130%)`,
+                border: `1px solid ${color}22`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: isMobile ? '14px' : '18px',
               }}>
-                <Icon />
+                <Icon size={isMobile ? 30 : 34} />
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: isMobile ? '14px' : '16px', color: C.text, marginBottom: '8px', lineHeight: 1.3 }}>{title}</h3>
-              <p style={{ fontSize: '13px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>{desc}</p>
+              <h3 style={{ fontWeight: 700, fontSize: isMobile ? '15px' : '17px', color: C.text, marginBottom: '8px', lineHeight: 1.3 }}>{title}</h3>
+              <p style={{ fontSize: isMobile ? '14px' : '13.5px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>{desc}</p>
             </GlowCard>
           ))}
         </div>

@@ -107,8 +107,10 @@ export function Hero() {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-        .hero-arrow-btn { transition: transform 0.2s ease, background 0.2s ease; }
-        .hero-arrow-btn:hover { transform: translateY(-50%) scale(1.1) !important; background: ${C.goldDark} !important; }
+        .hero-arrow-btn { transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
+        .hero-arrow-btn:hover { transform: translateY(-50%) scale(1.08) !important; }
+        .hero-arrow-right:hover { background: ${C.goldDark} !important; box-shadow: 0 8px 28px rgba(231,167,63,0.55) !important; }
+        .hero-arrow-left:hover { background: rgba(231,167,63,0.28) !important; border-color: ${C.gold} !important; }
       `}</style>
 
       <section style={{
@@ -119,7 +121,7 @@ export function Hero() {
 
         {/* Fondo */}
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, animation: 'bgFade 0.6s ease forwards' }}>
-          <Image src={sl.bg} alt="" aria-hidden="true" fill priority style={{ objectFit: 'cover', objectPosition: 'center', }} />
+          <Image src={sl.bg} alt="" aria-hidden="true" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center', }} />
         </div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
@@ -219,27 +221,43 @@ export function Hero() {
         </div>
 
         {/* Flecha derecha */}
-        <button onClick={next} className="hero-arrow-btn" style={{
-          position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)',
-          zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
-          width: '56px', height: '56px', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 6px 24px rgba(231,167,63,0.45)',
-        }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          onClick={next}
+          type="button"
+          aria-label="Siguiente slide"
+          className="hero-arrow-btn hero-arrow-right"
+          style={{
+            position: 'absolute', right: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
+            zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
+            width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 6px 20px rgba(231,167,63,0.45)',
+          }}
+        >
+          <svg width={isMobile ? 16 : 20} height={isMobile ? 16 : 20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
 
         {/* Flecha izquierda */}
-        <button onClick={prev} className="hero-arrow-btn" style={{
-          position: 'absolute', left: '40px', top: '50%', transform: 'translateY(-50%)',
-          zIndex: 4, background: 'rgba(255,255,255,0.1)', border: '1.5px solid rgba(255,255,255,0.2)',
-          borderRadius: '50%', width: '44px', height: '44px', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(4px)',
-        }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          onClick={prev}
+          type="button"
+          aria-label="Slide anterior"
+          className="hero-arrow-btn hero-arrow-left"
+          style={{
+            position: 'absolute', left: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
+            zIndex: 4,
+            background: 'rgba(231,167,63,0.18)',
+            border: `1.5px solid rgba(231,167,63,0.55)`,
+            borderRadius: '50%',
+            width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+          }}
+        >
+          <svg width={isMobile ? 16 : 20} height={isMobile ? 16 : 20} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { C } from './constants'
 import { WhatsAppIcon } from './ui'
+import { useBreakpoint } from '@/lib/hooks'
 
 const WA_NUMBER = '5493813046228'
 
@@ -26,6 +27,7 @@ export function WhatsAppChat() {
   const [botTime, setBotTime]         = useState('')
   const [userMsg, setUserMsg]         = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const { isMobile } = useBreakpoint()
 
   // Tooltip de bienvenida
   useEffect(() => {
@@ -103,31 +105,40 @@ export function WhatsAppChat() {
         .wa-chip { transition: all .18s ease; }
       `}</style>
 
-      {/* Tooltip */}
-      <div style={{
-        position:'fixed', bottom:'94px', right:'88px', zIndex:999,
-        background:C.white, padding:'8px 14px', borderRadius:'12px',
-        fontSize:'13px', fontWeight:500, color:C.text,
-        boxShadow:'0 4px 16px rgba(0,0,0,.13)',
-        whiteSpace:'nowrap', pointerEvents:'none',
-        opacity: showTooltip && !open ? 1 : 0,
-        transition:'opacity .4s',
-        border:`1px solid ${C.border}`,
-      }}>
-        ¿Tenés una consulta? ¡Escribinos! 💬
-        <span style={{
-          position:'absolute', right:'-7px', top:'50%', transform:'translateY(-50%)',
-          width:0, height:0,
-          borderTop:'7px solid transparent', borderBottom:'7px solid transparent',
-          borderLeft:`7px solid ${C.white}`,
-        }} />
-      </div>
+      {/* Tooltip — solo desktop */}
+      {!isMobile && (
+        <div style={{
+          position:'fixed', bottom:'94px', right:'88px', zIndex:999,
+          background:C.white, padding:'8px 14px', borderRadius:'12px',
+          fontSize:'13px', fontWeight:500, color:C.text,
+          boxShadow:'0 4px 16px rgba(0,0,0,.13)',
+          whiteSpace:'nowrap', pointerEvents:'none',
+          opacity: showTooltip && !open ? 1 : 0,
+          transition:'opacity .4s',
+          border:`1px solid ${C.border}`,
+        }}>
+          ¿Tenés una consulta? ¡Escribinos! 💬
+          <span style={{
+            position:'absolute', right:'-7px', top:'50%', transform:'translateY(-50%)',
+            width:0, height:0,
+            borderTop:'7px solid transparent', borderBottom:'7px solid transparent',
+            borderLeft:`7px solid ${C.white}`,
+          }} />
+        </div>
+      )}
 
       {/* Ventana de chat */}
       {open && (
         <div style={{
-          position:'fixed', bottom:'92px', right:'24px', zIndex:999,
-          width:'320px', background:C.white, borderRadius:'20px',
+          position:'fixed',
+          bottom: isMobile ? '76px' : '92px',
+          right: isMobile ? '12px' : '24px',
+          left: isMobile ? '12px' : 'auto',
+          zIndex:999,
+          width: isMobile ? 'auto' : '320px',
+          maxWidth: isMobile ? '340px' : 'none',
+          marginLeft: isMobile ? 'auto' : undefined,
+          background:C.white, borderRadius:'20px',
           boxShadow:'0 16px 56px rgba(0,0,0,.18)',
           overflow:'hidden', transformOrigin:'bottom right',
           animation:'wa-pop .3s cubic-bezier(.34,1.56,.64,1) forwards',
@@ -346,9 +357,14 @@ export function WhatsAppChat() {
         className="wa-fab-btn"
         onClick={() => setOpen(o => !o)}
         title="Escribinos por WhatsApp"
+        aria-label={open ? 'Cerrar chat de WhatsApp' : 'Abrir chat de WhatsApp'}
+        type="button"
         style={{
-          position:'fixed', bottom:'24px', right:'24px', zIndex:1000,
-          width:58, height:58, borderRadius:'50%',
+          position:'fixed',
+          bottom: isMobile ? '16px' : '24px',
+          right: isMobile ? '16px' : '24px',
+          zIndex:1000,
+          width: isMobile ? 50 : 58, height: isMobile ? 50 : 58, borderRadius:'50%',
           background:C.blue, border:'none', cursor:'pointer',
           display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow:'0 4px 24px rgba(43,123,184,.45)',
@@ -376,7 +392,7 @@ export function WhatsAppChat() {
             animation:'wa-badge 1.5s 3s ease-in-out 3',
           }}>1</div>
         )}
-        <WhatsAppIcon size={28} color="white" />
+        <WhatsAppIcon size={isMobile ? 24 : 28} color="white" />
       </button>
     </>
   )

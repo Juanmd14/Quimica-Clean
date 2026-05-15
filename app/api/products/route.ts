@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
 
+export const revalidate = 600
+
+const FEATURED_NAMES = ['ariel nelson', 'ala nelson']
+const featuredRank = (name: string) => {
+  const n = name.toLowerCase()
+  const idx = FEATURED_NAMES.findIndex(f => n.includes(f))
+  return idx === -1 ? 999 : idx
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -23,7 +32,13 @@ export async function GET(request: NextRequest) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: 'Error al obtener productos', details: error.message }, { status: 500 })
     }
-    return NextResponse.json({ success: true, data: data || [] })
+
+    const sorted = [...(data || [])].sort((a, b) => {
+      if (a.categoria !== b.categoria) return 0
+      return featuredRank(a.nombre) - featuredRank(b.nombre)
+    })
+
+    return NextResponse.json({ success: true, data: sorted })
   } catch (err) {
     console.error('GET products error:', err)
     return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 })
