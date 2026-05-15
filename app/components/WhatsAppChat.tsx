@@ -52,22 +52,29 @@ export function WhatsAppChat() {
   }, [open])
 
   const redirect = (text: string) => {
+    // iOS Safari bloquea window.open si no está en el user gesture síncrono.
+    // Abrir primero, animar después.
+    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`
+    const win = window.open(url, '_blank', 'noopener,noreferrer')
+    if (!win) {
+      // Fallback: si el popup quedó bloqueado, navegamos en la misma pestaña
+      // (en iOS esto abre el universal link y entra a WhatsApp igualmente).
+      window.location.href = url
+      return
+    }
+
     setUserMsg(text)
     if (inputRef.current) inputRef.current.disabled = true
     setPhase('connecting')
     setProgress(0)
     requestAnimationFrame(() => setTimeout(() => setProgress(100), 50))
     setTimeout(() => {
-      const msg = text
-      window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
-      setTimeout(() => {
-        if (inputRef.current) { inputRef.current.value = ''; inputRef.current.disabled = false }
-        setPhase('typing')
-        setProgress(0)
-        setUserMsg('')
-        setOpen(false)
-      }, 700)
-    }, 1200)
+      if (inputRef.current) { inputRef.current.value = ''; inputRef.current.disabled = false }
+      setPhase('typing')
+      setProgress(0)
+      setUserMsg('')
+      setOpen(false)
+    }, 1500)
   }
 
   const handleSend = () => {
