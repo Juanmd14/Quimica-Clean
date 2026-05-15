@@ -1,12 +1,24 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { MoleculeCanvas, WhatsAppIcon } from './ui'
 import { useBreakpoint } from '@/lib/hooks'
 
-const slides = [
+type Slide = {
+  bg: string
+  bgPosition?: string
+  bgPositionMobile?: string
+  eyebrow: string
+  line1: string
+  line2: string
+  line3: string
+  connector: boolean
+  sub: ReactNode
+}
+
+const slides: Slide[] = [
   {
     bg: '/hero-1.jpg',
     eyebrow: 'Distribuidora mayorista · Tucumán, Argentina',
@@ -115,14 +127,27 @@ export function Hero() {
       `}</style>
 
       <section style={{
-        height: '600px', paddingTop: '68px',
+        height: isMobile ? '520px' : '600px', paddingTop: '68px',
         display: 'flex', alignItems: 'center',
         position: 'relative', overflow: 'hidden',
       }}>
 
         {/* Fondo */}
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, animation: 'bgFade 0.6s ease forwards' }}>
-          <Image src={sl.bg} alt="" aria-hidden="true" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: sl.bgPosition ?? 'center' }} />
+          <Image
+            src={sl.bg}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="100vw"
+            style={{
+              objectFit: 'cover',
+              objectPosition: isMobile
+                ? (sl.bgPositionMobile ?? 'center')
+                : (sl.bgPosition ?? 'center'),
+            }}
+          />
         </div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
