@@ -21,6 +21,7 @@ type Slide = {
 const slides: Slide[] = [
   {
     bg: '/hero-1.jpg',
+    bgPositionMobile: 'center',
     eyebrow: 'Distribuidora mayorista · Tucumán, Argentina',
     line1: 'Especialistas en',
     line2: 'CONCENTRADOS',
@@ -35,6 +36,7 @@ const slides: Slide[] = [
   },
   {
     bg: '/hero-2.jpg',
+    bgPositionMobile: '40% center',
     eyebrow: 'Envíos a todo el país · Tucumán, Argentina',
     line1: 'Llegamos a',
     line2: 'TODO EL',
@@ -51,6 +53,7 @@ const slides: Slide[] = [
   {
     bg: '/hero-3.jpg',
     bgPosition: 'center 8%',
+    bgPositionMobile: 'center',
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
