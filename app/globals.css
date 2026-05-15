@@ -46,20 +46,25 @@ button, a {
   transition: all 0.15s ease-out;
 }
 
-/* Prevent FOUC */
 html {
-  scroll-behavior: smooth;
   width: 100%;
+  scroll-padding-top: 80px; /* offset for the 68px fixed navbar */
 }
 
-/* Optimize form inputs */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+::selection {
+  background: #e7a73f;
+  color: white;
+}
+
+/* Prevent mobile zoom on input focus */
 input, textarea, select {
-  font-size: 1rem; /* Prevent mobile zoom */
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+  font-size: 1rem;
 }
 
 /* ---- Responsive helpers ---- */

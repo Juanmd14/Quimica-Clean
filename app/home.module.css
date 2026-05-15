@@ -11,19 +11,6 @@
     }
   }
 
-  & html {
-    scroll-behavior: smooth;
-  }
-
-  & body {
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  & ::selection {
-    background: #e7a73f;
-    color: white;
-  }
-
   /* Animations */
   @keyframes fadeUp {
     from {
