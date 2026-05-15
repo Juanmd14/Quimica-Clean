@@ -10,7 +10,7 @@ type Slide = {
   bg: string
   bgPosition?: string
   bgPositionMobile?: string
-  bgFitMobile?: 'cover' | 'contain'
+  bgInsetMobile?: number
   eyebrow: string
   line1: string
   line2: string
@@ -38,7 +38,7 @@ const slides: Slide[] = [
   {
     bg: '/hero-2.jpg',
     bgPositionMobile: '40% center',
-    bgFitMobile: 'contain',
+    bgInsetMobile: 50,
     eyebrow: 'Envíos a todo el país · Tucumán, Argentina',
     line1: 'Llegamos a',
     line2: 'TODO EL',
@@ -56,7 +56,7 @@ const slides: Slide[] = [
     bg: '/hero-3.jpg',
     bgPosition: 'center 8%',
     bgPositionMobile: 'center',
-    bgFitMobile: 'contain',
+    bgInsetMobile: 50,
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
@@ -141,20 +141,25 @@ export function Hero() {
 
         {/* Fondo */}
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
-          <Image
-            src={sl.bg}
-            alt=""
-            aria-hidden="true"
-            fill
-            priority
-            sizes="100vw"
-            style={{
-              objectFit: isMobile ? (sl.bgFitMobile ?? 'cover') : 'cover',
-              objectPosition: isMobile
-                ? (sl.bgPositionMobile ?? 'center')
-                : (sl.bgPosition ?? 'center'),
-            }}
-          />
+          <div style={{
+            position: 'absolute',
+            inset: isMobile && sl.bgInsetMobile ? `${sl.bgInsetMobile}px 0` : 0,
+          }}>
+            <Image
+              src={sl.bg}
+              alt=""
+              aria-hidden="true"
+              fill
+              priority
+              sizes="100vw"
+              style={{
+                objectFit: 'cover',
+                objectPosition: isMobile
+                  ? (sl.bgPositionMobile ?? 'center')
+                  : (sl.bgPosition ?? 'center'),
+              }}
+            />
+          </div>
         </div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
