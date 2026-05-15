@@ -11,6 +11,12 @@ const featuredRank = (name: string) => {
   return idx === -1 ? 999 : idx
 }
 
+const CATEGORY_PRIORITY = ['Jabones']
+const categoryRank = (cat: string) => {
+  const idx = CATEGORY_PRIORITY.indexOf(cat)
+  return idx === -1 ? 999 : idx
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -34,7 +40,10 @@ export async function GET(request: NextRequest) {
     }
 
     const sorted = [...(data || [])].sort((a, b) => {
-      if (a.categoria !== b.categoria) return 0
+      const ra = categoryRank(a.categoria)
+      const rb = categoryRank(b.categoria)
+      if (ra !== rb) return ra - rb
+      if (a.categoria !== b.categoria) return a.categoria.localeCompare(b.categoria)
       return featuredRank(a.nombre) - featuredRank(b.nombre)
     })
 
