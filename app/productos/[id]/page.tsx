@@ -261,7 +261,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
                     <div style={{
                       background: C.white, borderRadius: '14px',
                       overflow: 'hidden', border: `1.5px solid ${C.border}`,
-                      transition: 'all 0.25s', height: '100%',
+                      transition: 'border-color 0.25s, transform 0.25s, box-shadow 0.25s', height: '100%',
                     }}>
                       <div style={{ position: 'relative', aspectRatio: '4 / 3', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {p.imagen_url

@@ -183,7 +183,7 @@ export function Hero() {
                 background: C.gold, color: 'white', border: 'none',
                 padding: '12px 28px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-                cursor: 'pointer', transition: 'all 0.25s',
+                cursor: 'pointer', transition: 'background 0.25s, transform 0.25s, box-shadow 0.25s',
                 boxShadow: '0 4px 20px rgba(231,167,63,0.4)',
               }}
                 onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = C.goldDark; b.style.transform = 'translateY(-2px)' }}
@@ -196,7 +196,7 @@ export function Hero() {
                 border: '1.5px solid rgba(255,255,255,0.28)',
                 padding: '11px 24px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '14px',
-                cursor: 'pointer', transition: 'all 0.25s',
+                cursor: 'pointer', transition: 'background 0.25s, border-color 0.25s',
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
               }}
                 onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.borderColor = 'rgba(255,255,255,0.5)'; b.style.background = 'rgba(255,255,255,0.08)' }}
@@ -214,7 +214,7 @@ export function Hero() {
               <div key={i} onClick={() => goTo(i, i > current ? 'left' : 'right')} style={{
                 width: current === i ? '24px' : '8px', height: '8px', borderRadius: '4px',
                 background: current === i ? C.gold : 'rgba(255,255,255,0.3)',
-                cursor: 'pointer', transition: 'all 0.35s ease',
+                cursor: 'pointer', transition: 'width 0.35s ease, background 0.35s ease',
               }} />
             ))}
           </div>

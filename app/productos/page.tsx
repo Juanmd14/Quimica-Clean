@@ -138,7 +138,7 @@ function CategoryPageContent() {
                 color: activeCategory === cat ? 'white' : C.textMid,
                 padding: '8px 16px', borderRadius: '20px',
                 fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 500,
-                cursor: 'pointer', transition: 'all 0.2s',
+                cursor: 'pointer', transition: 'background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s',
               }}>
                 {cat}
               </button>

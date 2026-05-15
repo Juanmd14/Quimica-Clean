@@ -302,7 +302,7 @@ export function Contact() {
                 padding: '13px 24px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'all 0.25s', boxShadow: '0 4px 16px rgba(37,211,102,0.3)',
+                transition: 'background 0.25s, transform 0.25s, box-shadow 0.25s', boxShadow: '0 4px 16px rgba(37,211,102,0.3)',
               }}
                 onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = '#1da851'; b.style.transform = 'translateY(-2px)' }}
                 onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = '#25D366'; b.style.transform = 'translateY(0)' }}
@@ -394,7 +394,7 @@ export function Contact() {
                   width: '100%', padding: '11px', background: C.gold, color: 'white',
                   border: 'none', borderRadius: '8px', fontFamily: 'DM Sans, sans-serif',
                   fontWeight: 600, fontSize: '14px', cursor: status === 'loading' ? 'not-allowed' : 'pointer',
-                  opacity: status === 'loading' ? 0.7 : 1, transition: 'all 0.25s',
+                  opacity: status === 'loading' ? 0.7 : 1, transition: 'background 0.25s, transform 0.25s, opacity 0.25s',
                 }}
                 onMouseEnter={e => { if (status !== 'loading') { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' } }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}

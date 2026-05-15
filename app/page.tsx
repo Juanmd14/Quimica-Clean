@@ -3,7 +3,7 @@ import { Navbar } from './components/Navbar'
 import { Hero } from './components/Hero'
 import { Stats, Categories, Products } from './components/Sections'
 import { WhyUs, Contact, Footer } from './components/ContactFooter'
-import { WhatsAppChat } from './components/WhatsAppChat'
+import WhatsAppChatLazy from './components/WhatsAppChatLazy'
 
 export default function Home() {
   return (
@@ -17,8 +17,8 @@ export default function Home() {
       <Contact />
       <Footer />
 
-      {/* WhatsApp flotante */}
-      <WhatsAppChat />
+      {/* WhatsApp flotante (lazy) */}
+      <WhatsAppChatLazy />
     </div>
   )
 }

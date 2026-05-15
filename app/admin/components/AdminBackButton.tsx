@@ -31,7 +31,7 @@ export default function AdminBackButton({ label = 'Volver al panel' }: { label?:
         fontWeight: 600,
         fontFamily: 'DM Sans, sans-serif',
         letterSpacing: '0.01em',
-        transition: 'all 0.2s ease',
+        transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
         boxShadow: hover ? '0 4px 14px rgba(231, 167, 63, 0.35)' : 'none',
       }}
     >
@@ -45,7 +45,7 @@ export default function AdminBackButton({ label = 'Volver al panel' }: { label?:
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transition: 'all 0.2s ease',
+          transition: 'background 0.2s ease, color 0.2s ease, transform 0.2s ease',
           transform: hover ? 'translateX(-3px)' : 'translateX(0)',
         }}
       >

@@ -185,7 +185,7 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
             <Link key={product.id} href={`/productos/${product.id}`} style={{ textDecoration: 'none' }}>
               <div style={{
                 border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden',
-                transition: 'all 0.22s', position: 'relative', cursor: 'pointer',
+                transition: 'border-color 0.22s, transform 0.22s, box-shadow 0.22s', position: 'relative', cursor: 'pointer',
               }}
                 onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
                 onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
@@ -261,7 +261,7 @@ export function Categories() {
               background: C.white, border: `1.5px solid ${C.border}`,
               padding: isMobile ? '18px 12px' : '24px 16px',
               textAlign: 'center', borderRadius: '16px',
-              cursor: 'pointer', transition: 'all 0.25s',
+              cursor: 'pointer', transition: 'border-color 0.25s, transform 0.25s, box-shadow 0.25s',
             }}
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 36px rgba(43,123,184,0.1)' }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
@@ -344,7 +344,7 @@ export function Products() {
                 color: activeCat === cat ? 'white' : C.textMid,
                 padding: '7px 14px', borderRadius: '20px',
                 fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 500,
-                cursor: 'pointer', transition: 'all 0.2s',
+                cursor: 'pointer', transition: 'background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s',
                 boxShadow: activeCat === cat ? '0 4px 12px rgba(43,123,184,0.3)' : 'none',
                 flexShrink: 0,
               }}>{cat}</button>
@@ -384,7 +384,7 @@ export function Products() {
           <a href="#categorias" style={{
             display: 'inline-block', background: C.blue, color: 'white',
             padding: '13px 32px', borderRadius: '8px', textDecoration: 'none',
-            fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
+            fontWeight: 600, fontSize: '14px', transition: 'background 0.2s, transform 0.2s',
           }}
             onMouseEnter={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = C.blueDark; a.style.transform = 'translateY(-2px)' }}
             onMouseLeave={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = C.blue; a.style.transform = 'translateY(0)' }}
@@ -433,7 +433,7 @@ export function Fabricantes() {
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
           {fabricantes.map((item, i) => (
-            <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: isMobile ? '20px 18px' : '28px 24px', transition: 'all 0.3s', cursor: 'default', backdropFilter: 'blur(8px)' }}
+            <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: isMobile ? '20px 18px' : '28px 24px', transition: 'background 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s', cursor: 'default', backdropFilter: 'blur(8px)' }}
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.09)'; d.style.borderColor = `${C.gold}55`; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = `0 20px 40px rgba(0,0,0,0.3)` }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.05)'; d.style.borderColor = 'rgba(255,255,255,0.1)'; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
             >

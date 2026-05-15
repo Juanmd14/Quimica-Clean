@@ -108,59 +108,107 @@ export function RevealText({ children, delay = 0 }: { children: string; delay?: 
 }
 
 // ─── MoleculeCanvas: partículas moleculares animadas ──────────────────────────
-interface Particle { x: number; y: number; vx: number; vy: number; r: number; opacity: number }
+interface Particle { x: number; y: number; vx: number; vy: number; r: number; opacity: number; isGold: boolean; haloCanvas: HTMLCanvasElement }
+
+function buildHalo(color: string, opacity: number, radius: number): HTMLCanvasElement {
+  const size = Math.ceil(radius * 6)
+  const off = document.createElement('canvas')
+  off.width = off.height = size
+  const c = off.getContext('2d')!
+  const cx = size / 2, cy = size / 2
+  const grad = c.createRadialGradient(cx, cy, 0, cx, cy, radius * 3)
+  grad.addColorStop(0, `${color.replace(')', `,${opacity})`).replace('rgb', 'rgba')}`)
+  grad.addColorStop(1, 'rgba(0,0,0,0)')
+  c.fillStyle = grad
+  c.fillRect(0, 0, size, size)
+  return off
+}
 
 export function MoleculeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particles = useRef<Particle[]>([])
   const animRef = useRef<number>(0)
+  const visibleRef = useRef<boolean>(true)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')!
+
+    // Respect reduced-motion + low-end heuristics
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobile = window.innerWidth < 768
+    if (reduceMotion) return
+
+    const COUNT = isMobile ? 18 : 38
+    const LINK_DIST = isMobile ? 90 : 110
+
     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight }
     resize()
     window.addEventListener('resize', resize)
 
-    particles.current = Array.from({ length: 38 }, () => ({
-      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-      r: Math.random() * 3 + 2, opacity: Math.random() * 0.5 + 0.15,
-    }))
+    particles.current = Array.from({ length: COUNT }, () => {
+      const r = Math.random() * 3 + 2
+      const opacity = Math.random() * 0.5 + 0.15
+      const isGold = r > 4
+      const color = isGold ? 'rgb(231,167,63)' : 'rgb(43,123,184)'
+      return {
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+        r, opacity, isGold,
+        haloCanvas: buildHalo(color, opacity, r),
+      }
+    })
+
+    // Pausar cuando el canvas no se ve
+    const io = new IntersectionObserver(
+      ([entry]) => { visibleRef.current = entry.isIntersecting },
+      { threshold: 0 },
+    )
+    io.observe(canvas)
 
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const pts = particles.current
-      for (let i = 0; i < pts.length; i++) {
-        for (let j = i + 1; j < pts.length; j++) {
-          const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist < 110) {
-            ctx.beginPath()
-            ctx.strokeStyle = `rgba(43,123,184,${(1 - dist / 110) * 0.15})`
-            ctx.lineWidth = 1
-            ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke()
+      if (visibleRef.current) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        const pts = particles.current
+
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y
+            const d2 = dx * dx + dy * dy
+            const link2 = LINK_DIST * LINK_DIST
+            if (d2 < link2) {
+              const alpha = (1 - Math.sqrt(d2) / LINK_DIST) * 0.15
+              ctx.beginPath()
+              ctx.strokeStyle = `rgba(43,123,184,${alpha})`
+              ctx.lineWidth = 1
+              ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke()
+            }
           }
         }
+
+        for (let k = 0; k < pts.length; k++) {
+          const p = pts[k]
+          const halfSize = p.haloCanvas.width / 2
+          ctx.drawImage(p.haloCanvas, p.x - halfSize, p.y - halfSize)
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+          ctx.fillStyle = p.isGold
+            ? `rgba(231,167,63,${p.opacity + 0.3})`
+            : `rgba(43,123,184,${p.opacity + 0.3})`
+          ctx.fill()
+          p.x += p.vx; p.y += p.vy
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1
+        }
       }
-      pts.forEach(p => {
-        const isGold = p.r > 4
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3)
-        grad.addColorStop(0, isGold ? `rgba(231,167,63,${p.opacity})` : `rgba(43,123,184,${p.opacity})`)
-        grad.addColorStop(1, 'rgba(0,0,0,0)')
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill()
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = isGold ? `rgba(231,167,63,${p.opacity + 0.3})` : `rgba(43,123,184,${p.opacity + 0.3})`
-        ctx.fill()
-        p.x += p.vx; p.y += p.vy
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1
-      })
       animRef.current = requestAnimationFrame(draw)
     }
     draw()
-    return () => { cancelAnimationFrame(animRef.current); window.removeEventListener('resize', resize) }
+    return () => {
+      cancelAnimationFrame(animRef.current)
+      window.removeEventListener('resize', resize)
+      io.disconnect()
+    }
   }, [])
 
   return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />

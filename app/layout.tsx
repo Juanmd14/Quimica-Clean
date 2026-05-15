@@ -63,10 +63,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseOrigin = supabaseUrl ? new URL(supabaseUrl).origin : null
+
   return (
     <html lang="es-AR">
       <head>
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        {supabaseOrigin && (
+          <>
+            <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+          </>
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${dmSans.variable} antialiased`}

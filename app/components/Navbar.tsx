@@ -78,7 +78,7 @@ export function Navbar() {
                     color: C.textMid, textDecoration: 'none',
                     fontSize: '14px', fontWeight: 500,
                     padding: '7px 18px', borderRadius: '8px',
-                    transition: 'all 0.2s',
+                    transition: 'background 0.2s, color 0.2s, box-shadow 0.2s',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = C.white
@@ -99,7 +99,7 @@ export function Navbar() {
                 background: C.gold, color: 'white', border: 'none',
                 padding: '10px 22px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '13px',
-                cursor: 'pointer', transition: 'all 0.25s',
+                cursor: 'pointer', transition: 'background 0.25s, transform 0.25s',
               }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
@@ -124,19 +124,19 @@ export function Navbar() {
             <span style={{
               display: 'block', width: '22px', height: '2px',
               background: C.text, borderRadius: '2px',
-              transition: 'all 0.3s',
+              transition: 'transform 0.3s, opacity 0.3s',
               transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none',
             }} />
             <span style={{
               display: 'block', width: '22px', height: '2px',
               background: C.text, borderRadius: '2px',
-              transition: 'all 0.3s',
+              transition: 'transform 0.3s, opacity 0.3s',
               opacity: menuOpen ? 0 : 1,
             }} />
             <span style={{
               display: 'block', width: '22px', height: '2px',
               background: C.text, borderRadius: '2px',
-              transition: 'all 0.3s',
+              transition: 'transform 0.3s, opacity 0.3s',
               transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none',
             }} />
           </button>
