@@ -266,11 +266,11 @@ export function Categories() {
               onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 36px rgba(43,123,184,0.1)' }}
               onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', position: 'relative', overflow: 'hidden' }}>
                 {cat.imagen_url ? (
-                  <Image src={cat.imagen_url} alt={cat.nombre} fill style={{ objectFit: 'cover' }} />
+                  <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="64px" style={{ objectFit: 'cover' }} />
                 ) : (
-                  <span style={{ fontSize: '24px' }}>{cat.emoji}</span>
+                  <span style={{ fontSize: '36px', lineHeight: 1 }}>{cat.emoji}</span>
                 )}
               </div>
               <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '4px', lineHeight: 1.25 }}>{cat.nombre}</div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import AdminBackButton from '@/app/admin/components/AdminBackButton'
 
 type Lead = {
   id: number
@@ -61,6 +62,10 @@ export default function LeadsPage() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: 'DM Sans, sans-serif', color: C.text }}>
       <div style={{ padding: '28px 32px', maxWidth: '1100px', margin: '0 auto' }}>
+
+        <div style={{ marginBottom: '20px' }}>
+          <AdminBackButton />
+        </div>
 
         <h2 style={{ color: C.text, fontWeight: 700, fontSize: '22px', margin: '0 0 28px' }}>
           Leads / Consultas

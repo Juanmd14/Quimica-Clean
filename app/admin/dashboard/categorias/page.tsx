@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
+import AdminBackButton from '@/app/admin/components/AdminBackButton'
 
 type Categoria = {
   id: number
@@ -111,6 +112,9 @@ export default function CategoriasPage() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: 'DM Sans, sans-serif', color: C.text, padding: '28px' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <AdminBackButton />
+        </div>
         <h2 style={{ color: C.text, fontWeight: 700, fontSize: '22px', marginBottom: '24px' }}>
           Gestionar Categorías
         </h2>
