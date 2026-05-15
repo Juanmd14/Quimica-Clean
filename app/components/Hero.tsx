@@ -10,6 +10,7 @@ type Slide = {
   bg: string
   bgPosition?: string
   bgPositionMobile?: string
+  bgFitMobile?: 'cover' | 'contain'
   eyebrow: string
   line1: string
   line2: string
@@ -36,7 +37,8 @@ const slides: Slide[] = [
   },
   {
     bg: '/hero-2.jpg',
-    bgPositionMobile: '40% center',
+    bgPositionMobile: 'center',
+    bgFitMobile: 'contain',
     eyebrow: 'Envíos a todo el país · Tucumán, Argentina',
     line1: 'Llegamos a',
     line2: 'TODO EL',
@@ -54,6 +56,7 @@ const slides: Slide[] = [
     bg: '/hero-3.jpg',
     bgPosition: 'center 8%',
     bgPositionMobile: 'center',
+    bgFitMobile: 'contain',
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
@@ -136,7 +139,7 @@ export function Hero() {
       }}>
 
         {/* Fondo */}
-        <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, animation: 'bgFade 0.6s ease forwards' }}>
+        <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
           <Image
             src={sl.bg}
             alt=""
@@ -145,7 +148,7 @@ export function Hero() {
             priority
             sizes="100vw"
             style={{
-              objectFit: 'cover',
+              objectFit: isMobile ? (sl.bgFitMobile ?? 'cover') : 'cover',
               objectPosition: isMobile
                 ? (sl.bgPositionMobile ?? 'center')
                 : (sl.bgPosition ?? 'center'),
