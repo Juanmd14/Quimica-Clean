@@ -266,14 +266,14 @@ export function Hero() {
           aria-label="Siguiente slide"
           className="hero-arrow-btn hero-arrow-right"
           style={{
-            position: 'absolute', right: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
+            position: 'absolute', right: '32px', top: '50%', transform: 'translateY(-50%)',
             zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
-            width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '48px', height: '48px', cursor: 'pointer',
+            display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 6px 20px rgba(231,167,63,0.45)',
           }}
         >
-          <svg width={isMobile ? 16 : 20} height={isMobile ? 16 : 20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
@@ -285,18 +285,18 @@ export function Hero() {
           aria-label="Slide anterior"
           className="hero-arrow-btn hero-arrow-left"
           style={{
-            position: 'absolute', left: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
+            position: 'absolute', left: '32px', top: '50%', transform: 'translateY(-50%)',
             zIndex: 4,
             background: 'rgba(231,167,63,0.18)',
             border: `1.5px solid rgba(231,167,63,0.55)`,
             borderRadius: '50%',
-            width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '48px', height: '48px', cursor: 'pointer',
+            display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
             backdropFilter: 'blur(4px)',
             WebkitBackdropFilter: 'blur(4px)',
           }}
         >
-          <svg width={isMobile ? 16 : 20} height={isMobile ? 16 : 20} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
