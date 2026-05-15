@@ -160,17 +160,17 @@ export function Hero() {
           key={`content-${current}`}
           style={{
             maxWidth: '1200px', margin: '0 auto', width: '100%',
-            padding: '0 48px', position: 'relative', zIndex: 3,
-            display: 'flex', flexDirection: 'column', gap: '22px',
+            padding: isMobile ? '0 20px' : '0 48px', position: 'relative', zIndex: 3,
+            display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '22px',
             animation: animating
               ? (dir === 'left' ? 'slideOutLeft 0.48s ease forwards' : 'slideOutRight 0.48s ease forwards')
               : (dir === 'left' ? 'slideInLeft 0.48s ease forwards' : 'slideInRight 0.48s ease forwards'),
           }}
         >
           {/* Eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '2px', background: C.gold }} />
-            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: C.gold }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap' }}>
+            <div style={{ width: isMobile ? '20px' : '40px', height: '2px', background: C.gold, flexShrink: 0 }} />
+            <span style={{ fontSize: isMobile ? '10px' : '11px', fontWeight: 700, letterSpacing: isMobile ? '0.1em' : '0.16em', textTransform: 'uppercase' as const, color: C.gold }}>
               {sl.eyebrow}
             </span>
           </div>
