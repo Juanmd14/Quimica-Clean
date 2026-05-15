@@ -4,11 +4,9 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const C = {
-  card: '#1a2436',
-  border: '#2a3a54',
-  blue: '#2b7bb8',
-  text: '#f1f5f9',
-  textMid: '#94a3b8',
+  gold: '#e7a73f',
+  goldDark: '#c98c2b',
+  white: '#ffffff',
 }
 
 export default function AdminBackButton({ label = 'Volver al panel' }: { label?: string }) {
@@ -22,33 +20,49 @@ export default function AdminBackButton({ label = 'Volver al panel' }: { label?:
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '10px',
-        background: C.card,
-        border: `1.5px solid ${hover ? C.blue : C.border}`,
-        color: hover ? C.blue : C.text,
-        padding: '10px 18px',
-        borderRadius: '10px',
+        gap: '8px',
+        background: hover ? C.gold : 'rgba(231, 167, 63, 0.12)',
+        border: `1.5px solid ${hover ? C.gold : 'rgba(231, 167, 63, 0.45)'}`,
+        color: hover ? C.white : C.gold,
+        padding: '7px 14px 7px 9px',
+        borderRadius: '999px',
         textDecoration: 'none',
-        fontSize: '14px',
+        fontSize: '13px',
         fontWeight: 600,
         fontFamily: 'DM Sans, sans-serif',
+        letterSpacing: '0.01em',
         transition: 'all 0.2s ease',
-        transform: hover ? 'translateX(-2px)' : 'translateX(0)',
+        boxShadow: hover ? '0 4px 14px rgba(231, 167, 63, 0.35)' : 'none',
       }}
     >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      <span
+        style={{
+          width: '22px',
+          height: '22px',
+          borderRadius: '50%',
+          background: hover ? C.white : C.gold,
+          color: hover ? C.gold : C.white,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s ease',
+          transform: hover ? 'translateX(-3px)' : 'translateX(0)',
+        }}
       >
-        <path d="M19 12H5" />
-        <path d="M12 19l-7-7 7-7" />
-      </svg>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M19 12H5" />
+          <path d="M12 19l-7-7 7-7" />
+        </svg>
+      </span>
       {label}
     </Link>
   )
