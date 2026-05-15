@@ -94,6 +94,7 @@ export function Hero() {
   }, [current, animating])
 
   const sl = slides[current]
+  const isStacked = isMobile && sl.bgFitMobile === 'contain'
 
   return (
     <>
@@ -133,38 +134,77 @@ export function Hero() {
       `}</style>
 
       <section style={{
-        height: isMobile ? '520px' : '600px', paddingTop: '68px',
-        display: 'flex', alignItems: 'center',
+        minHeight: isMobile ? '520px' : '600px',
+        height: isStacked ? 'auto' : (isMobile ? '520px' : '600px'),
+        paddingTop: isStacked ? 0 : '68px',
+        display: 'flex',
+        flexDirection: isStacked ? 'column' : 'row',
+        alignItems: isStacked ? 'stretch' : 'center',
         position: 'relative', overflow: 'hidden',
+        background: '#0a1a3a',
       }}>
 
-        {/* Fondo */}
-        <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
-          <Image
-            src={sl.bg}
-            alt=""
-            aria-hidden="true"
-            fill
-            priority
-            sizes="100vw"
-            style={{
-              objectFit: isMobile ? (sl.bgFitMobile ?? 'cover') : 'cover',
-              objectPosition: isMobile
-                ? (sl.bgPositionMobile ?? 'center')
-                : (sl.bgPosition ?? 'center'),
-            }}
-          />
-        </div>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
-        <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
+        {isStacked ? (
+          <>
+            {/* Spacer del navbar */}
+            <div style={{ height: '68px', flexShrink: 0 }} />
+            {/* Banner imagen arriba */}
+            <div key={`bg-${current}`} style={{
+              position: 'relative', width: '100%', height: '220px', flexShrink: 0,
+              background: '#0a1a3a',
+              animation: 'bgFade 0.6s ease forwards',
+            }}>
+              <Image
+                src={sl.bg}
+                alt=""
+                aria-hidden="true"
+                fill
+                priority
+                sizes="100vw"
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: sl.bgPositionMobile ?? 'center',
+                }}
+              />
+              {/* Degradado sutil al borde inferior para fundirlo con el navy */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,26,58,0) 60%, rgba(10,26,58,0.85) 100%)' }} />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Fondo */}
+            <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
+              <Image
+                src={sl.bg}
+                alt=""
+                aria-hidden="true"
+                fill
+                priority
+                sizes="100vw"
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: isMobile
+                    ? (sl.bgPositionMobile ?? 'center')
+                    : (sl.bgPosition ?? 'center'),
+                }}
+              />
+            </div>
+            <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
+            <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
+          </>
+        )}
 
         {/* Contenido animado */}
         <div
           key={`content-${current}`}
           style={{
             maxWidth: '1200px', margin: '0 auto', width: '100%',
-            padding: isMobile ? '0 20px' : '0 48px', position: 'relative', zIndex: 3,
+            padding: isStacked
+              ? '22px 20px 28px'
+              : (isMobile ? '0 20px' : '0 48px'),
+            position: 'relative', zIndex: 3,
             display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '22px',
+            flex: isStacked ? '1 1 auto' : undefined,
             animation: animating
               ? (dir === 'left' ? 'slideOutLeft 0.48s ease forwards' : 'slideOutRight 0.48s ease forwards')
               : (dir === 'left' ? 'slideInLeft 0.48s ease forwards' : 'slideInRight 0.48s ease forwards'),
