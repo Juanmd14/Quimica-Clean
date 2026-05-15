@@ -38,6 +38,7 @@ const slides = [
   },
   {
     bg: '/hero-3.jpg',
+    bgPosition: 'center 20%',
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
@@ -121,7 +122,7 @@ export function Hero() {
 
         {/* Fondo */}
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, animation: 'bgFade 0.6s ease forwards' }}>
-          <Image src={sl.bg} alt="" aria-hidden="true" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center', }} />
+          <Image src={sl.bg} alt="" aria-hidden="true" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: sl.bgPosition ?? 'center' }} />
         </div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
