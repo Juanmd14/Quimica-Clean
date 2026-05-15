@@ -38,7 +38,7 @@ const slides: Slide[] = [
   {
     bg: '/hero-2.jpg',
     bgPositionMobile: '40% center',
-    bgInsetMobile: 50,
+    bgInsetMobile: 68,
     eyebrow: 'Envíos a todo el país · Tucumán, Argentina',
     line1: 'Llegamos a',
     line2: 'TODO EL',
@@ -56,7 +56,7 @@ const slides: Slide[] = [
     bg: '/hero-3.jpg',
     bgPosition: 'center 8%',
     bgPositionMobile: 'center',
-    bgInsetMobile: 50,
+    bgInsetMobile: 68,
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
@@ -143,7 +143,7 @@ export function Hero() {
         <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
           <div style={{
             position: 'absolute',
-            inset: isMobile && sl.bgInsetMobile ? `${sl.bgInsetMobile}px 0` : 0,
+            inset: isMobile && sl.bgInsetMobile ? `${sl.bgInsetMobile}px 0 0 0` : 0,
           }}>
             <Image
               src={sl.bg}
