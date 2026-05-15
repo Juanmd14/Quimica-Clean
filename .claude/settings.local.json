@@ -23,7 +23,15 @@
       "Bash(npm run *)",
       "Bash(cp \"/c/Users/User/OneDrive/Escritorio/icono page.jpeg\" \"/c/Users/User/OneDrive/Escritorio/Juan cosas/Prog/quimica-clean/app/icon.jpg\")",
       "Bash(cp \"/c/Users/User/OneDrive/Escritorio/apple-touch-icon.png\" \"/c/Users/User/OneDrive/Escritorio/Juan cosas/Prog/quimica-clean/app/apple-icon.png\")",
-      "Bash(git ls-files *)"
+      "Bash(git ls-files *)",
+      "Bash(grep -E \"\\\\.\\(js|ts|json\\)$\")",
+      "Bash(npx eslint *)",
+      "Bash(command -v sharp)",
+      "Bash(command -v magick)",
+      "Bash(command -v convert)",
+      "Bash(command -v cwebp)",
+      "Bash(command -v ffmpeg)",
+      "Bash(node *)"
     ]
   }
 }
