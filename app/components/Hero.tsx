@@ -38,7 +38,7 @@ const slides = [
   },
   {
     bg: '/hero-3.jpg',
-    bgPosition: 'center 20%',
+    bgPosition: 'center 8%',
     eyebrow: 'Para fabricantes · Tucumán, Argentina',
     line1: 'Materia prima',
     line2: 'DE CALIDAD',
