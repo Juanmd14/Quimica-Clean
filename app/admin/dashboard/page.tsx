@@ -72,8 +72,6 @@ export default function AdminDashboard() {
     { label: 'Productos', href: '/admin/dashboard/products', icon: '📦' },
     { label: 'Categorías', href: '/admin/dashboard/categorias', icon: '🏷️' },
     { label: 'Leads / Consultas', href: '/admin/dashboard/leads', icon: '📋' },
-    { label: 'Usuarios', href: '/admin/dashboard/users', icon: '👥' },
-    { label: 'Configuración', href: '/admin/dashboard/settings', icon: '⚙️' },
   ]
 
   return (

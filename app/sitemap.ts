@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { categories } from '@/app/components/constants'
 
-const BASE = 'https://quimica-clean.com'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://quimica-clean.vercel.app'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()

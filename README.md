@@ -51,6 +51,7 @@ Abrir [http://localhost:3000](http://localhost:3000).
 | `ADMIN_PASSWORD` | Contraseña del panel `/admin` |
 | `RESEND_API_KEY` | API key de Resend para notificar leads |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | (opcional) Override del WhatsApp del negocio |
+| `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (metadata, sitemap, robots). Default: `https://quimica-clean.vercel.app` |
 
 ## Estructura
 
@@ -129,6 +130,19 @@ Las imágenes se sirven desde el bucket público `products` de Supabase Storage.
 
 - [`docs/API.md`](./docs/API.md) — referencia de los endpoints HTTP.
 - [`docs/ADMIN_GUIDE.md`](./docs/ADMIN_GUIDE.md) — cómo usar el panel admin.
+
+## Deploy
+
+Deploy automático en Vercel desde `main`. Las variables de entorno se configuran en el dashboard del proyecto (Settings → Environment Variables) usando los mismos nombres de `.env.example`.
+
+## Decisiones técnicas
+
+- **Supabase** como BaaS unificado (Postgres + Auth + Storage). Free tier suficiente para el volumen del cliente y evita orquestar tres servicios distintos.
+- **Cookie `httpOnly` para la sesión admin** en lugar de JWT en `localStorage`: no accesible desde JS del browser, mitiga XSS. La sesión vive 24h.
+- **App Router + Server Components** para que el catálogo se renderice del lado del servidor (mejor SEO y first paint), y los componentes interactivos (hero slider, formularios) sean Client Components explícitos.
+- **Validación con Zod en el server** (`lib/validations.ts`): el cliente puede mentir, el server no confía.
+- **Tailwind v4 + algunos estilos inline** para componentes con animaciones complejas (hero, footer). Trade-off consciente: menos clases utility, más legibilidad en componentes con muchos valores derivados.
+- **`NEXT_PUBLIC_SITE_URL` como env var** en lugar de hardcodear el dominio: permite cambiar el dominio definitivo desde el dashboard de Vercel sin redeploy.
 
 ## Licencia
 

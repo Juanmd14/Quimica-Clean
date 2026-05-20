@@ -514,10 +514,8 @@ export function Footer() {
             borderBottom: '1px solid rgba(255,255,255,0.08)',
           }}>
             {[
-              { label: 'Política de Privacidad', href: '/legal#privacidad' },
-              { label: 'Términos de Uso', href: '/legal#terminos' },
-              { label: 'Aviso Legal', href: '/legal#aviso-legal' },
-              { label: 'Cookies', href: '/legal#cookies' },
+              { label: 'Política de Privacidad', href: '/legal' },
+              { label: 'Términos de Uso', href: '/legal/terminos' },
             ].map(link => (
               <a
                 key={link.label}

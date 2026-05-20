@@ -31,18 +31,20 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://quimica-clean.vercel.app";
+
 export const metadata: Metadata = {
   title: "Química Clean | Distribuidora Mayorista de Productos de Limpieza Argentina",
   description: "Distribuidora mayorista de productos de limpieza concentrados y materias primas para empresas y revendedores. Ubicados en Tucumán, Argentina. Envíos a todo el país.",
   keywords: "productos limpieza, concentrados, materias primas, mayorista, Tucumán, argentina, distribuidora, jabones, detergentes, desinfectantes",
-  metadataBase: new URL("https://quimica-clean.com"),
+  metadataBase: new URL(SITE_URL),
   alternates: {
-    canonical: "https://quimica-clean.com",
+    canonical: SITE_URL,
   },
   openGraph: {
     type: "website",
     locale: "es_AR",
-    url: "https://quimica-clean.com",
+    url: SITE_URL,
     title: "Química Clean | Productos de Limpieza Mayorista",
     description: "Distribuidora mayorista de productos de limpieza concentrados y materias primas. Envíos a todo Argentina.",
     siteName: "Química Clean",
