@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { C } from './constants'
 import { useBreakpoint } from '@/lib/hooks'
 
@@ -11,15 +12,14 @@ export function Navbar() {
   const { isMobile } = useBreakpoint()
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60)
+    const fn = () => {
+      const isScrolled = window.scrollY > 60
+      setScrolled(isScrolled)
+      if (isScrolled) setMenuOpen(false)
+    }
     window.addEventListener('scroll', fn)
     return () => window.removeEventListener('scroll', fn)
   }, [])
-
-  // Cerrar menu al hacer scroll
-  useEffect(() => {
-    if (scrolled && menuOpen) setMenuOpen(false)
-  }, [scrolled, menuOpen])
 
   const handleNavClick = () => setMenuOpen(false)
 
@@ -45,7 +45,7 @@ export function Navbar() {
       }}>
 
         {/* Logo */}
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', textDecoration: 'none' }} aria-label="Ir al inicio">
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', textDecoration: 'none' }} aria-label="Ir al inicio">
           <Image
             src="/logo_qm.jpg"
             alt="Quimica Clean"
@@ -60,7 +60,7 @@ export function Navbar() {
               QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
             </span>
           )}
-        </a>
+        </Link>
 
         {/* Desktop: links + CTA */}
         {!isMobile && (

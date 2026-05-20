@@ -211,9 +211,9 @@ function CategoryPageContent() {
         <p style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '24px' }}>
           Contactanos y te asesoramos
         </p>
-        <a href="/#contacto" style={{ display: 'inline-block', background: 'white', color: C.gold, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '14px' }}>
+        <Link href="/#contacto" style={{ display: 'inline-block', background: 'white', color: C.gold, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '14px' }}>
           Ir a Contacto
-        </a>
+        </Link>
       </div>
     </div>
   )

@@ -1,163 +1,135 @@
-# Quimica Clean - E-Commerce de Productos Químicos
+# Química Clean
 
-Plataforma moderna de e-commerce para la venta de productos químicos y de limpieza, construida con Next.js 16, React 19, TypeScript y Supabase.
+Sitio comercial de una distribuidora mayorista de productos de limpieza con base en Tucumán, Argentina. Catálogo dinámico, panel de administración protegido y captura de leads con notificación por email.
 
-## Características
-
-- 🛍️ **Catálogo de Productos**: Gestión completa de productos químicos y de limpieza
-- 🔐 **Panel Admin Protegido**: Administra tu negocio de forma segura
-- 📱 **Responsive Design**: Optimizado para todos los dispositivos
-- 💾 **Base de Datos**: Integración con Supabase
-- 📝 **Validación de Datos**: Validación con Zod en backend y frontend
-- ⚡ **Rendimiento**: Optimizado con Next.js App Router
-- 🎨 **Tailwind CSS**: Estilos modernos y personalizables
-
-## Requisitos Previos
-
-- Node.js 18+
-- npm o yarn
-- Cuenta de Supabase
-
-## Instalación
-
-1. **Clonar el repositorio**
-```bash
-git clone <tu-repo>
-cd quimica-clean
-```
-
-2. **Instalar dependencias**
-```bash
-npm install
-```
-
-3. **Configurar variables de entorno**
-```bash
-cp .env.example .env.local
-```
-
-Edita `.env.local` con tus valores:
-```env
-NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
-SUPABASE_SECRET_KEY=tu_secret_key_de_supabase
-ADMIN_PASSWORD=tu_contraseña_admin_segura
-NEXT_PUBLIC_WHATSAPP_NUMBER=+5493811234567
-```
-
-4. **Ejecutar el servidor de desarrollo**
-```bash
-npm run dev
-```
-
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
-
-## Acceder al Panel Admin
-
-El panel de administración está protegido y solo accesible con contraseña.
-
-**URL del Admin**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-
-Para más detalles, consulta la [Guía del Admin](./docs/ADMIN_GUIDE.md)
-
-## Estructura del Proyecto
-
-```
-quimica-clean/
-├── app/
-│   ├── admin/                 # Panel de administración
-│   │   ├── login/            # Página de login
-│   │   ├── dashboard/        # Dashboard principal
-│   │   └── layout.tsx        # Layout protegido
-│   ├── api/                   # Rutas API
-│   │   └── admin/
-│   │       ├── login/        # Login endpoint
-│   │       ├── logout/       # Logout endpoint
-│   │       └── session/      # Verificar sesión
-│   ├── components/            # Componentes React
-│   └── page.tsx              # Página principal
-├── lib/
-│   ├── config.ts             # Configuración centralizada
-│   ├── types.ts              # Tipos TypeScript
-│   ├── validations.ts        # Esquemas Zod
-│   ├── auth.ts               # Autenticación
-│   └── supabase.ts           # Cliente Supabase
-└── public/                    # Archivos estáticos
-```
-
-## Scripts Disponibles
-
-```bash
-# Desarrollar
-npm run dev
-
-# Construir para producción
-npm run build
-
-# Ejecutar en producción
-npm start
-
-# Ejecutar linter
-npm run lint
-```
-
-## Seguridad
-
-⚠️ **Importante**: 
-- Nunca subas `.env.local` al repositorio
-- Usa una contraseña fuerte para el admin
-- En producción, usa variables de entorno seguras en tu plataforma de hosting
-- Las contraseñas de admin se almacenan en cookies httpOnly
-
-## Tecnologías
-
-- **Next.js 16**: Framework React moderno
-- **React 19**: Biblioteca UI
-- **TypeScript**: Type-safety
-- **Tailwind CSS 4**: Estilos
-- **Supabase**: Base de datos y autenticación
-- **Zod**: Validación de esquemas
-- **ESLint**: Linting de código
-
-## Desarrollo
-
-### Agregar nuevos productos
-
-Usa el endpoint POST `/api/admin/products` con validación Zod:
-
-```typescript
-{
-  "name": "Limpiador Multiusos",
-  "description": "Limpiador efectivo para todas las superficies",
-  "price": 299.99,
-  "category": "Limpiadores",
-  "image_url": "https://...",
-  "stock": 50
-}
-```
-
-### Crear nuevas rutas protegidas
-
-Todas las rutas en `/admin/*` están protegidas automáticamente por el middleware de autenticación.
-
-## Contribuir
-
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT.
-
-## Soporte
-
-Para soporte, contáctanos por WhatsApp o email.
+**Demo en vivo:** [quimica-clean.vercel.app](https://quimica-clean.vercel.app)
 
 ---
 
-Hecho con ❤️ para Quimica Clean
+## Highlights
+
+- **Catálogo dinámico** con productos y categorías servidos desde Supabase, sin redeploy.
+- **Panel admin protegido** (`/admin`) con autenticación por cookie `httpOnly` y sesión de 24h.
+- **CRUD completo** de productos y categorías, con upload de imágenes a Supabase Storage.
+- **Captura de leads** desde el sitio público con notificación automática al admin por email vía Resend.
+- **Mobile-first responsive**: hero adaptado por slide, navbar con menú hamburguesa, breakpoints centralizados (`lib/hooks.ts`).
+- **SEO**: metadata Open Graph + Twitter Card, `sitemap.ts`, `robots.ts`, canonical URLs, `lang="es-AR"`.
+- **Performance**: imágenes optimizadas (Next/Image + WebP/AVIF), `preconnect` a Supabase, fuentes vía `next/font`, lazy-load del widget de WhatsApp.
+- **Validación con Zod** en login.
+
+## Stack
+
+| Capa | Tecnología |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19 + Tailwind CSS v4 |
+| Lenguaje | TypeScript |
+| BD / Auth / Storage | Supabase |
+| Email transaccional | Resend |
+| Validación | Zod |
+
+## Setup local
+
+```bash
+git clone https://github.com/juanmd14/quimica-clean.git
+cd quimica-clean
+npm install
+cp .env.example .env.local   # luego editar con tus valores
+npm run dev
+```
+
+Abrir [http://localhost:3000](http://localhost:3000).
+
+## Variables de entorno
+
+| Variable | Para qué sirve |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key (cliente browser) |
+| `SUPABASE_SECRET_KEY` | Secret key (server) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role para operaciones admin |
+| `ADMIN_PASSWORD` | Contraseña del panel `/admin` |
+| `RESEND_API_KEY` | API key de Resend para notificar leads |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | (opcional) Override del WhatsApp del negocio |
+
+## Estructura
+
+```
+app/
+├── admin/            # Panel admin (login + dashboard + CRUD)
+├── api/              # Route handlers
+│   ├── admin/        # login / logout / session
+│   ├── products/     # CRUD productos + upload
+│   ├── categorias/   # CRUD categorías
+│   └── leads/        # Captura pública de leads
+├── components/       # Hero, Sections, Navbar, ContactFooter, WhatsAppChat...
+├── productos/        # Listado público + detalle por id
+└── legal/            # Página de términos / privacidad
+lib/
+├── auth.ts           # Sesión admin por cookie httpOnly
+├── adminMiddleware.ts# Guard para route handlers admin
+├── supabase.ts       # Cliente browser
+├── supabaseAdmin.ts  # Cliente server (service role)
+├── hooks.ts          # useBreakpoint compartido
+├── types.ts          # Tipos de las tablas
+├── validations.ts    # Schema Zod del login
+└── config.ts         # Constantes de marca
+```
+
+## Scripts
+
+```bash
+npm run dev      # Servidor de desarrollo
+npm run build    # Build de producción
+npm start        # Servir build
+npm run lint     # ESLint
+```
+
+## Schema de base de datos
+
+```sql
+create table productos (
+  id          bigserial primary key,
+  nombre      text not null,
+  categoria   text not null,
+  descripcion text,
+  color       text,
+  color2      text,
+  emoji       text,
+  imagen_url  text,
+  activo      boolean not null default true,
+  orden       int not null default 0
+);
+
+create table categorias (
+  id         bigserial primary key,
+  nombre     text not null,
+  emoji      text,
+  imagen_url text,
+  orden      int not null default 0
+);
+
+create table leads (
+  id               bigserial primary key,
+  nombre           text not null,
+  telefono         text not null,
+  producto_interes text,
+  mensaje          text,
+  created_at       timestamptz not null default now()
+);
+
+create index idx_productos_categoria on productos(categoria);
+create index idx_productos_orden     on productos(orden);
+create index idx_leads_created_at    on leads(created_at desc);
+```
+
+Las imágenes se sirven desde el bucket público `products` de Supabase Storage. El dominio está allowlisteado en `next.config.ts`.
+
+## Documentación adicional
+
+- [`docs/API.md`](./docs/API.md) — referencia de los endpoints HTTP.
+- [`docs/ADMIN_GUIDE.md`](./docs/ADMIN_GUIDE.md) — cómo usar el panel admin.
+
+## Licencia
+
+MIT — ver [LICENSE](./LICENSE).

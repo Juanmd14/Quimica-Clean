@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { MoleculeCanvas, WhatsAppIcon } from './ui'
@@ -78,20 +78,31 @@ export function Hero() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { isMobile } = useBreakpoint()
 
-  const goTo = (next: number, direction: 'left' | 'right' = 'left') => {
+  const goTo = (target: number, direction: 'left' | 'right' = 'left') => {
     if (animating) return
     setDir(direction)
     setAnimating(true)
-    setTimeout(() => { setCurrent(next); setAnimating(false) }, 480)
+    setTimeout(() => { setCurrent(target); setAnimating(false) }, 480)
   }
 
   const next = () => goTo((current + 1) % slides.length, 'left')
   const prev = () => goTo((current - 1 + slides.length) % slides.length, 'right')
 
   useEffect(() => {
-    timeoutRef.current = setInterval(next, 5000)
-    return () => { if (timeoutRef.current) clearInterval(timeoutRef.current) }
-  }, [current, animating])
+    const id = setInterval(() => {
+      setAnimating(prevAnim => {
+        if (prevAnim) return prevAnim
+        setDir('left')
+        setTimeout(() => {
+          setCurrent(c => (c + 1) % slides.length)
+          setAnimating(false)
+        }, 480)
+        return true
+      })
+    }, 5000)
+    timeoutRef.current = id
+    return () => clearInterval(id)
+  }, [])
 
   const sl = slides[current]
 

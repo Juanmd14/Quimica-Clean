@@ -38,18 +38,22 @@ export function WhatsAppChat() {
 
   // Al abrir: animación de tipeo, registrar hora
   useEffect(() => {
-    if (!open) return
-    setBadge(false)
-    setPhase('typing')
-    setProgress(0)
-    setUserMsg('')
+    if (!open || phase !== 'typing') return
     const t = setTimeout(() => {
       setBotTime(getTime())
       setPhase('ready')
       setTimeout(() => inputRef.current?.focus(), 100)
     }, 1300)
     return () => clearTimeout(t)
-  }, [open])
+  }, [open, phase])
+
+  const openChat = () => {
+    setBadge(false)
+    setPhase('typing')
+    setProgress(0)
+    setUserMsg('')
+    setOpen(true)
+  }
 
   const redirect = (text: string) => {
     // iOS Safari bloquea window.open si no está en el user gesture síncrono.
@@ -59,7 +63,7 @@ export function WhatsAppChat() {
     if (!win) {
       // Fallback: si el popup quedó bloqueado, navegamos en la misma pestaña
       // (en iOS esto abre el universal link y entra a WhatsApp igualmente).
-      window.location.href = url
+      window.location.assign(url)
       return
     }
 
@@ -362,7 +366,7 @@ export function WhatsAppChat() {
       {/* FAB */}
       <button
         className="wa-fab-btn"
-        onClick={() => setOpen(o => !o)}
+        onClick={() => open ? setOpen(false) : openChat()}
         title="Escribinos por WhatsApp"
         aria-label={open ? 'Cerrar chat de WhatsApp' : 'Abrir chat de WhatsApp'}
         type="button"

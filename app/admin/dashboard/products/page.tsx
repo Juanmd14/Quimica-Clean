@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import AdminBackButton from '@/app/admin/components/AdminBackButton'
 
 type Producto = {
@@ -255,7 +255,6 @@ function ProductModal({ product, onSave, onClose }: {
 
 export default function ProductsManagement() {
   const [products, setProducts] = useState<Producto[]>([])
-  const [filtered, setFiltered] = useState<Producto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [catFilter, setCatFilter] = useState('Todos')
@@ -263,22 +262,33 @@ export default function ProductsManagement() {
   const [modal, setModal] = useState<Producto | null | 'new'>(null)
   const [toast, setToast] = useState('')
 
-const loadProducts = useCallback(async () => {
-  setLoading(true)
-  const res = await fetch('/api/products?all=true')
-  const result = await res.json()
-  if (result.success) setProducts(result.data || [])
-  else setError('Error al cargar productos')
-  setLoading(false)
-}, [])
-
-  useEffect(() => { loadProducts() }, [loadProducts])
+  const loadProducts = async () => {
+    setLoading(true)
+    const res = await fetch('/api/products?all=true')
+    const result = await res.json()
+    if (result.success) setProducts(result.data || [])
+    else setError('Error al cargar productos')
+    setLoading(false)
+  }
 
   useEffect(() => {
+    let cancelled = false
+    fetch('/api/products?all=true')
+      .then(res => res.json())
+      .then(result => {
+        if (cancelled) return
+        if (result.success) setProducts(result.data || [])
+        else setError('Error al cargar productos')
+        setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const filtered = useMemo(() => {
     let f = products
     if (catFilter !== 'Todos') f = f.filter(p => p.categoria === catFilter)
     if (search) f = f.filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()))
-    setFiltered(f)
+    return f
   }, [products, catFilter, search])
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }

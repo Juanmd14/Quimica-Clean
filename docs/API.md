@@ -1,331 +1,132 @@
-# API de Productos - Documentación
+# API — Química Clean
 
-## Base URL
-```
-http://localhost:3000/api
-```
+Todos los endpoints viven bajo `/api`. Las respuestas exitosas siguen el shape `{ success: true, data }`. Los errores devuelven `{ error: string, details?: string }` con código HTTP correspondiente.
 
-## Endpoints
+Los endpoints marcados como **admin** requieren la cookie `admin_session` (httpOnly, válida 24h, emitida por `POST /api/admin/login`).
 
-### 1. GET /products
-Lista todos los productos con opciones de filtrado y paginación.
+---
 
-**Parámetros Query:**
-- `category` (opcional): Filtrar por categoría
-- `limit` (opcional, default: 50): Número de productos a retornar
-- `offset` (opcional, default: 0): Número de productos a saltar
+## Productos
 
-**Ejemplo:**
-```bash
-GET /api/products?category=Limpiadores&limit=10&offset=0
-```
+### `GET /api/products`
+Lista productos. Cacheado con `revalidate = 600`. Ordena con prioridad a la categoría `Jabones` y a productos featured (`ariel nelson`, `ala nelson`).
 
-**Respuesta (200 OK):**
+**Query params:**
+- `category` *(opcional)* — filtra por categoría.
+- `all=true` *(opcional)* — incluye productos con `activo = false`. Por defecto sólo activos.
+
+**Respuesta:**
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": "uuid",
-      "name": "Limpiador Multiusos",
-      "description": "Limpiador efectivo...",
-      "price": 299.99,
-      "category": "Limpiadores",
-      "image_url": "https://...",
-      "stock": 50,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
+      "id": 12,
+      "nombre": "Detergente 10%",
+      "categoria": "Detergentes",
+      "descripcion": "...",
+      "color": "#f9a825",
+      "color2": null,
+      "emoji": null,
+      "imagen_url": "https://....supabase.co/storage/v1/...",
+      "activo": true,
+      "orden": 0
     }
-  ],
-  "pagination": {
-    "total": 100,
-    "limit": 10,
-    "offset": 0
-  }
+  ]
 }
+```
+
+### `GET /api/products/:id`
+Devuelve un producto.
+
+### `POST /api/products` *(admin)*
+Crea un producto.
+
+**Body:**
+```json
+{
+  "nombre": "Detergente 10%",
+  "categoria": "Detergentes",
+  "descripcion": "Limpiador efectivo",
+  "color": "#f9a825",
+  "color2": null,
+  "emoji": null,
+  "imagen_url": "https://....supabase.co/storage/v1/...",
+  "activo": true,
+  "orden": 0
+}
+```
+`nombre` y `categoria` son obligatorios.
+
+### `PUT /api/products/:id` *(admin)*
+Actualiza los campos enviados (whitelist: `nombre`, `categoria`, `descripcion`, `color`, `color2`, `emoji`, `imagen_url`, `activo`, `orden`).
+
+### `DELETE /api/products/:id` *(admin)*
+
+### `POST /api/products/upload` *(admin)*
+Sube una imagen al bucket `productos` de Supabase Storage.
+
+**Body:** `multipart/form-data` con campo `file`.
+
+**Respuesta:**
+```json
+{ "url": "https://....supabase.co/storage/v1/object/public/productos/<filename>" }
 ```
 
 ---
 
-### 2. GET /products/:id
-Obtiene un producto específico por su ID.
+## Categorías
 
-**Parámetros:**
-- `id` (obligatorio): ID del producto
+### `GET /api/categorias`
+Público. Cacheado con `revalidate = 3600`.
 
-**Ejemplo:**
-```bash
-GET /api/products/123e4567-e89b-12d3-a456-426614174000
-```
+### `POST /api/categorias` *(admin)*
+Body: `{ nombre, emoji?, orden? }`.
 
-**Respuesta (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "id": "uuid",
-    "name": "Limpiador Multiusos",
-    "description": "Limpiador efectivo...",
-    "price": 299.99,
-    "category": "Limpiadores",
-    "image_url": "https://...",
-    "stock": 50,
-    "created_at": "2024-01-01T00:00:00Z",
-    "updated_at": "2024-01-01T00:00:00Z"
-  }
-}
-```
-
-**Respuesta (404 Not Found):**
-```json
-{
-  "error": "Producto no encontrado"
-}
-```
+### `PUT /api/categorias` *(admin)*
+Body: `{ id, emoji?, imagen_url?, orden? }`.
 
 ---
 
-### 3. POST /products
-Crea un nuevo producto. ⚠️ **Requiere autenticación admin**.
+## Leads
 
-**Headers:**
-```
-Content-Type: application/json
-```
+### `POST /api/leads`
+Público. Guarda el lead en la tabla `leads` y, si hay `RESEND_API_KEY`, envía un email de notificación al admin (no bloquea la respuesta si falla).
 
-**Body (JSON):**
+**Body:**
 ```json
 {
-  "name": "Limpiador Multiusos",
-  "description": "Limpiador efectivo para todas las superficies del hogar",
-  "price": 299.99,
-  "category": "Limpiadores",
-  "image_url": "https://ejemplo.com/producto.jpg",
-  "stock": 50
+  "nombre": "Juan",
+  "telefono": "+5493811234567",
+  "producto_interes": "Detergente 10%",
+  "mensaje": "Quiero presupuesto por 200 L"
 }
 ```
 
-**Ejemplo con curl:**
-```bash
-curl -X POST http://localhost:3000/api/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Limpiador Multiusos",
-    "description": "Limpiador efectivo para todas las superficies",
-    "price": 299.99,
-    "category": "Limpiadores",
-    "image_url": "https://ejemplo.com/producto.jpg",
-    "stock": 50
-  }'
-```
-
-**Respuesta (201 Created):**
-```json
-{
-  "success": true,
-  "data": {
-    "id": "uuid",
-    "name": "Limpiador Multiusos",
-    "description": "Limpiador efectivo...",
-    "price": 299.99,
-    "category": "Limpiadores",
-    "image_url": "https://...",
-    "stock": 50,
-    "created_at": "2024-01-01T00:00:00Z",
-    "updated_at": "2024-01-01T00:00:00Z"
-  }
-}
-```
-
-**Respuesta (400 Bad Request):**
-```json
-{
-  "error": "Datos inválidos",
-  "details": {
-    "fieldErrors": {
-      "name": ["El nombre debe tener al menos 3 caracteres"]
-    }
-  }
-}
-```
-
-**Respuesta (401 Unauthorized):**
-```json
-{
-  "error": "No autorizado. Debes estar autenticado como admin."
-}
-```
+**Validaciones**: `nombre` y `telefono` obligatorios, máximos de longitud, anti-spam por caracteres repetidos.
 
 ---
 
-### 4. PUT /products/:id
-Actualiza un producto existente. ⚠️ **Requiere autenticación admin**.
+## Admin auth
 
-**Parámetros:**
-- `id` (obligatorio): ID del producto
+### `POST /api/admin/login`
+Body: `{ password: string }`. Si coincide con `ADMIN_PASSWORD`, emite la cookie `admin_session` (httpOnly, sameSite=strict, 24h).
 
-**Headers:**
-```
-Content-Type: application/json
-```
+### `POST /api/admin/logout`
+Limpia la cookie.
 
-**Body (JSON):**
-```json
-{
-  "name": "Limpiador Multiusos Pro",
-  "description": "Limpiador profesional para todas las superficies",
-  "price": 399.99,
-  "category": "Limpiadores",
-  "image_url": "https://ejemplo.com/producto-pro.jpg",
-  "stock": 100
-}
-```
-
-**Ejemplo con curl:**
-```bash
-curl -X PUT http://localhost:3000/api/products/uuid \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Limpiador Multiusos Pro",
-    "price": 399.99,
-    ...
-  }'
-```
-
-**Respuesta (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "id": "uuid",
-    "name": "Limpiador Multiusos Pro",
-    "price": 399.99,
-    "updated_at": "2024-01-02T00:00:00Z",
-    ...
-  }
-}
-```
+### `GET /api/admin/session`
+Devuelve `{ authenticated: boolean }`.
 
 ---
 
-### 5. DELETE /products/:id
-Elimina un producto. ⚠️ **Requiere autenticación admin**.
-
-**Parámetros:**
-- `id` (obligatorio): ID del producto
-
-**Ejemplo con curl:**
-```bash
-curl -X DELETE http://localhost:3000/api/products/uuid
-```
-
-**Respuesta (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Producto eliminado"
-}
-```
-
-**Respuesta (404 Not Found):**
-```json
-{
-  "error": "Producto no encontrado"
-}
-```
-
----
-
-## Validación (Zod)
-
-Todos los campos se validan con los siguientes criterios:
-
-| Campo | Validación |
-|-------|-----------|
-| `name` | Mínimo 3 caracteres |
-| `description` | Mínimo 10 caracteres |
-| `price` | Número positivo |
-| `category` | No puede estar vacío |
-| `image_url` | URL válida (comenzar con http/https) |
-| `stock` | Número entero no negativo |
-
----
-
-## Autenticación
-
-Para acceder a los endpoints protegidos (POST, PUT, DELETE), primero debes:
-
-1. Acceder a `/admin/login`
-2. Ingresa tu contraseña admin
-3. Se creará una cookie `admin_session` httpOnly
-4. Haz las solicitudes con esa sesión activa
-
-La sesión expira después de 24 horas.
-
----
-
-## Ejemplos de Uso
-
-### Node.js / JavaScript
-```javascript
-// Crear producto
-const response = await fetch('/api/products', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Nuevo Producto',
-    description: 'Descripción del producto',
-    price: 199.99,
-    category: 'Limpiadores',
-    image_url: 'https://ejemplo.com/img.jpg',
-    stock: 25
-  })
-})
-
-const data = await response.json()
-console.log(data)
-```
-
-### Python
-```python
-import requests
-
-# Obtener productos
-response = requests.get('http://localhost:3000/api/products')
-products = response.json()
-
-# Crear producto
-data = {
-    "name": "Nuevo Producto",
-    "description": "Descripción del producto",
-    "price": 199.99,
-    "category": "Limpiadores",
-    "image_url": "https://ejemplo.com/img.jpg",
-    "stock": 25
-}
-
-response = requests.post('http://localhost:3000/api/products', json=data)
-print(response.json())
-```
-
----
-
-## Códigos de Estado HTTP
+## Códigos HTTP
 
 | Código | Significado |
-|--------|-----------|
-| 200 | Éxito - GET, PUT |
-| 201 | Creado - POST |
-| 400 | Error de validación |
-| 401 | No autorizado |
-| 404 | Recurso no encontrado |
+|---|---|
+| 200 | Éxito (GET/PUT/DELETE) |
+| 201 | Creado (POST) |
+| 400 | Body inválido |
+| 401 | No autenticado como admin |
+| 404 | No encontrado |
 | 500 | Error del servidor |
-
----
-
-## Notas de Seguridad
-
-- ⚠️ Todos los endpoints protegidos requieren estar autenticado como admin
-- ⚠️ Las contraseñas de admin se almacenan en cookies httpOnly (seguras)
-- ⚠️ Usa HTTPS en producción
-- ⚠️ Los datos se validan en el servidor (Zod)

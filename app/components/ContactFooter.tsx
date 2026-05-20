@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { GlowCard, WhatsAppIcon } from './ui'
@@ -166,7 +166,7 @@ export function Contact() {
       } else {
         setStatus('error')
       }
-    } catch (err) {
+    } catch {
       setStatus('error')
     }
   }

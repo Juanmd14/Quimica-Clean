@@ -175,5 +175,3 @@ export const stats = [
   { value: 1000, suffix: '+', label: 'Clientes activos'     },
   { display: 'check',         label: 'Entregas en todo el país' },
 ]
-
-// appended products for Materia Prima and Bouquets

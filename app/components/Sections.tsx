@@ -32,41 +32,6 @@ const fallbackCategories: CategoriaData[] = [
   { nombre: 'Jabon de manos', emoji: '🧼', imagen_url: null, count: 5 },
 ]
 
-// ─── SVG icons por categoría ──────────────────────────────────────────────────
-function CategoryIcon({ name, size = 28, color = C.blue }: { name: string; size?: number; color?: string }) {
-  const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-  switch (name) {
-    case 'Suavizantes':
-      return <svg {...s}><path d="M12 2C8 2 5 5 5 9c0 3 2 5 4 7l3 4 3-4c2-2 4-4 4-7 0-4-3-7-7-7z" /><path d="M9 9c0-1.7 1.3-3 3-3" /></svg>
-    case 'Jabones':
-      return <svg {...s}><circle cx="12" cy="10" r="4" /><path d="M8 10c0 0-3 1-3 5s2 5 7 5 7-1 7-5-3-5-3-5" /><path d="M12 6V3" /><circle cx="12" cy="2.5" r="0.5" fill={color} /></svg>
-    case 'Detergentes':
-      return <svg {...s}><path d="M8 3h8l1 4H7L8 3z" /><path d="M7 7v11a2 2 0 002 2h6a2 2 0 002-2V7" /><path d="M10 11h4" /><path d="M10 15h4" /></svg>
-    case 'Desengrasantes':
-      return <svg {...s}><path d="M5 3h14" /><path d="M5 3v2l2 2v12a1 1 0 001 1h8a1 1 0 001-1V7l2-2V3" /><path d="M9 11l2 2 4-4" /></svg>
-    case 'Desinfectantes':
-      return <svg {...s}><path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6l-8-4z" /><path d="M9 12l2 2 4-4" /></svg>
-    case 'Pisos':
-      return <svg {...s}><rect x="2" y="14" width="9" height="8" rx="1" /><rect x="13" y="14" width="9" height="8" rx="1" /><rect x="2" y="4" width="9" height="8" rx="1" /><rect x="13" y="4" width="9" height="8" rx="1" /></svg>
-    case 'Piletas':
-      return <svg {...s}><path d="M2 12c1-2 2-3 4-3s3 2 4 2 3-2 4-2 3 1 4 3" /><path d="M2 17c1-2 2-3 4-3s3 2 4 2 3-2 4-2 3 1 4 3" /><path d="M6 5h12v4H6z" /><path d="M9 5V3m6 2V3" /></svg>
-    case 'Automotor':
-      return <svg {...s}><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h14l3 5v5a2 2 0 01-2 2h-2" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path d="M7 12V7" /></svg>
-    case 'Hogar':
-      return <svg {...s}><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" /><path d="M9 21V12h6v9" /></svg>
-    case 'Concentrados':
-      return <svg {...s}><path d="M9 3h6m-5 0v4l-4 8a2 2 0 001.73 3h8.54A2 2 0 0018 15L14 7V3" /><line x1="6.5" y1="13" x2="17.5" y2="13" /><circle cx="12" cy="18" r="1" fill={color} /></svg>
-    case 'Materia Prima':
-      return <svg {...s}><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /><path d="M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" /></svg>
-    case 'Contenedores':
-      return <svg {...s}><path d="M2 6l10-4 10 4v12l-10 4L2 18V6z" /><path d="M12 2v18" /><path d="M2 6l10 4 10-4" /></svg>
-    case 'Bouquets':
-      return <svg {...s}><path d="M12 2C8 2 5 5 5 9c0 2.5 1.5 4.5 3 6l4 5 4-5c1.5-1.5 3-3.5 3-6 0-4-3-7-7-7z" /><circle cx="12" cy="9" r="2" /></svg>
-    default:
-      return <svg {...s}><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>
-  }
-}
-
 // ─── ProductThumb ─────────────────────────────────────────────────────────────
 function ProductThumb({ id, imageUrl, color, color2, emoji, height = 140 }: {
   id: number; imageUrl?: string; color?: string; color2?: string; emoji?: string; height?: number
@@ -335,7 +300,7 @@ export function Products() {
             flexWrap: isMobile ? 'nowrap' : 'wrap',
             width: isMobile ? '100%' : 'auto',
             paddingBottom: isMobile ? '4px' : '0',
-            WebkitOverflowScrolling: 'touch' as any,
+            WebkitOverflowScrolling: 'touch',
           }}>
             {['Todos', ...categoriaList].map(cat => (
               <button key={cat} onClick={() => setActiveCat(cat)} style={{
