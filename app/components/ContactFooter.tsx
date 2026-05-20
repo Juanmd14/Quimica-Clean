@@ -547,6 +547,19 @@ export function Footer() {
               © 2026 Química Clean · San Miguel de Tucumán, Argentina
               <br />
               Todos los derechos reservados.
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.18)', marginLeft: '6px' }}>
+                · Sitio por{' '}
+                <a
+                  href="https://juanmd14.netlify.app"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'inherit')}
+                >
+                  Juan
+                </a>
+              </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'center' : 'flex-end' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
