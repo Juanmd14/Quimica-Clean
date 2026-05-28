@@ -141,6 +141,9 @@ export function Hero() {
         .hero-arrow-btn:hover { transform: translateY(-50%) scale(1.08) !important; }
         .hero-arrow-right:hover { background: ${C.goldDark} !important; box-shadow: 0 8px 28px rgba(231,167,63,0.55) !important; }
         .hero-arrow-left:hover { background: rgba(231,167,63,0.28) !important; border-color: ${C.gold} !important; }
+        @media (max-width: 767px) {
+          .hero-arrow-btn:hover { transform: scale(1.08) !important; }
+        }
       `}</style>
 
       <section style={{
@@ -277,14 +280,18 @@ export function Hero() {
           aria-label="Siguiente slide"
           className="hero-arrow-btn hero-arrow-right"
           style={{
-            position: 'absolute', right: '32px', top: '50%', transform: 'translateY(-50%)',
+            position: 'absolute',
+            right: isMobile ? '16px' : '32px',
+            top: isMobile ? 'auto' : '50%',
+            bottom: isMobile ? '16px' : 'auto',
+            transform: isMobile ? 'none' : 'translateY(-50%)',
             zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
-            width: '48px', height: '48px', cursor: 'pointer',
-            display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
+            width: isMobile ? '42px' : '48px', height: isMobile ? '42px' : '48px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 6px 20px rgba(231,167,63,0.45)',
           }}
         >
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width={isMobile ? 18 : 20} height={isMobile ? 18 : 20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
