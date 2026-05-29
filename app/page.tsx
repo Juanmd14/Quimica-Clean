@@ -4,21 +4,30 @@ import { Hero } from './components/Hero'
 import { Stats, Categories, Products } from './components/Sections'
 import { WhyUs, Contact, Footer } from './components/ContactFooter'
 import WhatsAppChatLazy from './components/WhatsAppChatLazy'
+import { DataProvider } from './components/DataProvider'
+import { getProductos, getCategorias } from '@/lib/data'
 
-export default function Home() {
+export default async function Home() {
+  const [productos, categorias] = await Promise.all([
+    getProductos(),
+    getCategorias(),
+  ])
+
   return (
-    <div className={styles['home-styles']}>
-      <Navbar />
-      <Hero />
-      <Stats />
-      <Categories />
-      <Products />
-      <WhyUs />
-      <Contact />
-      <Footer />
+    <DataProvider productos={productos} categorias={categorias}>
+      <div className={styles['home-styles']}>
+        <Navbar />
+        <Hero />
+        <Stats />
+        <Categories />
+        <Products />
+        <WhyUs />
+        <Contact />
+        <Footer />
 
-      {/* WhatsApp flotante (lazy) */}
-      <WhatsAppChatLazy />
-    </div>
+        {/* WhatsApp flotante (lazy) */}
+        <WhatsAppChatLazy />
+      </div>
+    </DataProvider>
   )
 }

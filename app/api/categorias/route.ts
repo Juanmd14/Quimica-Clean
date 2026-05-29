@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
+import { revalidateTag } from 'next/cache'
 
 export const revalidate = 3600
 
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: 'Error al crear categoría', details: error.message }, { status: 500 })
+    revalidateTag('categorias', { expire: 0 })
     return NextResponse.json({ success: true, data }, { status: 201 })
   } catch (err) {
     console.error('POST categorias error:', err)
@@ -85,6 +87,7 @@ export async function PUT(request: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: 'Error al actualizar categoría', details: error.message }, { status: 500 })
+    revalidateTag('categorias', { expire: 0 })
     return NextResponse.json({ success: true, data })
   } catch (err) {
     console.error('PUT categorias error:', err)

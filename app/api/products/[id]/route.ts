@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 
 export async function GET(
   _request: NextRequest,
@@ -47,6 +48,7 @@ export async function PUT(
       .single()
 
     if (error) return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
+    revalidateTag('productos', { expire: 0 })
     return NextResponse.json({ success: true, data })
   } catch (err) {
     console.error('PUT product[id] error:', err)
@@ -65,6 +67,7 @@ export async function DELETE(
     const { id } = await params
     const { error } = await getSupabaseAdmin().from('productos').delete().eq('id', id)
     if (error) return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
+    revalidateTag('productos', { expire: 0 })
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('DELETE product[id] error:', err)

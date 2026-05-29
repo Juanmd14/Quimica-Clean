@@ -5,40 +5,26 @@ import { notFound } from 'next/navigation'
 import { C, categories } from '@/app/components/constants'
 import { WhatsAppIcon } from '@/app/components/ui'
 import { CONFIG } from '@/lib/config'
-import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
+import { getProductos, getCategorias } from '@/lib/data'
 import type { Producto } from '@/lib/supabase'
 
 async function fetchProducto(id: number): Promise<Producto | null> {
-  const { data, error } = await getSupabaseAdmin()
-    .from('productos')
-    .select('*')
-    .eq('id', id)
-    .eq('activo', true)
-    .single()
-  if (error || !data) return null
-  return data as unknown as Producto
+  const productos = await getProductos()
+  return productos.find(p => p.id === id) ?? null
 }
 
 async function fetchRelacionados(categoria: string, excludeId: number): Promise<Producto[]> {
-  const { data } = await getSupabaseAdmin()
-    .from('productos')
-    .select('*')
-    .eq('categoria', categoria)
-    .eq('activo', true)
-    .neq('id', excludeId)
-    .limit(4)
-  return (data as unknown as Producto[]) || []
+  const productos = await getProductos()
+  return productos.filter(p => p.categoria === categoria && p.id !== excludeId).slice(0, 4)
 }
 
 type CategoriaRow = { nombre: string; emoji: string | null; imagen_url: string | null }
 
 async function fetchCategoriaPorNombre(nombre: string): Promise<CategoriaRow | null> {
-  const { data } = await getSupabaseAdmin()
-    .from('categorias')
-    .select('nombre, emoji, imagen_url')
-    .eq('nombre', nombre)
-    .single()
-  return (data as unknown as CategoriaRow) || null
+  const categorias = await getCategorias()
+  const cat = categorias.find(c => c.nombre === nombre)
+  if (!cat) return null
+  return { nombre: cat.nombre, emoji: cat.emoji, imagen_url: cat.imagen_url }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {

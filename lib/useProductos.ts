@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useProductosData } from '@/app/components/DataProvider'
 import { type Producto } from '@/lib/supabase'
 import { products } from '@/app/components/constants'
 
@@ -16,18 +16,6 @@ const fallback: Producto[] = products.map((p, i) => ({
 }))
 
 export function useProductos() {
-  const [productos, setProductos] = useState<Producto[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(result => {
-        setProductos(result.success && result.data?.length ? result.data : fallback)
-      })
-      .catch(() => setProductos(fallback))
-      .finally(() => setLoading(false))
-  }, [])
-
-  return { productos, loading }
+  const productos = useProductosData()
+  return { productos: productos.length ? productos : fallback, loading: false }
 }

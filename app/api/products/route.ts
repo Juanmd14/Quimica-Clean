@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { requireAdminAuth } from '@/lib/adminMiddleware'
+import { revalidateTag } from 'next/cache'
 
 export const revalidate = 600
 
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
       console.error('Supabase insert error:', error)
       return NextResponse.json({ error: 'Error al crear el producto', details: error.message }, { status: 500 })
     }
+    revalidateTag('productos', { expire: 0 })
     return NextResponse.json({ success: true, data }, { status: 201 })
   } catch (err) {
     console.error('POST products error:', err)
