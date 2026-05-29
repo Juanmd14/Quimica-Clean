@@ -229,29 +229,18 @@ export function Hero() {
           {/* Botones */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <a href="#productos" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: C.gold, color: 'white', border: 'none',
+              <button className="qc-btn-gold" style={{
                 padding: '12px 28px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-                cursor: 'pointer', transition: 'background 0.25s, transform 0.25s, box-shadow 0.25s',
                 boxShadow: '0 4px 20px rgba(231,167,63,0.4)',
-              }}
-                onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = C.goldDark; b.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = C.gold; b.style.transform = 'translateY(0)' }}
-              >Ver catálogo →</button>
+              }}>Ver catálogo →</button>
             </a>
             <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: 'transparent', color: 'white',
-                border: '1.5px solid rgba(255,255,255,0.28)',
+              <button className="qc-btn-ghost" style={{
                 padding: '11px 24px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '14px',
-                cursor: 'pointer', transition: 'background 0.25s, border-color 0.25s',
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
-              }}
-                onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.borderColor = 'rgba(255,255,255,0.5)'; b.style.background = 'rgba(255,255,255,0.08)' }}
-                onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.borderColor = 'rgba(255,255,255,0.28)'; b.style.background = 'transparent' }}
-              >
+              }}>
                 <WhatsAppIcon size={16} color="white" />
                 WhatsApp
               </button>

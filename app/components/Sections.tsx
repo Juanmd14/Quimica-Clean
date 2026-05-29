@@ -132,13 +132,7 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
         }}>
           {catProducts.map(product => (
             <Link key={product.id} href={`/productos/${product.id}`} style={{ textDecoration: 'none' }}>
-              <div style={{
-                border: `1.5px solid ${C.border}`, borderRadius: '14px', overflow: 'hidden',
-                transition: 'border-color 0.22s, transform 0.22s, box-shadow 0.22s', position: 'relative', cursor: 'pointer',
-              }}
-                onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-3px)'; d.style.boxShadow = '0 10px 28px rgba(43,123,184,0.12)' }}
-                onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
-              >
+              <div className="qc-card-lift-sm" style={{ borderRadius: '14px', overflow: 'hidden', position: 'relative' }}>
                 <ProductThumb
                   id={product.id}
                   imageUrl={product.imagen_url ?? undefined}
@@ -195,15 +189,11 @@ export function Categories() {
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: isMobile ? '10px' : '14px' }}>
           {categorias.map((cat, i) => (
-            <div key={i} onClick={() => setOpenCat(cat)} style={{
-              background: C.white, border: `1.5px solid ${C.border}`,
+            <div key={i} onClick={() => setOpenCat(cat)} className="qc-card-lift" style={{
+              background: C.white,
               padding: isMobile ? '18px 12px' : '24px 16px',
               textAlign: 'center', borderRadius: '16px',
-              cursor: 'pointer', transition: 'border-color 0.25s, transform 0.25s, box-shadow 0.25s',
-            }}
-              onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.blue; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = '0 16px 36px rgba(43,123,184,0.1)' }}
-              onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.borderColor = C.border; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
-            >
+            }}>
               <div style={{ width: '64px', height: '64px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', position: 'relative', overflow: 'hidden' }}>
                 {cat.imagen_url ? (
                   <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="64px" style={{ objectFit: 'cover' }} />
@@ -309,14 +299,11 @@ export function Products() {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <a href="#categorias" style={{
-            display: 'inline-block', background: C.blue, color: 'white',
+          <a href="#categorias" className="qc-btn-blue" style={{
+            display: 'inline-block',
             padding: '13px 32px', borderRadius: '8px', textDecoration: 'none',
-            fontWeight: 600, fontSize: '14px', transition: 'background 0.2s, transform 0.2s',
-          }}
-            onMouseEnter={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = C.blueDark; a.style.transform = 'translateY(-2px)' }}
-            onMouseLeave={e => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = C.blue; a.style.transform = 'translateY(0)' }}
-          >
+            fontWeight: 600, fontSize: '14px',
+          }}>
             Ver todas las categorías →
           </a>
         </div>
@@ -361,10 +348,7 @@ export function Fabricantes() {
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
           {fabricantes.map((item, i) => (
-            <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: isMobile ? '20px 18px' : '28px 24px', transition: 'background 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s', cursor: 'default', backdropFilter: 'blur(8px)' }}
-              onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.09)'; d.style.borderColor = `${C.gold}55`; d.style.transform = 'translateY(-5px)'; d.style.boxShadow = `0 20px 40px rgba(0,0,0,0.3)` }}
-              onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.05)'; d.style.borderColor = 'rgba(255,255,255,0.1)'; d.style.transform = 'translateY(0)'; d.style.boxShadow = 'none' }}
-            >
+            <div key={i} className="qc-card-glass" style={{ borderRadius: '16px', padding: isMobile ? '20px 18px' : '28px 24px' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(231,167,63,0.12)', border: '1px solid rgba(231,167,63,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', marginBottom: '14px' }}>
                 {item.emoji}
               </div>

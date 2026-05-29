@@ -74,36 +74,20 @@ export function Navbar() {
                 <a
                   key={label}
                   href={href}
+                  className="qc-nav-link"
                   style={{
-                    color: C.textMid, textDecoration: 'none',
                     fontSize: '14px', fontWeight: 500,
                     padding: '7px 18px', borderRadius: '8px',
-                    transition: 'background 0.2s, color 0.2s, box-shadow 0.2s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = C.white
-                    e.currentTarget.style.color = C.blue
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.color = C.textMid
-                    e.currentTarget.style.boxShadow = 'none'
                   }}
                 >{label}</a>
               ))}
             </div>
 
             <a href="#contacto" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: C.gold, color: 'white', border: 'none',
+              <button className="qc-btn-gold" style={{
                 padding: '10px 22px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '13px',
-                cursor: 'pointer', transition: 'background 0.25s, transform 0.25s',
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
-              >Consultar ahora</button>
+              }}>Consultar ahora</button>
             </a>
           </>
         )}
@@ -163,24 +147,19 @@ export function Navbar() {
                 key={label}
                 href={href}
                 onClick={handleNavClick}
+                className="qc-nav-link-mobile"
                 style={{
-                  color: C.text, textDecoration: 'none',
                   fontSize: '16px', fontWeight: 600,
                   padding: '12px 16px', borderRadius: '10px',
-                  transition: 'background 0.2s',
                   display: 'block',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = C.offWhite)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >{label}</a>
             ))}
             <div style={{ borderTop: `1px solid ${C.border}`, marginTop: '8px', paddingTop: '16px' }}>
               <a href="#contacto" onClick={handleNavClick} style={{ textDecoration: 'none', display: 'block' }}>
-                <button style={{
-                  width: '100%', background: C.gold, color: 'white', border: 'none',
-                  padding: '13px', borderRadius: '10px',
+                <button className="qc-btn-gold" style={{
+                  width: '100%', padding: '13px', borderRadius: '10px',
                   fontFamily: 'DM Sans, sans-serif', fontWeight: 700, fontSize: '15px',
-                  cursor: 'pointer',
                 }}>
                   Consultar ahora
                 </button>

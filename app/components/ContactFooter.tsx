@@ -297,16 +297,11 @@ export function Contact() {
             </div>
 
             <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-              <button style={{
-                width: '100%', background: '#25D366', color: 'white', border: 'none',
-                padding: '13px 24px', borderRadius: '8px',
+              <button className="qc-btn-wa" style={{
+                width: '100%', padding: '13px 24px', borderRadius: '8px',
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'background 0.25s, transform 0.25s, box-shadow 0.25s', boxShadow: '0 4px 16px rgba(37,211,102,0.3)',
-              }}
-                onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = '#1da851'; b.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = '#25D366'; b.style.transform = 'translateY(0)' }}
-              >
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              }}>
                 <WhatsAppIcon size={18} color="white" />
                 Escribir por WhatsApp
               </button>
@@ -390,14 +385,11 @@ export function Contact() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
+                className="qc-btn-gold"
                 style={{
-                  width: '100%', padding: '11px', background: C.gold, color: 'white',
-                  border: 'none', borderRadius: '8px', fontFamily: 'DM Sans, sans-serif',
-                  fontWeight: 600, fontSize: '14px', cursor: status === 'loading' ? 'not-allowed' : 'pointer',
-                  opacity: status === 'loading' ? 0.7 : 1, transition: 'background 0.25s, transform 0.25s, opacity 0.25s',
+                  width: '100%', padding: '11px', borderRadius: '8px',
+                  fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
                 }}
-                onMouseEnter={e => { if (status !== 'loading') { (e.currentTarget as HTMLButtonElement).style.background = C.goldDark; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' } }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.gold; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
               >
                 {status === 'loading' ? '⏳ Enviando...' : '✓ Enviar consulta'}
               </button>
@@ -448,15 +440,11 @@ export function Footer() {
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, maxWidth: '280px', marginBottom: '20px' }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
-            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{
+            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" className="qc-btn-wa-soft" style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
-              background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.2)',
-              color: '#4ade80', padding: '8px 16px', borderRadius: '8px',
-              fontSize: '13px', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(37,211,102,0.2)'}
-              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(37,211,102,0.1)'}
-            >
+              padding: '8px 16px', borderRadius: '8px',
+              fontSize: '13px', fontWeight: 600, textDecoration: 'none',
+            }}>
               <WhatsAppIcon size={16} color="#4ade80" />
               +54 9 381 304-6228
             </a>
@@ -466,10 +454,7 @@ export function Footer() {
           <div>
             <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.gold, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Productos</div>
             {['Materias Primas', 'Solventes', 'Concentrados', 'Jabones', 'Contenedores', 'Higiene'].map(p => (
-              <a key={p} href="#productos" style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '9px', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
-              >{p}</a>
+              <a key={p} href="#productos" className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '13px', marginBottom: '9px' }}>{p}</a>
             ))}
           </div>
 
@@ -477,10 +462,7 @@ export function Footer() {
           <div>
             <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Empresa</div>
             {['Nosotros', 'Calidad', 'Distribución', 'Contacto'].map(l => (
-              <a key={l} href={`#${l.toLowerCase()}`} style={{ display: 'block', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '13px', marginBottom: '9px', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
-              >{l}</a>
+              <a key={l} href={`#${l.toLowerCase()}`} className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '13px', marginBottom: '9px' }}>{l}</a>
             ))}
           </div>
 
@@ -520,14 +502,8 @@ export function Footer() {
               <a
                 key={link.label}
                 href={link.href}
-                style={{
-                  fontSize: '12px',
-                  color: 'rgba(255,255,255,0.5)',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = C.gold)}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+                className="qc-link-gold-hover"
+                style={{ fontSize: '12px', textDecoration: 'none' }}
               >
                 {link.label}
               </a>
@@ -553,9 +529,8 @@ export function Footer() {
                   href="https://juanmd14.netlify.app"
                   target="_blank"
                   rel="noreferrer"
-                  style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'inherit')}
+                  className="qc-link-juan"
+                  style={{ textDecoration: 'none' }}
                 >
                   Juan
                 </a>
