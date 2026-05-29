@@ -118,7 +118,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
   ])
 
   const waNumber = (CONFIG.WHATSAPP_NUMBER || '').replace('+', '')
-  const waMsg = encodeURIComponent(`Hola! Me interesa el producto: ${producto.nombre}. ¿Me pueden dar más información?`)
+  const waMsg = encodeURIComponent(`Hola, quiero consultar sobre ${producto.nombre}`)
 
   // JSON-LD structured data for SEO
   const jsonLd = {
@@ -210,28 +210,17 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <Link href="/#contacto" style={{ textDecoration: 'none' }}>
-                <button style={{
-                  width: '100%', background: C.gold, color: 'white', border: 'none',
-                  padding: '16px', borderRadius: '10px', fontFamily: 'DM Sans, sans-serif',
-                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                }}>
-                  Solicitar cotización
-                </button>
-              </Link>
-              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                <button style={{
-                  width: '100%', background: '#25d366', color: 'white', border: 'none',
-                  padding: '16px', borderRadius: '10px', fontFamily: 'DM Sans, sans-serif',
-                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                }}>
-                  <WhatsAppIcon size={18} color="white" />
-                  WhatsApp
-                </button>
-              </a>
-            </div>
+            <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <button style={{
+                width: '100%', background: C.gold, color: 'white', border: 'none',
+                padding: '16px', borderRadius: '10px', fontFamily: 'DM Sans, sans-serif',
+                fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+              }}>
+                <WhatsAppIcon size={18} color="white" />
+                Consultar por WhatsApp
+              </button>
+            </a>
           </div>
         </div>
 
