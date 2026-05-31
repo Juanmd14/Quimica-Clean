@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import AdminBackButton from '@/app/admin/components/AdminBackButton'
 
 type Lead = {
@@ -32,19 +31,14 @@ export default function LeadsPage() {
   const [expandido, setExpandido] = useState<number | null>(null)
 
   useEffect(() => {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    )
-    supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (error) setError('Error al cargar los leads')
-        else setLeads(data || [])
+    fetch('/api/leads')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setLeads(data)
+        else setError('Error al cargar los leads')
         setLoading(false)
       })
+      .catch(() => { setError('Error al cargar los leads'); setLoading(false) })
   }, [])
 
   const hoy = leads.filter(l => {

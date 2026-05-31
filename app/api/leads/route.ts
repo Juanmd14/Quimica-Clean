@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
+import { requireAdminAuth } from '@/lib/adminMiddleware'
 import { Resend } from 'resend'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+
+export async function GET() {
+  const authCheck = await requireAdminAuth()
+  if (authCheck.error) return authCheck.response
+
+  const { data, error } = await getSupabaseAdmin()
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Leads fetch error:', error)
+    return NextResponse.json({ error: 'Error al obtener leads' }, { status: 500 })
+  }
+
+  return NextResponse.json(data)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Lead error:', error)
-      return NextResponse.json({ error: 'Error al guardar el lead', detail: error.message, code: error.code }, { status: 500 })
+      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
     }
 
     // Notificar al admin por email (no bloquea la respuesta si falla)
