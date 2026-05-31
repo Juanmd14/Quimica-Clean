@@ -109,7 +109,8 @@ export function WhatsAppChat() {
 
         .wa-input:focus { border-color:${C.blue} !important; background:#fff !important; outline:none; }
         .wa-input::placeholder { color:${C.textLight}; }
-        .wa-input:disabled { cursor:not-allowed; }
+        .wa-input:disabled { cursor:wait; opacity:.6; }
+        .wa-chip:active { transform:scale(.95) !important; }
         .wa-send-btn:hover:not(:disabled) { background:${C.blueDark} !important; }
         .wa-fab-btn:hover { transform:scale(1.08) !important; box-shadow:0 8px 30px rgba(43,123,184,.6) !important; }
         .wa-chip:hover { background:${C.blue} !important; color:#fff !important; border-color:${C.blue} !important; transform:translateY(-1px); box-shadow:0 4px 12px rgba(43,123,184,.25); }
@@ -142,7 +143,7 @@ export function WhatsAppChat() {
       {open && (
         <div style={{
           position:'fixed',
-          bottom: isMobile ? '76px' : '92px',
+          bottom: isMobile ? '82px' : '92px',
           right: isMobile ? '12px' : '24px',
           left: isMobile ? '12px' : 'auto',
           zIndex:999,
@@ -159,7 +160,8 @@ export function WhatsAppChat() {
           {/* Header */}
           <div style={{
             background:`linear-gradient(135deg, ${C.blueDark}, ${C.blue})`,
-            padding:'14px 16px', display:'flex', alignItems:'center', gap:'11px',
+            padding: isMobile ? '11px 14px' : '14px 16px',
+            display:'flex', alignItems:'center', gap:'11px',
           }}>
             <div style={{
               width:44, height:44, borderRadius:'50%',
@@ -205,9 +207,9 @@ export function WhatsAppChat() {
               </div>
               <div>
                 <div style={{
-                  background:C.white, borderRadius:'14px', borderBottomLeftRadius:'4px',
+                  background:C.white, borderRadius:'18px', borderBottomLeftRadius:'4px',
                   padding:'10px 14px', fontSize:'13.5px', lineHeight:1.55, color:C.text,
-                  boxShadow:'0 1px 4px rgba(0,0,0,.07)', maxWidth:'225px',
+                  boxShadow:'0 1px 6px rgba(0,0,0,.06)', maxWidth:'225px',
                 }}>
                   {phase === 'typing' ? (
                     <div style={{ display:'flex', gap:4, alignItems:'center', padding:'3px 2px' }}>
@@ -246,7 +248,7 @@ export function WhatsAppChat() {
                 <div>
                   <div style={{
                     background:C.blue, color:'#fff',
-                    borderRadius:'14px', borderBottomRightRadius:'4px',
+                    borderRadius:'18px', borderBottomRightRadius:'4px',
                     padding:'10px 14px', fontSize:'13.5px', lineHeight:1.55,
                     maxWidth:'220px', boxShadow:'0 1px 4px rgba(0,0,0,.1)',
                   }}>
@@ -323,7 +325,7 @@ export function WhatsAppChat() {
                   ref={inputRef}
                   className="wa-input"
                   type="text"
-                  placeholder="O escribí tu consulta..."
+                  placeholder={phase === 'typing' ? 'Escribiendo...' : 'O escribí tu consulta...'}
                   disabled={phase === 'typing'}
                   onKeyDown={e => { if (e.key === 'Enter') handleSend() }}
                   style={{
@@ -331,7 +333,6 @@ export function WhatsAppChat() {
                     padding:'9px 14px', fontSize:'13.5px', color:C.text,
                     fontFamily:'DM Sans, sans-serif', background:C.offWhite,
                     transition:'border-color .2s, background .2s',
-                    opacity: phase === 'typing' ? 0.45 : 1,
                   }}
                 />
                 <button
@@ -339,12 +340,11 @@ export function WhatsAppChat() {
                   onClick={handleSend}
                   disabled={phase === 'typing'}
                   style={{
-                    width:38, height:38, borderRadius:'50%',
-                    background:C.blue, border:'none',
-                    cursor: phase === 'typing' ? 'default' : 'pointer',
+                    width:40, height:40, borderRadius:'50%',
+                    background: phase === 'typing' ? C.textLight : C.blue, border:'none',
+                    cursor: phase === 'typing' ? 'wait' : 'pointer',
                     display:'flex', alignItems:'center', justifyContent:'center',
                     transition:'background .15s', flexShrink:0,
-                    opacity: phase === 'typing' ? 0.45 : 1,
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
@@ -375,7 +375,7 @@ export function WhatsAppChat() {
           bottom: isMobile ? '16px' : '24px',
           right: isMobile ? '16px' : '24px',
           zIndex:1000,
-          width: isMobile ? 50 : 58, height: isMobile ? 50 : 58, borderRadius:'50%',
+          width: isMobile ? 56 : 58, height: isMobile ? 56 : 58, borderRadius:'50%',
           background:C.blue, border:'none', cursor:'pointer',
           display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow:'0 4px 24px rgba(43,123,184,.45)',

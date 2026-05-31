@@ -47,7 +47,11 @@ button, a {
 
 html {
   width: 100%;
-  scroll-padding-top: 80px; /* offset for the 68px fixed navbar */
+  scroll-padding-top: 80px;
+}
+
+@media (max-width: 767px) {
+  html { scroll-padding-top: 72px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -218,14 +222,14 @@ input, textarea, select {
 
 /* ---- Footer links ---- */
 .qc-link-fade {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.55);
   text-decoration: none;
   transition: color 0.15s;
 }
-.qc-link-fade:hover { color: rgba(255,255,255,0.8); }
+.qc-link-fade:hover { color: rgba(255,255,255,0.9); }
 
 .qc-link-gold-hover {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.55);
   text-decoration: none;
   transition: color 0.15s;
 }
@@ -237,6 +241,34 @@ input, textarea, select {
   transition: color 0.15s;
 }
 .qc-link-juan:hover { color: #e7a73f; }
+
+/* ---- Contact form inputs ---- */
+.qc-input {
+  border: 1.5px solid rgba(255,255,255,0.12);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.qc-input:focus {
+  border-color: #e7a73f;
+  box-shadow: 0 0 0 3px rgba(231,167,63,0.15);
+  outline: none;
+}
+.qc-input-err {
+  border-color: #f87171 !important;
+}
+
+/* ---- Touch device active feedback ---- */
+@media (hover: none) {
+  .qc-btn-gold:active:not(:disabled) { transform: scale(0.97); }
+  .qc-btn-wa:active  { transform: scale(0.97); }
+  .qc-btn-ghost:active { transform: scale(0.97); }
+  .qc-btn-blue:active { transform: scale(0.97); }
+}
+
+/* ---- Animations ---- */
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 6px #22c55e; }
+  50%       { box-shadow: 0 0 14px #22c55e, 0 0 4px #22c55e; }
+}
 
 /* ---- Skeleton shimmer ---- */
 @keyframes qc-shimmer {

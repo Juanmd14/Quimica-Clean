@@ -192,17 +192,13 @@ export function Contact() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: 'rgba(255,255,255,0.07)',
-    border: '1.5px solid rgba(255,255,255,0.12)', color: 'white',
+    width: '100%', background: 'rgba(255,255,255,0.07)', color: 'white',
     padding: '10px 14px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px',
-    outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s, box-shadow 0.2s',
-    boxSizing: 'border-box' as const,
+    outline: 'none', borderRadius: '8px', boxSizing: 'border-box' as const,
   }
 
-  const getInputStyle = (field: string): React.CSSProperties => ({
-    ...inputStyle,
-    borderColor: errors[field as keyof FormError] && touched[field] ? '#f87171' : inputStyle.borderColor,
-  })
+  const getInputClassName = (field: string) =>
+    `qc-input${errors[field as keyof FormError] && touched[field] ? ' qc-input-err' : ''}`
 
   return (
     <section id="contacto" style={{ padding: '0', background: C.white }}>
@@ -210,7 +206,7 @@ export function Contact() {
       {/* Banner */}
       <div style={{
         background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
-        padding: isMobile ? '40px 20px' : '56px 48px',
+        padding: isMobile ? '28px 20px' : '56px 48px',
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -237,7 +233,7 @@ export function Contact() {
         }}>
 
           {/* Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'space-between', order: isMobile ? 1 : 0 }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: '18px', color: 'white', marginBottom: '6px' }}>Hablemos directamente</h3>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>
@@ -314,6 +310,7 @@ export function Contact() {
             padding: isMobile ? '24px 20px' : '32px',
             border: '1px solid rgba(255,255,255,0.1)',
             display: 'flex', flexDirection: 'column', gap: '14px',
+            order: isMobile ? 0 : 1,
           }}>
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '2px' }}>Envianos tu consulta</div>
@@ -330,9 +327,8 @@ export function Contact() {
                   value={formData.nombre}
                   onChange={e => setFormData({ ...formData, nombre: e.target.value })}
                   onBlur={() => handleFieldBlur('nombre')}
-                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.nombre && touched.nombre ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-                  style={getInputStyle('nombre')}
+                  className={getInputClassName('nombre')}
+                  style={inputStyle}
                 />
                 {errors.nombre && touched.nombre && (
                   <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.nombre}</div>
@@ -348,9 +344,8 @@ export function Contact() {
                   value={formData.telefono}
                   onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^\d\s\+\-\(\)]/g, '') })}
                   onBlur={() => handleFieldBlur('telefono')}
-                  onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-                  onBlurCapture={e => { e.currentTarget.style.borderColor = errors.telefono && touched.telefono ? '#f87171' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-                  style={getInputStyle('telefono')}
+                  className={getInputClassName('telefono')}
+                  style={inputStyle}
                 />
                 {errors.telefono && touched.telefono && (
                   <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.telefono}</div>
@@ -364,22 +359,29 @@ export function Contact() {
                 maxLength={50}
                 value={formData.producto_interes}
                 onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
-                onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
+                className="qc-input"
                 style={inputStyle}
               />
 
               {/* Mensaje */}
-              <textarea
-                placeholder="Mensaje o consulta"
-                rows={3}
-                maxLength={300}
-                value={formData.mensaje}
-                onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
-                onFocus={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(231,167,63,0.15)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow = 'none' }}
-                style={{ ...inputStyle, resize: 'none' }}
-              />
+              <div>
+                <textarea
+                  placeholder="Mensaje o consulta"
+                  rows={3}
+                  maxLength={300}
+                  value={formData.mensaje}
+                  onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
+                  className="qc-input"
+                  style={{ ...inputStyle, resize: 'none' }}
+                />
+                <div style={{
+                  fontSize: '11px', textAlign: 'right', marginTop: '4px',
+                  color: formData.mensaje.length > 250 ? C.gold : 'rgba(255,255,255,0.3)',
+                  transition: 'color 0.2s',
+                }}>
+                  {formData.mensaje.length}/300
+                </div>
+              </div>
 
               {/* Submit Button */}
               <button
@@ -387,7 +389,7 @@ export function Contact() {
                 disabled={status === 'loading'}
                 className="qc-btn-gold"
                 style={{
-                  width: '100%', padding: '11px', borderRadius: '8px',
+                  width: '100%', padding: isMobile ? '13px' : '11px', borderRadius: '8px',
                   fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
                 }}
               >
@@ -423,8 +425,8 @@ export function Footer() {
       <div style={{ padding: isMobile ? '40px 20px 32px' : '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 1.5fr',
-          gap: isMobile ? '32px 20px' : '40px',
+          gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr 1fr 1.5fr',
+          gap: isMobile ? '28px' : '40px',
         }}>
 
           {/* Brand — ocupa 2 columnas en mobile */}
@@ -466,8 +468,8 @@ export function Footer() {
             ))}
           </div>
 
-          {/* Contacto — ocupa 2 columnas en mobile cuando hay espacio */}
-          <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
+          {/* Contacto */}
+          <div>
             <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Contacto</div>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.9 }}>
               <div>admquimicaclean@gmail.com</div>
@@ -537,7 +539,7 @@ export function Footer() {
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'center' : 'flex-end' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-green 2s infinite' }} />
               <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Sistema en línea</span>
             </div>
           </div>

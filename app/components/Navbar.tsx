@@ -33,7 +33,7 @@ export function Navbar() {
     <>
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: '68px', padding: '0 24px',
+        height: isMobile ? '60px' : '68px', padding: '0 24px',
         background: scrolled || menuOpen ? 'rgba(255,255,255,0.97)' : C.white,
         borderBottom: `1px solid ${C.border}`,
         backdropFilter: scrolled ? 'blur(12px)' : 'blur(0px)',
@@ -130,7 +130,7 @@ export function Navbar() {
       {/* Mobile menu desplegable */}
       {isMobile && (
         <div style={{
-          position: 'fixed', top: '68px', left: 0, right: 0, zIndex: 99,
+          position: 'fixed', top: '60px', left: 0, right: 0, zIndex: 99,
           background: 'rgba(255,255,255,0.98)',
           borderBottom: `1px solid ${C.border}`,
           backdropFilter: 'blur(12px)',
