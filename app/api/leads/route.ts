@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Lead error:', error)
-      return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
+      return NextResponse.json({ error: 'Error al guardar el lead', detail: error.message, code: error.code }, { status: 500 })
     }
 
     // Notificar al admin por email (no bloquea la respuesta si falla)
