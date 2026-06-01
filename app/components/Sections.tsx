@@ -300,12 +300,12 @@ export function Products() {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <a href="#categorias" className="qc-btn-blue" style={{
+          <a href="/productos" className="qc-btn-blue" style={{
             display: 'inline-block',
             padding: '13px 32px', borderRadius: '8px', textDecoration: 'none',
             fontWeight: 600, fontSize: '14px',
           }}>
-            Ver todas las categorías →
+            Ver todo el catálogo →
           </a>
         </div>
       </Reveal>

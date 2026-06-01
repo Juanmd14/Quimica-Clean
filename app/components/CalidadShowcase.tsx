@@ -93,7 +93,7 @@ export function CalidadShowcase() {
             marginBottom: isMobile ? '24px' : '32px',
             maxWidth: '480px',
           }}>
-            Cada lote sale de nuestra planta. Stock permanente, calidad controlada y entregas urgentes en todo el país.
+            Fabricación propia. Precios mayoristas, stock disponible y envíos a todo el país.
           </p>
           <a
             href="#productos"

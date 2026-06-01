@@ -1,7 +1,7 @@
 import styles from './home.module.css'
 import { Navbar } from './components/Navbar'
 import { Hero } from './components/Hero'
-import { Stats, Categories, Products } from './components/Sections'
+import { Stats, Products } from './components/Sections'
 import { WhyUs, Contact, Footer } from './components/ContactFooter'
 import { ProductFinder } from './components/ProductFinder'
 import { CalidadShowcase } from './components/CalidadShowcase'
@@ -21,9 +21,8 @@ export default async function Home() {
         <Navbar />
         <Hero />
         <Stats />
-        <Categories />
-        <ProductFinder />
         <Products />
+        <ProductFinder />
         <CalidadShowcase />
         <WhyUs />
         <Contact />
