@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
 import { GlowCard, WhatsAppIcon } from './ui'
+import { Reveal } from './Reveal'
 import { useBreakpoint } from '@/lib/hooks'
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
@@ -56,7 +57,7 @@ export function WhyUs() {
       background: `linear-gradient(160deg, ${C.blueLight} 0%, ${C.white} 55%)`,
       borderTop: `1px solid ${C.border}`,
     }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <Reveal style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: isMobile ? '36px' : '60px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -94,7 +95,7 @@ export function WhyUs() {
             </GlowCard>
           ))}
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { C, stats } from './constants'
 import { CountUp, GlowCard } from './ui'
+import { Reveal } from './Reveal'
 import { useProductos } from '@/lib/useProductos'
 import { useCategorias } from '@/lib/useCategorias'
 import { useBreakpoint } from '@/lib/hooks'
@@ -176,7 +177,7 @@ export function Categories() {
 
   return (
     <section id="categorias" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.offWhite }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <Reveal style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ marginBottom: isMobile ? '32px' : '52px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: C.blue, marginBottom: '14px' }}>
             <span style={{ width: '24px', height: '2px', background: C.blue, display: 'inline-block' }} />
@@ -205,7 +206,7 @@ export function Categories() {
             </div>
           ))}
         </div>
-      </div>
+      </Reveal>
 
       {openCat && <CategoryModal cat={openCat} onClose={() => setOpenCat(null)} />}
     </section>
@@ -229,7 +230,7 @@ export function Products() {
 
   return (
     <section id="productos" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.white }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <Reveal style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         <div style={{
           display: 'flex',
@@ -307,7 +308,7 @@ export function Products() {
             Ver todas las categorías →
           </a>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

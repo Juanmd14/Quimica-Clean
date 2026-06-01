@@ -270,6 +270,27 @@ input, textarea, select {
   50%       { box-shadow: 0 0 14px #22c55e, 0 0 4px #22c55e; }
 }
 
+@keyframes qcFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.qc-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: opacity, transform;
+}
+.qc-reveal-in {
+  animation: qcFadeUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qc-reveal, .qc-reveal-in {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
 /* ---- Skeleton shimmer ---- */
 @keyframes qc-shimmer {
   0%   { background-position: -400px 0; }
