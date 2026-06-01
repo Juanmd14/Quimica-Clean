@@ -129,6 +129,7 @@ type NecDef = {
   label: string; Icon: IconCmp
   cats: string[]
   keywords?: string[]
+  excludeKeywords?: string[]
 }
 
 const RUBROS: Record<RubroKey, RubroDef> = {
@@ -176,12 +177,12 @@ const RUBROS: Record<RubroKey, RubroDef> = {
 
 const NECESIDADES: Record<NecKey, NecDef> = {
   pisos:          { label: 'Pisos y superficies',  Icon: Icons.broom,  cats: ['Pisos', 'Hogar', 'Concentrados'], keywords: ['piso', 'cera', 'acondicionador'] },
-  cocinas:        { label: 'Cocinas y desengrase', Icon: Icons.chef,   cats: ['Desengrasantes', 'Concentrados'], keywords: ['desengras', 'músculo', 'musculo'] },
-  banos:          { label: 'Baños y sanitarios',   Icon: Icons.shower, cats: ['Desinfectantes', 'Desengrasantes', 'Hogar'], keywords: ['baño', 'sanitario', 'desincrustante', 'sarro', 'manos'] },
+  cocinas:        { label: 'Cocinas y desengrase', Icon: Icons.chef,   cats: ['Desengrasantes', 'Concentrados'], keywords: ['desengras', 'músculo', 'musculo'], excludeKeywords: ['sarro', 'desincrustante'] },
+  banos:          { label: 'Baños y sanitarios',   Icon: Icons.shower, cats: ['Desinfectantes', 'Desengrasantes', 'Hogar'], keywords: ['baño', 'sanitario', 'desincrustante', 'sarro', 'manos'], excludeKeywords: ['insecticida', 'fly', 'k-otrina', 'disgregante'] },
   ropa:           { label: 'Ropa y textiles',      Icon: Icons.shirt,  cats: ['Jabones', 'Suavizantes', 'Detergentes'] },
   vidrios:        { label: 'Vidrios y brillo',     Icon: Icons.window, cats: ['Concentrados', 'Hogar'], keywords: ['vidrio'] },
-  desinfeccion:   { label: 'Desinfección',         Icon: Icons.shield, cats: ['Desinfectantes'] },
-  aromatizacion:  { label: 'Aromatización',        Icon: Icons.flower, cats: ['Bouquets', 'Hogar'], keywords: ['perfum', 'esencia', 'aroma'] },
+  desinfeccion:   { label: 'Desinfección',         Icon: Icons.shield, cats: ['Desinfectantes'], excludeKeywords: ['insecticida', 'fly', 'k-otrina', 'disgregante'] },
+  aromatizacion:  { label: 'Aromatización',        Icon: Icons.flower, cats: ['Bouquets', 'Hogar'], keywords: ['perfum', 'esencia', 'aroma'], excludeKeywords: ['piso'] },
   piletas:        { label: 'Piletas',              Icon: Icons.pool,   cats: ['Piletas'] },
   auto:           { label: 'Auto y lavadero',      Icon: Icons.car,    cats: ['Automotor'] },
   materiasprimas: { label: 'Materias primas y kits', Icon: Icons.flask, cats: ['Materia Prima', 'Contenedores', 'Concentrados'], keywords: ['kit', 'pasta'] },
@@ -202,10 +203,13 @@ function scoreProduct(p: Producto, need: NecDef, rubro: RubroDef, allowRawKits: 
   // 1. KITs/pastas de fabricación: solo si el usuario pidió materias primas.
   if (RAW_KIT_RE.test(p.nombre) && !allowRawKits) return 0
 
-  // 2. Gate base: el producto debe coincidir con la categoría o con un keyword.
+  // 2. Exclusiones explícitas (insecticidas en desinfección, etc.).
+  if (need.excludeKeywords?.some(k => name.includes(k))) return 0
+
+  // 3. Gate base: el producto debe coincidir con la categoría o con un keyword.
   if (!inNeedCats && !matchesKeyword) return 0
 
-  // 3. En categorías "anchas" exigimos keyword: evita que entren productos de
+  // 4. En categorías "anchas" exigimos keyword: evita que entren productos de
   //    la categoría que no son para esta necesidad (ej: KIT en vidrios).
   if (BROAD_CATS.has(p.categoria) && need.keywords && !matchesKeyword) return 0
 
