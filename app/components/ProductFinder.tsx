@@ -176,7 +176,7 @@ const RUBROS: Record<RubroKey, RubroDef> = {
 
 const NECESIDADES: Record<NecKey, NecDef> = {
   pisos:          { label: 'Pisos y superficies',  Icon: Icons.broom,  cats: ['Pisos', 'Hogar', 'Concentrados'], keywords: ['piso', 'cera', 'acondicionador'] },
-  cocinas:        { label: 'Cocinas y desengrase', Icon: Icons.chef,   cats: ['Desengrasantes', 'Concentrados'], keywords: ['desengras'] },
+  cocinas:        { label: 'Cocinas y desengrase', Icon: Icons.chef,   cats: ['Desengrasantes', 'Concentrados'], keywords: ['desengras', 'músculo', 'musculo'] },
   banos:          { label: 'Baños y sanitarios',   Icon: Icons.shower, cats: ['Desinfectantes', 'Desengrasantes', 'Hogar'], keywords: ['baño', 'sanitario', 'desincrustante', 'sarro', 'manos'] },
   ropa:           { label: 'Ropa y textiles',      Icon: Icons.shirt,  cats: ['Jabones', 'Suavizantes', 'Detergentes'] },
   vidrios:        { label: 'Vidrios y brillo',     Icon: Icons.window, cats: ['Concentrados', 'Hogar'], keywords: ['vidrio'] },
@@ -184,18 +184,37 @@ const NECESIDADES: Record<NecKey, NecDef> = {
   aromatizacion:  { label: 'Aromatización',        Icon: Icons.flower, cats: ['Bouquets', 'Hogar'], keywords: ['perfum', 'esencia', 'aroma'] },
   piletas:        { label: 'Piletas',              Icon: Icons.pool,   cats: ['Piletas'] },
   auto:           { label: 'Auto y lavadero',      Icon: Icons.car,    cats: ['Automotor'] },
-  materiasprimas: { label: 'Materias primas',      Icon: Icons.flask,  cats: ['Materia Prima', 'Contenedores'] },
+  materiasprimas: { label: 'Materias primas y kits', Icon: Icons.flask, cats: ['Materia Prima', 'Contenedores', 'Concentrados'], keywords: ['kit', 'pasta'] },
 }
 
+// Categorías "anchas" que mezclan productos de uso final con bases — solo entran
+// si el nombre matchea algún keyword de la necesidad.
+const BROAD_CATS = new Set(['Concentrados', 'Hogar'])
+// KITs y pastas son insumos para fabricar, no productos de uso final.
+const RAW_KIT_RE = /\b(kit|pasta preformulada)\b/i
+
 // ─── Scoring + reasoning ──────────────────────────────────────────────────────
-function scoreProduct(p: Producto, need: NecDef, rubro: RubroDef): number {
+function scoreProduct(p: Producto, need: NecDef, rubro: RubroDef, allowRawKits: boolean): number {
   const name = p.nombre.toLowerCase()
+  const inNeedCats = need.cats.includes(p.categoria)
+  const matchesKeyword = need.keywords?.some(k => name.includes(k)) ?? false
+
+  // 1. KITs/pastas de fabricación: solo si el usuario pidió materias primas.
+  if (RAW_KIT_RE.test(p.nombre) && !allowRawKits) return 0
+
+  // 2. Gate base: el producto debe coincidir con la categoría o con un keyword.
+  if (!inNeedCats && !matchesKeyword) return 0
+
+  // 3. En categorías "anchas" exigimos keyword: evita que entren productos de
+  //    la categoría que no son para esta necesidad (ej: KIT en vidrios).
+  if (BROAD_CATS.has(p.categoria) && need.keywords && !matchesKeyword) return 0
+
   let s = 0
-  if (need.cats.includes(p.categoria)) s += 10
-  if (need.keywords?.some(k => name.includes(k))) s += 8
+  if (inNeedCats) s += 10
+  if (matchesKeyword) s += 8
   if (rubro.priorityCats.includes(p.categoria)) s += 4
   if (rubro.priorityCats[0] === p.categoria) s += 2
-  if (/concentrado|kit|1\s*\+\s*\d/i.test(p.nombre)) s += 2
+  if (/concentrado|1\s*\+\s*\d/i.test(p.nombre)) s += 2
   return s
 }
 
@@ -223,13 +242,14 @@ export function ProductFinder() {
 
   const matched = useMemo(() => {
     if (!necDef || !rubroDef) return []
+    const allowRawKits = nec === 'materiasprimas'
     return productos
-      .map(p => ({ p, s: scoreProduct(p, necDef, rubroDef) }))
+      .map(p => ({ p, s: scoreProduct(p, necDef, rubroDef, allowRawKits) }))
       .filter(x => x.s > 0)
       .sort((a, b) => b.s - a.s)
       .slice(0, 6)
       .map(x => x.p)
-  }, [productos, necDef, rubroDef])
+  }, [productos, necDef, rubroDef, nec])
 
   const buildWa = () => {
     const r = rubroDef?.label ?? '—'
