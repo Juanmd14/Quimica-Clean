@@ -214,10 +214,10 @@ export function Hero() {
             <div style={{ fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.02em', marginBottom: isMobile ? '6px' : '8px' }}>
               {sl.line1}
             </div>
-            <div style={{ fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: '4px' }}>
-              {sl.line2}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '6px' : '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '14px', marginBottom: '4px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>
+                {sl.line2}
+              </span>
               {sl.connector && (
                 <span style={{
                   fontSize: 'clamp(26px, 6.5vw, 50px)',
@@ -227,11 +227,11 @@ export function Hero() {
                   letterSpacing: '-0.02em',
                   lineHeight: 1,
                   display: 'inline-block',
-                  paddingBottom: '0.2em',
                   verticalAlign: 'baseline',
-                  overflow: 'visible',
                 }}>y</span>
               )}
+            </div>
+            <div style={{ marginBottom: '8px' }}>
               <span style={{
                 fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900,
                 letterSpacing: '-0.03em', lineHeight: 1,
