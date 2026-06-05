@@ -225,7 +225,11 @@ export function Hero() {
                   color: C.gold,
                   opacity: 0.9,
                   letterSpacing: '-0.02em',
-                  lineHeight: 1.2,
+                  lineHeight: 1,
+                  display: 'inline-block',
+                  paddingBottom: '0.2em',
+                  verticalAlign: 'baseline',
+                  overflow: 'visible',
                 }}>y</span>
               )}
               <span style={{
@@ -235,7 +239,6 @@ export function Hero() {
                 backgroundImage: `linear-gradient(180deg, ${C.gold} 0%, #f3c266 100%)`,
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
-                textShadow: '0 2px 18px rgba(231,167,63,0.18)',
               }}>
                 {sl.line3}
               </span>
