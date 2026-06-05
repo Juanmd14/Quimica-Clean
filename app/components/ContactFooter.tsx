@@ -43,16 +43,16 @@ function IconFlask({ size = 34 }: { size?: number }) {
 const reasons = [
   {
     Icon: IconCertified,
-    title: 'Productos certificados',
-    desc: 'Cada insumo viene con ficha técnica y certificación de origen.',
-    proof: 'Trazabilidad completa',
+    title: 'Materia prima certificada',
+    desc: 'Trabajamos con insumos de origen certificado y ficha técnica respaldatoria.',
+    proof: 'Trazabilidad de origen',
     color: C.gold, bg: C.goldLight,
   },
   {
     Icon: IconTruck,
     title: 'Envíos a todo el país',
-    desc: 'Stock permanente y despacho inmediato a cualquier provincia.',
-    proof: 'Despacho en 24–48 hs',
+    desc: 'Stock permanente y despacho a cualquier provincia mediante transportes y encomiendas.',
+    proof: 'Cobertura nacional',
     color: C.blue, bg: C.blueLight,
   },
   {
@@ -64,9 +64,9 @@ const reasons = [
   },
   {
     Icon: IconFlask,
-    title: 'Asesoramiento técnico',
-    desc: 'Te orientamos en formulación, dilución y elección del producto.',
-    proof: 'Atención directa con el químico',
+    title: 'Asesoramiento personalizado',
+    desc: 'Nuestros asesores te orientan en el uso y elección del producto adecuado.',
+    proof: 'Atención directa por asesor',
     color: C.blue, bg: C.blueLight,
   },
 ]
