@@ -221,13 +221,11 @@ export function Hero() {
               {sl.connector && (
                 <span style={{
                   fontSize: 'clamp(26px, 6.5vw, 50px)',
-                  fontWeight: 400,
-                  fontStyle: 'italic',
+                  fontWeight: 700,
                   color: C.gold,
-                  opacity: 0.88,
-                  letterSpacing: '-0.01em',
+                  opacity: 0.9,
+                  letterSpacing: '-0.02em',
                   lineHeight: 1,
-                  fontFamily: 'Georgia, "Times New Roman", serif',
                 }}>y</span>
               )}
               <span style={{

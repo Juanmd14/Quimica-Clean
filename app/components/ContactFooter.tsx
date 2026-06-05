@@ -342,16 +342,6 @@ export function Contact() {
               ))}
             </div>
 
-            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-              <button className="qc-btn-wa" style={{
-                width: '100%', padding: '13px 24px', borderRadius: '8px',
-                fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              }}>
-                <WhatsAppIcon size={18} color="white" />
-                Escribir por WhatsApp
-              </button>
-            </a>
           </div>
 
           {/* Formulario */}

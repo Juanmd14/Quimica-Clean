@@ -300,10 +300,10 @@ export function WhatsAppChat() {
                 animation:'wa-spin .8s linear infinite',
               }} />
               <div style={{ fontSize:'13.5px', fontWeight:600, color:C.text }}>
-                Conectando con un asesor...
+                Abriendo WhatsApp...
               </div>
               <div style={{ fontSize:'11.5px', color:C.textLight }}>
-                En un momento te atendemos
+                Te llevamos al chat con tu mensaje
               </div>
               <div style={{ width:'100%', height:3, background:C.border, borderRadius:4, overflow:'hidden' }}>
                 <div style={{
@@ -356,7 +356,7 @@ export function WhatsAppChat() {
                 textAlign:'center', padding:'5px 0 10px',
                 fontSize:'10.5px', color:C.textLight, background:C.white, letterSpacing:'.3px',
               }}>
-                🔒 Seguro · Química Clean
+                Te abrimos WhatsApp con tu mensaje listo
               </div>
             </>
           )}
