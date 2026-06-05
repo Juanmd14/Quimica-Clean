@@ -193,7 +193,7 @@ export function Hero() {
           key={`content-${current}`}
           style={{
             maxWidth: '1200px', margin: '0 auto', width: '100%',
-            padding: isMobile ? '0 64px 0 20px' : '0 48px',
+            padding: isMobile ? '0 76px 0 20px' : '0 48px',
             position: 'relative', zIndex: 3,
             display: 'flex', flexDirection: 'column', gap: isMobile ? '14px' : '22px',
             animation: animating
@@ -215,12 +215,12 @@ export function Hero() {
               {sl.line1}
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '14px', marginBottom: '4px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              <span style={{ fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>
                 {sl.line2}
               </span>
               {sl.connector && (
                 <span style={{
-                  fontSize: 'clamp(26px, 6.5vw, 50px)',
+                  fontSize: 'clamp(22px, 5.5vw, 50px)',
                   fontWeight: 500,
                   color: C.gold,
                   opacity: 0.9,
@@ -233,7 +233,7 @@ export function Hero() {
             </div>
             <div style={{ marginBottom: '8px' }}>
               <span style={{
-                fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900,
+                fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 900,
                 letterSpacing: '-0.03em', lineHeight: 1,
                 color: 'transparent',
                 backgroundImage: `linear-gradient(180deg, ${C.gold} 0%, #f3c266 100%)`,
