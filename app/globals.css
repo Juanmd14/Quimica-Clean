@@ -256,6 +256,20 @@ input, textarea, select {
   border-color: #f87171 !important;
 }
 
+/* ---- Catalog back pill ---- */
+.qc-back-pill:hover {
+  background: rgba(231,167,63,0.16) !important;
+  border-color: rgba(231,167,63,0.55) !important;
+  color: #e7a73f !important;
+}
+
+/* ---- Catalog search input ---- */
+.qc-search-input::placeholder { color: #94a3b8; }
+.qc-search-input:focus {
+  border-color: #e7a73f !important;
+  box-shadow: 0 0 0 3px rgba(231,167,63,0.18);
+}
+
 /* ---- Touch device active feedback ---- */
 @media (hover: none) {
   .qc-btn-gold:active:not(:disabled) { transform: scale(0.97); }

@@ -41,10 +41,34 @@ function IconFlask({ size = 34 }: { size?: number }) {
 }
 
 const reasons = [
-  { Icon: IconCertified, title: 'Calidad certificada', desc: 'Productos con certificación y fichas técnicas disponibles para cada insumo.', color: C.gold, bg: C.goldLight },
-  { Icon: IconTruck, title: 'Distribución nacional', desc: 'Envíos a todo Argentina. Stock permanente para pedidos urgentes sin demoras.', color: C.blue, bg: C.blueLight },
-  { Icon: IconHandshake, title: 'Atención mayorista', desc: 'Precios especiales para revendedores, industrias y compras en volumen.', color: C.gold, bg: C.goldLight },
-  { Icon: IconFlask, title: 'Asesoramiento técnico', desc: 'Te orientamos en la elección del producto adecuado para cada proceso.', color: C.blue, bg: C.blueLight },
+  {
+    Icon: IconCertified,
+    title: 'Productos certificados',
+    desc: 'Cada insumo viene con ficha técnica y certificación de origen.',
+    proof: 'Trazabilidad completa',
+    color: C.gold, bg: C.goldLight,
+  },
+  {
+    Icon: IconTruck,
+    title: 'Envíos a todo el país',
+    desc: 'Stock permanente y despacho inmediato a cualquier provincia.',
+    proof: 'Despacho en 24–48 hs',
+    color: C.blue, bg: C.blueLight,
+  },
+  {
+    Icon: IconHandshake,
+    title: 'Precio mayorista real',
+    desc: 'Tarifas por volumen para revendedores, industrias y fabricantes.',
+    proof: 'Desde 1 bidón / 200 L',
+    color: C.gold, bg: C.goldLight,
+  },
+  {
+    Icon: IconFlask,
+    title: 'Asesoramiento técnico',
+    desc: 'Te orientamos en formulación, dilución y elección del producto.',
+    proof: 'Atención directa con el químico',
+    color: C.blue, bg: C.blueLight,
+  },
 ]
 
 // ─── WhyUs ────────────────────────────────────────────────────────────────────
@@ -69,7 +93,7 @@ export function WhyUs() {
             <span style={{ width: '24px', height: '2px', background: C.blue, display: 'inline-block' }} />
           </div>
           <h2 style={{ fontFamily: 'DM Sans', fontWeight: 700, fontSize: isMobile ? '26px' : '34px', color: C.text, letterSpacing: '-0.02em' }}>
-            Calidad que respalda cada entrega
+            Lo que recibe cada cliente
           </h2>
         </div>
 
@@ -78,7 +102,7 @@ export function WhyUs() {
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
           gap: isMobile ? '12px' : '20px',
         }}>
-          {reasons.map(({ Icon, title, desc, color, bg }, i) => (
+          {reasons.map(({ Icon, title, desc, proof, color, bg }, i) => (
             <GlowCard key={i} style={{ padding: isMobile ? '18px 18px' : '32px' }} glowColor={color}>
               <div style={{
                 display: 'flex',
@@ -99,7 +123,15 @@ export function WhyUs() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{ fontWeight: 700, fontSize: isMobile ? '16px' : '17px', color: C.text, marginBottom: '6px', lineHeight: 1.3 }}>{title}</h3>
-                  <p style={{ fontSize: isMobile ? '13.5px' : '13.5px', color: C.textMid, lineHeight: 1.55, margin: 0 }}>{desc}</p>
+                  <p style={{ fontSize: '13.5px', color: C.textMid, lineHeight: 1.55, margin: 0 }}>{desc}</p>
+                  <div style={{
+                    marginTop: '10px', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    fontSize: '11px', fontWeight: 700, color, letterSpacing: '0.06em',
+                    textTransform: 'uppercase' as const,
+                  }}>
+                    <span style={{ width: '14px', height: '1.5px', background: color, display: 'inline-block' }} />
+                    {proof}
+                  </div>
                 </div>
               </div>
             </GlowCard>
@@ -222,13 +254,13 @@ export function Contact() {
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.75)', marginBottom: '12px' }}>
-            — Contacto —
+            Pedí tu cotización
           </div>
           <h2 style={{ fontWeight: 700, fontSize: isMobile ? '28px' : '38px', color: 'white', lineHeight: 1.15, marginBottom: '12px', letterSpacing: '-0.02em' }}>
-            ¿Necesitás un producto?
+            Decinos qué necesitás y te armamos el pedido
           </h2>
           <p style={{ fontSize: isMobile ? '14px' : '15px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.65 }}>
-            Completá el formulario y te respondemos en menos de 24 horas hábiles.
+            Respondemos en menos de 24 hs hábiles con stock, precio mayorista y plazos de entrega.
           </p>
         </div>
       </div>
@@ -325,7 +357,7 @@ export function Contact() {
           }}>
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontWeight: 700, fontSize: '16px', color: 'white', marginBottom: '2px' }}>Envianos tu consulta</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Te respondemos en menos de 24hs hábiles</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Atención directa de nuestro equipo, no es un bot</div>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

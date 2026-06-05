@@ -224,10 +224,11 @@ export function Hero() {
               <span style={{
                 fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900,
                 letterSpacing: '-0.03em', lineHeight: 1,
-                ...(isMobile
-                  ? { color: C.gold }
-                  : { WebkitTextStroke: `2px ${C.gold}`, color: 'transparent' }
-                ),
+                color: 'transparent',
+                backgroundImage: `linear-gradient(180deg, ${C.gold} 0%, #f3c266 100%)`,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                textShadow: '0 2px 18px rgba(231,167,63,0.18)',
               }}>
                 {sl.line3}
               </span>
