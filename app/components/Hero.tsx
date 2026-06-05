@@ -104,6 +104,19 @@ export function Hero() {
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const preload = () => {
+      slides.slice(1).forEach(sl => {
+        const img = new window.Image()
+        img.src = sl.bg
+      })
+    }
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback
+    if (ric) ric(preload)
+    else setTimeout(preload, 1200)
+  }, [])
+
   const sl = slides[current]
 
   return (
@@ -161,7 +174,7 @@ export function Hero() {
               alt=""
               aria-hidden="true"
               fill
-              priority
+              priority={current === 0}
               sizes="100vw"
               style={{
                 objectFit: 'cover',
@@ -180,9 +193,9 @@ export function Hero() {
           key={`content-${current}`}
           style={{
             maxWidth: '1200px', margin: '0 auto', width: '100%',
-            padding: isMobile ? '0 20px' : '0 48px',
+            padding: isMobile ? '0 64px 0 20px' : '0 48px',
             position: 'relative', zIndex: 3,
-            display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '22px',
+            display: 'flex', flexDirection: 'column', gap: isMobile ? '14px' : '22px',
             animation: animating
               ? (dir === 'left' ? 'slideOutLeft 0.48s ease forwards' : 'slideOutRight 0.48s ease forwards')
               : (dir === 'left' ? 'slideInLeft 0.48s ease forwards' : 'slideInRight 0.48s ease forwards'),
@@ -198,19 +211,19 @@ export function Hero() {
 
           {/* Título */}
           <div>
-            <div style={{ fontSize: 'clamp(20px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.02em', marginBottom: '8px' }}>
+            <div style={{ fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.02em', marginBottom: isMobile ? '6px' : '8px' }}>
               {sl.line1}
             </div>
-            <div style={{ fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 0.95, marginBottom: '4px' }}>
+            <div style={{ fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: '4px' }}>
               {sl.line2}
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
               {sl.connector && (
-                <span style={{ fontSize: 'clamp(20px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.45)' }}>y</span>
+                <span style={{ fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.45)' }}>y</span>
               )}
               <span style={{
-                fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 900,
-                letterSpacing: '-0.03em', lineHeight: 0.95,
+                fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900,
+                letterSpacing: '-0.03em', lineHeight: 1,
                 ...(isMobile
                   ? { color: C.gold }
                   : { WebkitTextStroke: `2px ${C.gold}`, color: 'transparent' }
@@ -222,7 +235,7 @@ export function Hero() {
           </div>
 
           {/* Subtítulo */}
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: '460px', margin: 0 }}>
+          <p style={{ fontSize: isMobile ? '13px' : '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, maxWidth: '460px', margin: 0 }}>
             {sl.sub}
           </p>
 

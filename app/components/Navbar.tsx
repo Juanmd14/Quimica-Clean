@@ -12,13 +12,21 @@ export function Navbar() {
   const { isMobile } = useBreakpoint()
 
   useEffect(() => {
+    let raf = 0
     const fn = () => {
-      const isScrolled = window.scrollY > 60
-      setScrolled(isScrolled)
-      if (isScrolled) setMenuOpen(false)
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        const isScrolled = window.scrollY > 60
+        setScrolled(isScrolled)
+        if (isScrolled) setMenuOpen(false)
+        raf = 0
+      })
     }
-    window.addEventListener('scroll', fn)
-    return () => window.removeEventListener('scroll', fn)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', fn)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
   const handleNavClick = () => setMenuOpen(false)

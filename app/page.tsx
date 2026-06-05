@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar'
 import { Hero } from './components/Hero'
 import { Stats, Products } from './components/Sections'
 import { WhyUs, Contact, Footer } from './components/ContactFooter'
-import { ProductFinder } from './components/ProductFinder'
 import { CalidadShowcase } from './components/CalidadShowcase'
 import WhatsAppChatLazy from './components/WhatsAppChatLazy'
 import { DataProvider } from './components/DataProvider'
@@ -22,7 +21,6 @@ export default async function Home() {
         <Hero />
         <Stats />
         <Products />
-        <ProductFinder />
         <CalidadShowcase />
         <WhyUs />
         <Contact />

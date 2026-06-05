@@ -1,13 +1,33 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { C } from './constants'
 import { useBreakpoint } from '@/lib/hooks'
 
 export function CalidadShowcase() {
   const { isMobile } = useBreakpoint()
+  const sectionRef = useRef<HTMLElement>(null)
+  const [loadVideo, setLoadVideo] = useState(false)
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLoadVideo(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '400px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   return (
     <section
+      ref={sectionRef}
       id="calidad"
       style={{
         position: 'relative',
@@ -26,21 +46,23 @@ export function CalidadShowcase() {
           zIndex: 0,
         }}
       />
-      <video
-        src="/showcase.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          zIndex: 0,
-        }}
-      />
+      {loadVideo && (
+        <video
+          src="/showcase.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+      )}
 
       {/* Gradient overlay para legibilidad */}
       <div

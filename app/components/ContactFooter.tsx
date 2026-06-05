@@ -75,23 +75,33 @@ export function WhyUs() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
           gap: isMobile ? '12px' : '20px',
         }}>
           {reasons.map(({ Icon, title, desc, color, bg }, i) => (
-            <GlowCard key={i} style={{ padding: isMobile ? '22px 18px' : '32px' }} glowColor={color}>
+            <GlowCard key={i} style={{ padding: isMobile ? '18px 18px' : '32px' }} glowColor={color}>
               <div style={{
-                width: isMobile ? '52px' : '60px', height: isMobile ? '52px' : '60px',
-                borderRadius: '14px',
-                background: `linear-gradient(135deg, ${bg} 0%, ${C.white} 130%)`,
-                border: `1px solid ${color}22`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: isMobile ? '14px' : '18px',
+                display: 'flex',
+                flexDirection: isMobile ? 'row' : 'column',
+                alignItems: isMobile ? 'flex-start' : 'flex-start',
+                gap: isMobile ? '16px' : '0',
               }}>
-                <Icon size={isMobile ? 30 : 34} />
+                <div style={{
+                  width: isMobile ? '54px' : '60px', height: isMobile ? '54px' : '60px',
+                  borderRadius: '14px',
+                  background: `linear-gradient(135deg, ${bg} 0%, ${C.white} 130%)`,
+                  border: `1px solid ${color}22`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: isMobile ? '0' : '18px',
+                  flexShrink: 0,
+                }}>
+                  <Icon size={isMobile ? 30 : 34} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 style={{ fontWeight: 700, fontSize: isMobile ? '16px' : '17px', color: C.text, marginBottom: '6px', lineHeight: 1.3 }}>{title}</h3>
+                  <p style={{ fontSize: isMobile ? '13.5px' : '13.5px', color: C.textMid, lineHeight: 1.55, margin: 0 }}>{desc}</p>
+                </div>
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: isMobile ? '15px' : '17px', color: C.text, marginBottom: '8px', lineHeight: 1.3 }}>{title}</h3>
-              <p style={{ fontSize: isMobile ? '14px' : '13.5px', color: C.textMid, lineHeight: 1.7, margin: 0 }}>{desc}</p>
             </GlowCard>
           ))}
         </div>
@@ -423,16 +433,16 @@ export function Footer() {
   return (
     <footer style={{ background: C.dark, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
 
-      <div style={{ padding: isMobile ? '40px 20px 32px' : '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '36px 20px 28px' : '60px 48px 40px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr 1fr 1.5fr',
-          gap: isMobile ? '28px' : '40px',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 1.5fr',
+          gap: isMobile ? '24px 20px' : '40px',
         }}>
 
-          {/* Brand — ocupa 2 columnas en mobile */}
+          {/* Brand — ocupa todas las columnas en mobile */}
           <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '8px', overflow: 'hidden', background: 'white', flexShrink: 0 }}>
                 <Image src="/logo_qm.jpg" alt="Quimica Clean" width={36} height={36} style={{ objectFit: 'contain' }} />
               </div>
@@ -440,7 +450,7 @@ export function Footer() {
                 QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, maxWidth: '280px', marginBottom: '20px' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: '320px', marginBottom: '16px' }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
             <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" className="qc-btn-wa-soft" style={{
@@ -453,30 +463,33 @@ export function Footer() {
             </a>
           </div>
 
-          {/* Productos */}
+          {/* Productos — en mobile mostramos solo los principales */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.gold, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Productos</div>
-            {['Materias Primas', 'Solventes', 'Concentrados', 'Jabones', 'Contenedores', 'Higiene'].map(p => (
-              <a key={p} href="#productos" className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '13px', marginBottom: '9px' }}>{p}</a>
+            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: C.gold, textTransform: 'uppercase' as const, marginBottom: '12px' }}>Productos</div>
+            {(isMobile
+              ? ['Materias Primas', 'Concentrados', 'Jabones', 'Higiene']
+              : ['Materias Primas', 'Solventes', 'Concentrados', 'Jabones', 'Contenedores', 'Higiene']
+            ).map(p => (
+              <a key={p} href="#productos" className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '12.5px', marginBottom: '7px' }}>{p}</a>
             ))}
           </div>
 
           {/* Empresa */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Empresa</div>
-            {['Nosotros', 'Calidad', 'Distribución', 'Contacto'].map(l => (
-              <a key={l} href={`#${l.toLowerCase()}`} className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '13px', marginBottom: '9px' }}>{l}</a>
+            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '12px' }}>Empresa</div>
+            {['Nosotros', 'Calidad', 'Contacto'].map(l => (
+              <a key={l} href={`#${l.toLowerCase()}`} className="qc-link-fade" style={{ display: 'block', textDecoration: 'none', fontSize: '12.5px', marginBottom: '7px' }}>{l}</a>
             ))}
           </div>
 
-          {/* Contacto */}
-          <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '16px' }}>Contacto</div>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.9 }}>
+          {/* Contacto — full width en mobile */}
+          <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '12px' }}>Contacto</div>
+            <div style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75 }}>
               <div>admquimicaclean@gmail.com</div>
               <div>Tucumán, Argentina</div>
-              <div style={{ marginTop: '4px', fontSize: '11px' }}>Lun–Vie: 8:00–13:30 y 14:30–18:00</div>
-              <div style={{ fontSize: '11px' }}>Sáb: 8:00–13:00</div>
+              <div style={{ marginTop: '4px', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Lun–Vie: 8:00–13:30 y 14:30–18:00</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Sáb: 8:00–13:00</div>
             </div>
           </div>
         </div>

@@ -65,19 +65,19 @@ export function Stats() {
           return (
             <div key={i} style={{
               textAlign: 'center',
-              padding: isMobile ? '28px 16px' : '44px 24px',
+              padding: isMobile ? '20px 10px' : '44px 24px',
               borderRight: !isLastInRow ? '1px solid rgba(255,255,255,0.1)' : 'none',
               borderBottom: isBottomRow ? 'none' : isMobile && i < 2 ? '1px solid rgba(255,255,255,0.1)' : 'none',
             }}>
-              <div style={{ fontWeight: 800, fontSize: isMobile ? '36px' : '46px', color: C.gold, lineHeight: 1, marginBottom: '8px', letterSpacing: '-0.02em' }}>
+              <div style={{ fontWeight: 800, fontSize: isMobile ? '30px' : '46px', color: C.gold, lineHeight: 1, marginBottom: isMobile ? '4px' : '8px', letterSpacing: '-0.02em' }}>
                 {'display' in s ? (
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block' }}>
+                  <svg width={isMobile ? 36 : 48} height={isMobile ? 36 : 48} viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block' }}>
                     <circle cx="12" cy="12" r="11" stroke={C.gold} strokeWidth="1.5" fill="none" opacity="0.25" />
                     <polyline points="6.5 12.5 10 16 17.5 8.5" stroke={C.gold} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 ) : <CountUp target={s.value} suffix={s.suffix} />}
               </div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
+              <div style={{ fontSize: isMobile ? '11.5px' : '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.3 }}>{s.label}</div>
             </div>
           )
         })}
@@ -226,7 +226,7 @@ export function Products() {
     : productos.filter(p => p.categoria === activeCat)
   const shown = filtered.slice(0, 6)
 
-  const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)'
+  const gridCols = isMobile ? 'repeat(2, 1fr)' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)'
 
   return (
     <section id="productos" style={{ padding: isMobile ? '56px 20px' : '96px 48px', background: C.white }}>
@@ -271,7 +271,7 @@ export function Products() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: isMobile ? '14px' : '20px', marginBottom: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: isMobile ? '10px' : '20px', marginBottom: '40px' }}>
           {shown.map(product => (
             <Link key={product.id} href={`/productos/${product.id}`} style={{ textDecoration: 'none' }}>
               <GlowCard style={{ padding: '0' }}>
@@ -282,15 +282,15 @@ export function Products() {
                     color={product.color ?? undefined}
                     color2={product.color2 ?? undefined}
                     emoji={product.emoji ?? undefined}
-                    height={isMobile ? 120 : 140}
+                    height={isMobile ? 130 : 140}
                   />
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: C.blueLight, padding: '2px 9px', borderRadius: '10px', fontSize: '10px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
+                  <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 2, background: C.blueLight, padding: '2px 8px', borderRadius: '10px', fontSize: '9.5px', color: C.blue, fontWeight: 700, letterSpacing: '0.04em' }}>
                     {product.categoria.toUpperCase()}
                   </div>
                 </div>
-                <div style={{ padding: isMobile ? '14px 16px 18px' : '20px 22px 22px' }}>
-                  <h3 style={{ fontWeight: 700, fontSize: '15px', color: C.text, marginBottom: '7px', lineHeight: 1.3 }}>{product.nombre}</h3>
-                  <div style={{ fontSize: '13px', color: C.gold, fontWeight: 600 }}>
+                <div style={{ padding: isMobile ? '10px 12px 14px' : '20px 22px 22px' }}>
+                  <h3 style={{ fontWeight: 700, fontSize: isMobile ? '13px' : '15px', color: C.text, marginBottom: '5px', lineHeight: 1.3 }}>{product.nombre}</h3>
+                  <div style={{ fontSize: isMobile ? '11.5px' : '13px', color: C.gold, fontWeight: 600 }}>
                     Ver detalles →
                   </div>
                 </div>
