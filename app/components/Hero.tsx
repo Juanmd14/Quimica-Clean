@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, type ReactNode } from 'react'
 import Image from 'next/image'
 import { C } from './constants'
-import { MoleculeCanvas, WhatsAppIcon } from './ui'
+import { MoleculeCanvas } from './ui'
 import { useBreakpoint } from '@/lib/hooks'
 
 type Slide = {
@@ -217,9 +217,18 @@ export function Hero() {
             <div style={{ fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: '4px' }}>
               {sl.line2}
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '6px' : '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
               {sl.connector && (
-                <span style={{ fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.45)' }}>y</span>
+                <span style={{
+                  fontSize: 'clamp(26px, 6.5vw, 50px)',
+                  fontWeight: 400,
+                  fontStyle: 'italic',
+                  color: C.gold,
+                  opacity: 0.88,
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1,
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                }}>y</span>
               )}
               <span style={{
                 fontSize: 'clamp(32px, 9vw, 68px)', fontWeight: 900,
@@ -248,16 +257,6 @@ export function Hero() {
                 fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
                 boxShadow: '0 4px 20px rgba(231,167,63,0.4)',
               }}>Ver catálogo →</button>
-            </a>
-            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <button className="qc-btn-ghost" style={{
-                padding: '11px 24px', borderRadius: '8px',
-                fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '14px',
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-              }}>
-                <WhatsAppIcon size={16} color="white" />
-                WhatsApp
-              </button>
             </a>
           </div>
 

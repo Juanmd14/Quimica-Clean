@@ -256,18 +256,22 @@ input, textarea, select {
   border-color: #f87171 !important;
 }
 
-/* ---- Catalog back pill ---- */
-.qc-back-pill:hover {
-  background: rgba(231,167,63,0.16) !important;
-  border-color: rgba(231,167,63,0.55) !important;
+/* ---- Catalog back link (minimal) ---- */
+.qc-back-link:hover {
   color: #e7a73f !important;
+  transform: translateX(-2px);
 }
 
-/* ---- Catalog search input ---- */
-.qc-search-input::placeholder { color: #94a3b8; }
-.qc-search-input:focus {
-  border-color: #e7a73f !important;
-  box-shadow: 0 0 0 3px rgba(231,167,63,0.18);
+/* ---- Catalog hero search (glass dorado en header azul) ---- */
+.qc-search-hero::placeholder { color: rgba(255,255,255,0.5); }
+.qc-search-hero:hover:not(:focus) {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+}
+.qc-search-hero:focus {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(231,167,63,0.7) !important;
+  box-shadow: 0 0 0 4px rgba(231,167,63,0.18);
 }
 
 /* ---- Touch device active feedback ---- */

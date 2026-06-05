@@ -489,17 +489,9 @@ export function Footer() {
                 QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: '320px', marginBottom: '16px' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: '320px', margin: 0 }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
-            <a href="https://wa.me/543813046228" target="_blank" rel="noreferrer" className="qc-btn-wa-soft" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '8px 16px', borderRadius: '8px',
-              fontSize: '13px', fontWeight: 600, textDecoration: 'none',
-            }}>
-              <WhatsAppIcon size={16} color="#4ade80" />
-              +54 9 381 304-6228
-            </a>
           </div>
 
           {/* Productos — en mobile mostramos solo los principales */}
