@@ -107,8 +107,9 @@ export function WhyUs() {
               <div style={{
                 display: 'flex',
                 flexDirection: isMobile ? 'row' : 'column',
-                alignItems: isMobile ? 'flex-start' : 'flex-start',
+                alignItems: 'flex-start',
                 gap: isMobile ? '16px' : '0',
+                height: '100%',
               }}>
                 <div style={{
                   width: isMobile ? '54px' : '60px', height: isMobile ? '54px' : '60px',
@@ -121,11 +122,17 @@ export function WhyUs() {
                 }}>
                   <Icon size={isMobile ? 30 : 34} />
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  flex: 1, minWidth: 0,
+                  display: 'flex', flexDirection: 'column',
+                  alignSelf: 'stretch',
+                }}>
                   <h3 style={{ fontWeight: 700, fontSize: isMobile ? '16px' : '17px', color: C.text, marginBottom: '6px', lineHeight: 1.3 }}>{title}</h3>
                   <p style={{ fontSize: '13.5px', color: C.textMid, lineHeight: 1.55, margin: 0 }}>{desc}</p>
                   <div style={{
-                    marginTop: '10px', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    marginTop: isMobile ? '10px' : 'auto',
+                    paddingTop: isMobile ? '0' : '14px',
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
                     fontSize: '11px', fontWeight: 700, color, letterSpacing: '0.06em',
                     textTransform: 'uppercase' as const,
                   }}>

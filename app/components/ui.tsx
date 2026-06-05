@@ -52,7 +52,7 @@ export function GlowCard({
           left: pos.x - 110, top: pos.y - 110,
         }} />
       )}
-      <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
+      <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>{children}</div>
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
         background: `linear-gradient(90deg, ${glowColor}, ${C.gold})`,
