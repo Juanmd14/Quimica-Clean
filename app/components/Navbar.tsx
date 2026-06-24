@@ -56,7 +56,7 @@ export function Navbar() {
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', textDecoration: 'none' }} aria-label="Ir al inicio">
           <Image
             src="/logo_qm.jpg"
-            alt="Quimica Clean"
+            alt="Química Clean"
             width={46}
             height={46}
             style={{ objectFit: 'contain' }}
@@ -104,13 +104,17 @@ export function Navbar() {
         {isMobile && (
           <button
             onClick={() => setMenuOpen(o => !o)}
+            type="button"
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuOpen}
+            aria-controls="qc-mobile-menu"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              padding: '8px', borderRadius: '8px',
+              padding: '10px', borderRadius: '8px',
+              minWidth: '44px', minHeight: '44px',
               display: 'flex', flexDirection: 'column', gap: '5px',
               alignItems: 'center', justifyContent: 'center',
             }}
-            aria-label="Abrir menú"
           >
             {/* 3 líneas animadas */}
             <span style={{
@@ -137,18 +141,22 @@ export function Navbar() {
 
       {/* Mobile menu desplegable */}
       {isMobile && (
-        <div style={{
-          position: 'fixed', top: '60px', left: 0, right: 0, zIndex: 99,
-          background: 'rgba(255,255,255,0.98)',
-          borderBottom: `1px solid ${C.border}`,
-          backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          padding: '20px 24px 28px',
-          opacity: menuOpen ? 1 : 0,
-          transform: menuOpen ? 'translateY(0)' : 'translateY(-6px)',
-          pointerEvents: menuOpen ? 'auto' : 'none',
-          transition: 'opacity 0.25s ease, transform 0.25s ease',
-        }}>
+        <div
+          id="qc-mobile-menu"
+          aria-hidden={!menuOpen}
+          style={{
+            position: 'fixed', top: '60px', left: 0, right: 0, zIndex: 99,
+            background: 'rgba(255,255,255,0.98)',
+            borderBottom: `1px solid ${C.border}`,
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            padding: '20px 24px 28px',
+            opacity: menuOpen ? 1 : 0,
+            transform: menuOpen ? 'translateY(0)' : 'translateY(-6px)',
+            pointerEvents: menuOpen ? 'auto' : 'none',
+            transition: 'opacity 0.25s ease, transform 0.25s ease',
+          }}
+        >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {links.map(({ label, href }) => (
               <a

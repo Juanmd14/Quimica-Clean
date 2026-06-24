@@ -161,7 +161,7 @@ export const products: {
   { id: 1213, category: 'Bouquets', name: 'Cherry',        emoji: '🍒' },
   { id: 1214, category: 'Bouquets', name: 'Sandía',        emoji: '🍉' },
   { id: 1215, category: 'Bouquets', name: 'Coco',          emoji: '🥥' },
-  { id: 1216, category: 'Bouquets', name: 'Frutos Verdes', color: '🍏' },
+  { id: 1216, category: 'Bouquets', name: 'Frutos Verdes', emoji: '🍏' },
   { id: 1217, category: 'Bouquets', name: 'Lavanda',       emoji: '💜' },
   { id: 1218, category: 'Bouquets', name: 'Lysoform',      emoji: '🏥' },
   { id: 1219, category: 'Bouquets', name: 'Citronela',     emoji: '🌿' },

@@ -75,11 +75,12 @@ export function Hero() {
   const [current, setCurrent] = useState(0)
   const [dir, setDir] = useState<'left' | 'right'>('left')
   const [animating, setAnimating] = useState(false)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [paused, setPaused] = useState(false)
+  const [reduceMotion, setReduceMotion] = useState(false)
   const { isMobile } = useBreakpoint()
 
   const goTo = (target: number, direction: 'left' | 'right' = 'left') => {
-    if (animating) return
+    if (animating || target === current) return
     setDir(direction)
     setAnimating(true)
     setTimeout(() => { setCurrent(target); setAnimating(false) }, 480)
@@ -88,7 +89,19 @@ export function Hero() {
   const next = () => goTo((current + 1) % slides.length, 'left')
   const prev = () => goTo((current - 1 + slides.length) % slides.length, 'right')
 
+  // Respect prefers-reduced-motion
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReduceMotion(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  // Autoplay (paused on hover/focus, on user toggle, on reduce-motion)
+  useEffect(() => {
+    if (paused || reduceMotion) return
     const id = setInterval(() => {
       setAnimating(prevAnim => {
         if (prevAnim) return prevAnim
@@ -100,234 +113,260 @@ export function Hero() {
         return true
       })
     }, 5000)
-    timeoutRef.current = id
     return () => clearInterval(id)
-  }, [])
+  }, [paused, reduceMotion])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const preload = () => {
-      slides.slice(1).forEach(sl => {
-        const img = new window.Image()
-        img.src = sl.bg
-      })
-    }
-    const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback
-    if (ric) ric(preload)
-    else setTimeout(preload, 1200)
-  }, [])
+  // Touch swipe (mobile)
+  const touchStartX = useRef<number | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (Math.abs(dx) < 50) return
+    if (dx < 0) next(); else prev()
+  }
 
   const sl = slides[current]
+  const animState = animating
+    ? `out-${dir}`
+    : `in-${dir}`
 
   return (
-    <>
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes arrowBounce {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(5px); }
-        }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(80px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(-80px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideOutLeft {
-          from { opacity: 1; transform: translateX(0); }
-          to   { opacity: 0; transform: translateX(-80px); }
-        }
-        @keyframes slideOutRight {
-          from { opacity: 1; transform: translateX(0); }
-          to   { opacity: 0; transform: translateX(80px); }
-        }
-        @keyframes bgFade {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        .hero-arrow-btn { transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
-        .hero-arrow-btn:hover { transform: translateY(-50%) scale(1.08) !important; }
-        .hero-arrow-right:hover { background: ${C.goldDark} !important; box-shadow: 0 8px 28px rgba(231,167,63,0.55) !important; }
-        .hero-arrow-left:hover { background: rgba(231,167,63,0.28) !important; border-color: ${C.gold} !important; }
-      `}</style>
-
-      <section style={{
-        height: isMobile ? '520px' : '600px', paddingTop: '68px',
+    <section
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      aria-roledescription="carousel"
+      aria-label="Slides destacados"
+      style={{
+        height: isMobile ? '520px' : '600px',
+        paddingTop: isMobile ? '60px' : '68px',
         display: 'flex', alignItems: 'center',
         position: 'relative', overflow: 'hidden',
         background: '#0a1a3a',
       }}>
 
-        {/* Fondo */}
-        <div key={`bg-${current}`} style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a', animation: 'bgFade 0.6s ease forwards' }}>
-          <div style={{
-            position: 'absolute',
-            inset: isMobile && sl.bgInsetMobile ? `${sl.bgInsetMobile}px 0 0 0` : 0,
-          }}>
+      {/* Fondos apilados (sin unmount, opacity-cross-fade) */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, background: '#0a1a3a' }}>
+        {slides.map((s, i) => (
+          <div
+            key={i}
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: isMobile && s.bgInsetMobile ? `${s.bgInsetMobile}px 0 0 0` : 0,
+              opacity: current === i ? 1 : 0,
+              transition: 'opacity 0.6s ease',
+            }}
+          >
             <Image
-              src={sl.bg}
+              src={s.bg}
               alt=""
               aria-hidden="true"
               fill
-              priority={current === 0}
+              priority={i === 0}
               sizes="100vw"
               style={{
                 objectFit: 'cover',
                 objectPosition: isMobile
-                  ? (sl.bgPositionMobile ?? 'center')
-                  : (sl.bgPosition ?? 'center'),
+                  ? (s.bgPositionMobile ?? 'center')
+                  : (s.bgPosition ?? 'center'),
               }}
             />
           </div>
-        </div>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
-        <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
+        ))}
+      </div>
+      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(4,20,55,0.95) 0%, rgba(5,25,65,0.82) 55%, rgba(5,20,50,0.60) 100%)' }} />
+      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 2 }}><MoleculeCanvas /></div>
 
-        {/* Contenido animado */}
-        <div
-          key={`content-${current}`}
-          style={{
-            maxWidth: '1200px', margin: '0 auto', width: '100%',
-            padding: isMobile ? '0 76px 0 20px' : '0 48px',
-            position: 'relative', zIndex: 3,
-            display: 'flex', flexDirection: 'column', gap: isMobile ? '14px' : '22px',
-            animation: animating
-              ? (dir === 'left' ? 'slideOutLeft 0.48s ease forwards' : 'slideOutRight 0.48s ease forwards')
-              : (dir === 'left' ? 'slideInLeft 0.48s ease forwards' : 'slideInRight 0.48s ease forwards'),
-          }}
-        >
-          {/* Eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap' }}>
-            <div style={{ width: isMobile ? '20px' : '40px', height: '2px', background: C.gold, flexShrink: 0 }} />
-            <span style={{ fontSize: isMobile ? '10px' : '11px', fontWeight: 700, letterSpacing: isMobile ? '0.1em' : '0.16em', textTransform: 'uppercase' as const, color: C.gold }}>
-              {sl.eyebrow}
+      {/* Contenido animado (sin key cycle, anima por data-attribute) */}
+      <div
+        className="hero-content"
+        data-anim={reduceMotion ? undefined : animState}
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          maxWidth: '1200px', margin: '0 auto', width: '100%',
+          padding: isMobile ? '0 76px 0 20px' : '0 48px',
+          position: 'relative', zIndex: 3,
+          display: 'flex', flexDirection: 'column', gap: isMobile ? '14px' : '22px',
+        }}
+      >
+        {/* Eyebrow */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap' }}>
+          <div aria-hidden="true" style={{ width: isMobile ? '20px' : '40px', height: '2px', background: C.gold, flexShrink: 0 }} />
+          <span style={{ fontSize: isMobile ? '10px' : '11px', fontWeight: 700, letterSpacing: isMobile ? '0.1em' : '0.16em', textTransform: 'uppercase' as const, color: C.gold }}>
+            {sl.eyebrow}
+          </span>
+        </div>
+
+        {/* Título — h1 semántico */}
+        <h1 style={{ margin: 0, fontWeight: 'inherit' }}>
+          <span style={{ display: 'block', fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.02em', marginBottom: isMobile ? '6px' : '8px' }}>
+            {sl.line1}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '14px', marginBottom: '4px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 800, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              {sl.line2}
             </span>
-          </div>
+            {sl.connector && (
+              <span aria-hidden="true" style={{
+                fontSize: 'clamp(22px, 5.5vw, 50px)',
+                fontWeight: 500,
+                color: C.gold,
+                opacity: 0.9,
+                letterSpacing: '-0.02em',
+                lineHeight: 1,
+                display: 'inline-block',
+                verticalAlign: 'baseline',
+              }}>y</span>
+            )}
+          </span>
+          <span style={{
+            display: 'block',
+            fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 800,
+            letterSpacing: '-0.03em', lineHeight: 1,
+            color: 'transparent',
+            backgroundImage: `linear-gradient(180deg, ${C.gold} 0%, #f3c266 100%)`,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            marginBottom: '8px',
+          }}>
+            {sl.line3}
+          </span>
+        </h1>
 
-          {/* Título */}
-          <div>
-            <div style={{ fontSize: 'clamp(18px, 2.8vw, 32px)', fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.02em', marginBottom: isMobile ? '6px' : '8px' }}>
-              {sl.line1}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '8px' : '14px', marginBottom: '4px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                {sl.line2}
-              </span>
-              {sl.connector && (
-                <span style={{
-                  fontSize: 'clamp(22px, 5.5vw, 50px)',
-                  fontWeight: 500,
-                  color: C.gold,
-                  opacity: 0.9,
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1,
-                  display: 'inline-block',
-                  verticalAlign: 'baseline',
-                }}>y</span>
-              )}
-            </div>
-            <div style={{ marginBottom: '8px' }}>
-              <span style={{
-                fontSize: 'clamp(28px, 7.5vw, 68px)', fontWeight: 900,
-                letterSpacing: '-0.03em', lineHeight: 1,
-                color: 'transparent',
-                backgroundImage: `linear-gradient(180deg, ${C.gold} 0%, #f3c266 100%)`,
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-              }}>
-                {sl.line3}
-              </span>
-            </div>
-          </div>
+        {/* Subtítulo */}
+        <p style={{ fontSize: isMobile ? '13px' : '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, maxWidth: '460px', margin: 0 }}>
+          {sl.sub}
+        </p>
 
-          {/* Subtítulo */}
-          <p style={{ fontSize: isMobile ? '13px' : '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, maxWidth: '460px', margin: 0 }}>
-            {sl.sub}
-          </p>
-
-          {/* Botones */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <a href="#productos" style={{ textDecoration: 'none' }}>
-              <button className="qc-btn-gold" style={{
-                padding: '12px 28px', borderRadius: '8px',
-                fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
-                boxShadow: '0 4px 20px rgba(231,167,63,0.4)',
-              }}>Ver catálogo →</button>
-            </a>
-          </div>
-
-          {/* Dots */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {slides.map((_, i) => (
-              <div key={i} onClick={() => goTo(i, i > current ? 'left' : 'right')} style={{
-                width: current === i ? '24px' : '8px', height: '8px', borderRadius: '4px',
-                background: current === i ? C.gold : 'rgba(255,255,255,0.3)',
-                cursor: 'pointer', transition: 'width 0.35s ease, background 0.35s ease',
-              }} />
-            ))}
-          </div>
-        </div>
-
-        {/* Flecha derecha */}
-        <button
-          onClick={next}
-          type="button"
-          aria-label="Siguiente slide"
-          className="hero-arrow-btn hero-arrow-right"
-          style={{
-            position: 'absolute',
-            right: isMobile ? '16px' : '32px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
-            width: isMobile ? '42px' : '48px', height: isMobile ? '42px' : '48px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 6px 20px rgba(231,167,63,0.45)',
-          }}
-        >
-          <svg width={isMobile ? 18 : 20} height={isMobile ? 18 : 20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-        {/* Flecha izquierda */}
-        <button
-          onClick={prev}
-          type="button"
-          aria-label="Slide anterior"
-          className="hero-arrow-btn hero-arrow-left"
-          style={{
-            position: 'absolute', left: '32px', top: '50%', transform: 'translateY(-50%)',
-            zIndex: 4,
-            background: 'rgba(231,167,63,0.18)',
-            border: `1.5px solid rgba(231,167,63,0.55)`,
-            borderRadius: '50%',
-            width: '48px', height: '48px', cursor: 'pointer',
-            display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-          }}
-        >
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-
-        {/* Flecha abajo */}
-        <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 3 }}>
-          <a href="#productos" style={{ textDecoration: 'none', display: 'flex' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'arrowBounce 2s ease-in-out infinite' }}>
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+        {/* Botones */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <a href="#productos" style={{ textDecoration: 'none' }}>
+            <button className="qc-btn-gold" style={{
+              padding: '12px 28px', borderRadius: '8px',
+              fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
+              boxShadow: '0 4px 20px rgba(231,167,63,0.4)',
+            }}>Ver catálogo →</button>
           </a>
         </div>
 
-      </section>
-    </>
+        {/* Dots: ahora botones con hit area 44x44 */}
+        <div role="tablist" aria-label="Ir a slide" style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              role="tab"
+              type="button"
+              aria-selected={current === i}
+              aria-label={`Slide ${i + 1} de ${slides.length}`}
+              onClick={() => goTo(i, i > current ? 'left' : 'right')}
+              style={{
+                width: '36px', height: '36px',
+                padding: 0, margin: 0,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <span aria-hidden="true" style={{
+                display: 'block',
+                width: current === i ? '24px' : '8px', height: '8px', borderRadius: '4px',
+                background: current === i ? C.gold : 'rgba(255,255,255,0.45)',
+                transition: 'width 0.35s ease, background 0.35s ease',
+              }} />
+            </button>
+          ))}
+          {/* Play/Pause */}
+          <button
+            type="button"
+            onClick={() => setPaused(p => !p)}
+            aria-label={paused ? 'Reanudar carrusel' : 'Pausar carrusel'}
+            aria-pressed={paused}
+            style={{
+              marginLeft: '8px',
+              width: '36px', height: '36px',
+              padding: 0,
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'rgba(255,255,255,0.85)',
+            }}
+          >
+            {paused ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="6,4 20,12 6,20" />
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="6" y="5" width="4" height="14" rx="1" />
+                <rect x="14" y="5" width="4" height="14" rx="1" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Flecha derecha */}
+      <button
+        onClick={next}
+        type="button"
+        aria-label="Siguiente slide"
+        className="hero-arrow-btn hero-arrow-right"
+        style={{
+          position: 'absolute',
+          right: isMobile ? '16px' : '32px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 4, background: C.gold, border: 'none', borderRadius: '50%',
+          width: isMobile ? '44px' : '48px', height: isMobile ? '44px' : '48px', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 6px 20px rgba(231,167,63,0.45)',
+        }}
+      >
+        <svg width={isMobile ? 18 : 20} height={isMobile ? 18 : 20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+
+      {/* Flecha izquierda */}
+      <button
+        onClick={prev}
+        type="button"
+        aria-label="Slide anterior"
+        className="hero-arrow-btn hero-arrow-left"
+        style={{
+          position: 'absolute', left: '32px', top: '50%', transform: 'translateY(-50%)',
+          zIndex: 4,
+          background: 'rgba(231,167,63,0.18)',
+          border: `1.5px solid rgba(231,167,63,0.55)`,
+          borderRadius: '50%',
+          width: '48px', height: '48px', cursor: 'pointer',
+          display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+        }}
+      >
+        <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      {/* Flecha abajo */}
+      <div className="hero-arrow-down" style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 3 }}>
+        <a href="#productos" aria-label="Ir a productos" style={{ textDecoration: 'none', display: 'flex' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </a>
+      </div>
+
+    </section>
   )
 }

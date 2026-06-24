@@ -1,24 +1,101 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
+import Image from 'next/image'
 import { C } from './constants'
 import { WhatsAppIcon } from './ui'
 import { useBreakpoint } from '@/lib/hooks'
+import { getBusinessStatus, getNextOpenAt, type BusinessStatus } from '@/lib/businessHours'
+import type { ChatContext } from './WhatsAppChatLazy'
 
-const WA_NUMBER = '5493813046228'
+const ASESORAS = [
+  { id: 'luciana', name: 'Luciana', role: 'Asesora comercial', photo: '/asesora-luciana.jpg', phone: '5493813202593' },
+  { id: 'rocio',   name: 'Rocío',   role: 'Asesora comercial', photo: '/asesora-rocio.jpg',   phone: '5493813006202' },
+] as const
+type Asesora = (typeof ASESORAS)[number]
 
-const QUICK_CHIPS = [
-  { label: '💰 Consultar precios', text: 'Hola, quiero consultar precios.' },
-  { label: '📦 Hacer un pedido',   text: 'Hola, quiero hacer un pedido.' },
-  { label: '📋 Ver catálogo',      text: 'Hola, me gustaría ver el catálogo de productos.' },
-  { label: '🚚 Info de envíos',    text: 'Hola, quiero saber cómo son los envíos.' },
-]
+type ChipCtx = 'home' | 'catalog' | 'product'
+
+type Chip = { label: string; build: (ctx: ChatContext) => string }
+
+const CHIP_POOL: Record<ChipCtx, Chip[]> = {
+  home: [
+    { label: '💰 Consultar precios', build: () => 'Hola, quiero consultar precios mayoristas.' },
+    { label: '📦 Hacer un pedido',   build: () => 'Hola, quiero hacer un pedido.' },
+    { label: '📋 Ver catálogo',      build: () => 'Hola, me gustaría ver el catálogo de productos.' },
+    { label: '🚚 Info de envíos',    build: () => 'Hola, quiero saber cómo son los envíos.' },
+  ],
+  catalog: [
+    { label: '💰 Pedir cotización',     build: () => 'Hola, quiero pedir una cotización mayorista.' },
+    { label: '📦 ¿Cómo compro?',        build: () => 'Hola, ¿cómo es el proceso para hacer un pedido?' },
+    { label: '🚚 ¿Envían a mi zona?',   build: () => 'Hola, quiero saber si hacen envíos a mi zona.' },
+    { label: '🏭 Soy revendedor',       build: () => 'Hola, soy revendedor y quiero trabajar con ustedes.' },
+  ],
+  product: [
+    { label: '💲 Precio y stock',        build: c => c.type === 'product' ? `Hola, quiero precio y stock del producto: ${c.name}.` : 'Hola.' },
+    { label: '📐 Presentaciones',        build: c => c.type === 'product' ? `Hola, ¿qué presentaciones tienen del producto: ${c.name}?` : 'Hola.' },
+    { label: '🚚 Calcular envío',        build: c => c.type === 'product' ? `Hola, quiero calcular envío para: ${c.name}.` : 'Hola.' },
+    { label: '📋 Productos similares',   build: c => c.type === 'product' ? `Hola, ¿tienen productos similares a: ${c.name}?` : 'Hola.' },
+  ],
+}
+
+function pickAsesora(): Asesora {
+  if (typeof window === 'undefined') return ASESORAS[0]
+
+  // Same browsing session: keep the assigned asesora to avoid confusing the visitor
+  const sessionChoice = sessionStorage.getItem('qc-asesora-id')
+  const fromSession = ASESORAS.find(a => a.id === sessionChoice)
+  if (fromSession) return fromSession
+
+  // New session: round-robin via localStorage counter
+  // First visit ever → -1, becomes 0 (Luciana). Next visit → 1 (Rocío). And so on.
+  const last = parseInt(localStorage.getItem('qc-asesora-counter') ?? '-1', 10)
+  const nextIdx = (Number.isFinite(last) ? last + 1 : 0) % ASESORAS.length
+  const chosen = ASESORAS[nextIdx]
+  localStorage.setItem('qc-asesora-counter', String(nextIdx))
+  sessionStorage.setItem('qc-asesora-id', chosen.id)
+  return chosen
+}
+
+function buildGreeting(context: ChatContext, status: BusinessStatus, name: string, nextOpenAt: string): ReactNode {
+  if (context.type === 'product') {
+    const intro = <>¡Hola! 👋 Veo que te interesa <strong style={{ color: C.blue }}>{context.name}</strong>.{' '}</>
+    if (status === 'open' || status === 'closing-soon') {
+      return <>{intro}Soy {name}, ¿te paso stock, precio mayorista o presentaciones?</>
+    }
+    if (status === 'lunch') {
+      return <>{intro}Soy {name}, volvemos del receso a las 14:30 — dejame tu mensaje y te respondo apenas vuelva 🙌</>
+    }
+    return <>{intro}Ahora estamos cerrados. {nextOpenAt}. Dejá tu consulta y te respondo apenas abramos.</>
+  }
+  if (context.type === 'catalog') {
+    if (status === 'open' || status === 'closing-soon') {
+      return <>¡Hola! 👋 ¿Buscás algo específico del catálogo? Soy {name}, te ayudo a encontrarlo.</>
+    }
+    if (status === 'lunch') {
+      return <>¡Hola! 👋 Soy {name}. Volvemos del receso a las 14:30, pero contame qué buscás y te respondo apenas vuelva.</>
+    }
+    return <>¡Hola! 👋 Soy {name}. Ahora estamos cerrados. {nextOpenAt}. Dejá tu consulta y te contacto apenas abramos.</>
+  }
+  // home
+  if (status === 'open') return <>¡Hola! 👋 Soy {name}, asesora de <strong style={{ color: C.blue }}>Química Clean</strong>. ¿En qué puedo ayudarte hoy?</>
+  if (status === 'closing-soon') return <>¡Hola! 👋 Soy {name}. Estamos cerrando pronto — escribime rápido y te respondo hoy 🙌</>
+  if (status === 'lunch') return <>¡Hola! 👋 Soy {name}. Volvemos del receso a las 14:30, pero dejame tu mensaje y te respondo apenas vuelva.</>
+  return <>¡Hola! 👋 Soy {name}. Ahora estamos cerrados. {nextOpenAt}. Dejá tu consulta y te contacto apenas abramos.</>
+}
+
+function buildStatusLine(status: BusinessStatus, nextOpenAt: string): { dot: string; text: string } {
+  if (status === 'open') return { dot: '#4ade80', text: 'En línea · Respuesta rápida' }
+  if (status === 'closing-soon') return { dot: '#fbbf24', text: 'Cerrando pronto — atención hoy' }
+  if (status === 'lunch') return { dot: '#fbbf24', text: 'En receso · Volvemos 14:30' }
+  return { dot: '#94a3b8', text: nextOpenAt }
+}
 
 function getTime() {
   return new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
 }
 
-export function WhatsAppChat() {
+export function WhatsAppChat({ context = { type: 'home' } as ChatContext }: { context?: ChatContext }) {
   const [open, setOpen]               = useState(false)
   const [phase, setPhase]             = useState<'typing' | 'ready' | 'connecting'>('typing')
   const [progress, setProgress]       = useState(0)
@@ -26,8 +103,20 @@ export function WhatsAppChat() {
   const [badge, setBadge]             = useState(true)
   const [botTime, setBotTime]         = useState('')
   const [userMsg, setUserMsg]         = useState('')
+  const [asesora]                     = useState<Asesora>(() => pickAsesora())
+  const [status, setStatus]           = useState<BusinessStatus>(() => getBusinessStatus())
+  const [nextOpenAt, setNextOpenAt]   = useState<string>(() => getNextOpenAt())
   const inputRef = useRef<HTMLInputElement>(null)
   const { isMobile } = useBreakpoint()
+
+  // Refresh business status every 60s (handles user crossing a boundary like 13:30 → lunch)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setStatus(getBusinessStatus())
+      setNextOpenAt(getNextOpenAt())
+    }, 60_000)
+    return () => clearInterval(id)
+  }, [])
 
   // Tooltip de bienvenida
   useEffect(() => {
@@ -58,11 +147,9 @@ export function WhatsAppChat() {
   const redirect = (text: string) => {
     // iOS Safari bloquea window.open si no está en el user gesture síncrono.
     // Abrir primero, animar después.
-    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`
+    const url = `https://wa.me/${asesora.phone}?text=${encodeURIComponent(text)}`
     const win = window.open(url, '_blank', 'noopener,noreferrer')
     if (!win) {
-      // Fallback: si el popup quedó bloqueado, navegamos en la misma pestaña
-      // (en iOS esto abre el universal link y entra a WhatsApp igualmente).
       window.location.assign(url)
       return
     }
@@ -87,36 +174,13 @@ export function WhatsAppChat() {
     redirect(text)
   }
 
+  const chipCtx: ChipCtx = context.type
+  const chips = CHIP_POOL[chipCtx]
+  const statusLine = buildStatusLine(status, nextOpenAt)
+  const greeting = buildGreeting(context, status, asesora.name, nextOpenAt)
+
   return (
     <>
-      <style>{`
-        @keyframes wa-pulse {
-          0%   { transform:scale(1);   opacity:.7; }
-          70%  { transform:scale(1.65);opacity:0; }
-          100% { transform:scale(1.65);opacity:0; }
-        }
-        @keyframes wa-bounce {
-          0%,60%,100% { transform:translateY(0); }
-          30%          { transform:translateY(-7px); }
-        }
-        @keyframes wa-pop {
-          from { transform:scale(.42) translateY(24px); opacity:0; }
-          to   { transform:scale(1)   translateY(0);    opacity:1; }
-        }
-        @keyframes wa-spin  { to { transform:rotate(360deg); } }
-        @keyframes wa-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes wa-badge { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
-
-        .wa-input:focus { border-color:${C.blue} !important; background:#fff !important; outline:none; }
-        .wa-input::placeholder { color:${C.textLight}; }
-        .wa-input:disabled { cursor:wait; opacity:.6; }
-        .wa-chip:active { transform:scale(.95) !important; }
-        .wa-send-btn:hover:not(:disabled) { background:${C.blueDark} !important; }
-        .wa-fab-btn:hover { transform:scale(1.08) !important; box-shadow:0 8px 30px rgba(43,123,184,.6) !important; }
-        .wa-chip:hover { background:${C.blue} !important; color:#fff !important; border-color:${C.blue} !important; transform:translateY(-1px); box-shadow:0 4px 12px rgba(43,123,184,.25); }
-        .wa-chip { transition: all .18s ease; }
-      `}</style>
-
       {/* Tooltip — solo desktop */}
       {!isMobile && (
         <div style={{
@@ -129,7 +193,7 @@ export function WhatsAppChat() {
           transition:'opacity .4s',
           border:`1px solid ${C.border}`,
         }}>
-          ¿Tenés una consulta? ¡Escribinos! 💬
+          ¿Tenés una consulta? Te atiende {asesora.name} 💬
           <span style={{
             position:'absolute', right:'-7px', top:'50%', transform:'translateY(-50%)',
             width:0, height:0,
@@ -141,21 +205,25 @@ export function WhatsAppChat() {
 
       {/* Ventana de chat */}
       {open && (
-        <div style={{
-          position:'fixed',
-          bottom: isMobile ? '82px' : '92px',
-          right: isMobile ? '12px' : '24px',
-          left: isMobile ? '12px' : 'auto',
-          zIndex:999,
-          width: isMobile ? 'auto' : '320px',
-          maxWidth: isMobile ? '340px' : 'none',
-          marginLeft: isMobile ? 'auto' : undefined,
-          background:C.white, borderRadius:'20px',
-          boxShadow:'0 16px 56px rgba(0,0,0,.18)',
-          overflow:'hidden', transformOrigin:'bottom right',
-          animation:'wa-pop .3s cubic-bezier(.34,1.56,.64,1) forwards',
-          border:`1px solid ${C.border}`,
-        }}>
+        <div
+          role="dialog"
+          aria-label={`Chat con ${asesora.name}, ${asesora.role} de Química Clean`}
+          style={{
+            position:'fixed',
+            bottom: isMobile ? '82px' : '92px',
+            right: isMobile ? '12px' : '24px',
+            left: isMobile ? '12px' : 'auto',
+            zIndex:999,
+            width: isMobile ? 'auto' : '320px',
+            maxWidth: isMobile ? '340px' : 'none',
+            marginLeft: isMobile ? 'auto' : undefined,
+            background:C.white, borderRadius:'20px',
+            boxShadow:'0 16px 56px rgba(0,0,0,.18)',
+            overflow:'hidden', transformOrigin:'bottom right',
+            animation:'wa-pop .3s cubic-bezier(.34,1.56,.64,1) forwards',
+            border:`1px solid ${C.border}`,
+          }}
+        >
 
           {/* Header */}
           <div style={{
@@ -165,32 +233,45 @@ export function WhatsAppChat() {
           }}>
             <div style={{
               width:44, height:44, borderRadius:'50%',
-              background:'rgba(255,255,255,.15)',
-              display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
-              border:'1.5px solid rgba(255,255,255,.25)',
+              overflow:'hidden', position:'relative', flexShrink:0,
+              border:'1.5px solid rgba(255,255,255,.35)',
+              background:'rgba(255,255,255,.1)',
             }}>
-              <WhatsAppIcon size={22} color="white" />
+              <Image
+                src={asesora.photo}
+                alt=""
+                fill
+                sizes="44px"
+                style={{ objectFit:'cover' }}
+              />
             </div>
-            <div>
-              <div style={{ color:C.white, fontSize:'14px', fontWeight:700 }}>
-                Química Clean
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ color:C.white, fontSize:'14px', fontWeight:700, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                {asesora.name} · Química Clean
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:2 }}>
-                <div style={{ width:7, height:7, borderRadius:'50%', background:'#4ade80' }} />
+                <div aria-hidden="true" style={{ width:7, height:7, borderRadius:'50%', background:statusLine.dot }} />
                 <span style={{ color:'rgba(255,255,255,.75)', fontSize:'11px' }}>
-                  En línea · Respuesta inmediata
+                  {statusLine.text}
                 </span>
               </div>
             </div>
             <button
+              type="button"
               onClick={() => setOpen(false)}
+              aria-label="Cerrar chat"
               style={{
                 marginLeft:'auto', background:'rgba(255,255,255,.12)', border:'none',
                 color:'rgba(255,255,255,.85)', cursor:'pointer',
                 fontSize:'14px', padding:'6px 7px', lineHeight:1,
                 borderRadius:'8px', transition:'background .15s',
               }}
-            >✕</button>
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
 
           {/* Mensajes */}
@@ -200,10 +281,10 @@ export function WhatsAppChat() {
             <div style={{ display:'flex', gap:8, alignItems:'flex-end' }}>
               <div style={{
                 width:28, height:28, borderRadius:'50%', flexShrink:0,
-                background:C.blue,
-                display:'flex', alignItems:'center', justifyContent:'center',
+                overflow:'hidden', position:'relative',
+                border:'1px solid rgba(43,123,184,.25)',
               }}>
-                <WhatsAppIcon size={14} color="white" />
+                <Image src={asesora.photo} alt="" fill sizes="28px" style={{ objectFit:'cover' }} />
               </div>
               <div>
                 <div style={{
@@ -212,7 +293,7 @@ export function WhatsAppChat() {
                   boxShadow:'0 1px 6px rgba(0,0,0,.06)', maxWidth:'225px',
                 }}>
                   {phase === 'typing' ? (
-                    <div style={{ display:'flex', gap:4, alignItems:'center', padding:'3px 2px' }}>
+                    <div style={{ display:'flex', gap:4, alignItems:'center', padding:'3px 2px' }} aria-label="Escribiendo">
                       {[0, .2, .4].map((d, i) => (
                         <div key={i} style={{
                           width:7, height:7, borderRadius:'50%', background:C.textLight,
@@ -222,9 +303,7 @@ export function WhatsAppChat() {
                     </div>
                   ) : (
                     <span style={{ animation:'wa-fadein .35s ease forwards' }}>
-                      ¡Hola! 👋 Soy el asistente de{' '}
-                      <strong style={{ color:C.blue }}>Química Clean</strong>.
-                      ¿En qué puedo ayudarte hoy?
+                      {greeting}
                     </span>
                   )}
                 </div>
@@ -267,18 +346,20 @@ export function WhatsAppChat() {
             <div style={{
               padding:'10px 12px 8px', background:'#f0f4f8',
               display:'flex', flexWrap:'wrap', gap:6,
-              animation:'wa-fadein .3s .1s ease both',
             }}>
-              {QUICK_CHIPS.map(chip => (
+              {chips.map((chip, i) => (
                 <button
                   key={chip.label}
+                  type="button"
                   className="wa-chip"
-                  onClick={() => redirect(chip.text)}
+                  onClick={() => redirect(chip.build(context))}
                   style={{
                     background:C.white, color:C.textMid,
                     border:`1px solid ${C.border}`, borderRadius:'20px',
                     padding:'5px 11px', fontSize:'11.5px', fontWeight:500,
                     cursor:'pointer', fontFamily:'DM Sans, sans-serif',
+                    animation:`wa-fadein .3s ${100 + i * 70}ms ease both`,
+                    opacity: 0,
                   }}
                 >
                   {chip.label}
@@ -321,7 +402,9 @@ export function WhatsAppChat() {
                 display:'flex', gap:8, padding:'10px 12px',
                 background:C.white, borderTop:`1px solid ${C.border}`, alignItems:'center',
               }}>
+                <label htmlFor="wa-input" className="sr-only">Escribí tu consulta</label>
                 <input
+                  id="wa-input"
                   ref={inputRef}
                   className="wa-input"
                   type="text"
@@ -333,12 +416,15 @@ export function WhatsAppChat() {
                     padding:'9px 14px', fontSize:'13.5px', color:C.text,
                     fontFamily:'DM Sans, sans-serif', background:C.offWhite,
                     transition:'border-color .2s, background .2s',
+                    minWidth: 0,
                   }}
                 />
                 <button
+                  type="button"
                   className="wa-send-btn"
                   onClick={handleSend}
                   disabled={phase === 'typing'}
+                  aria-label="Enviar consulta a WhatsApp"
                   style={{
                     width:40, height:40, borderRadius:'50%',
                     background: phase === 'typing' ? C.textLight : C.blue, border:'none',
@@ -347,7 +433,7 @@ export function WhatsAppChat() {
                     transition:'background .15s', flexShrink:0,
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                   </svg>
                 </button>
@@ -369,6 +455,7 @@ export function WhatsAppChat() {
         onClick={() => open ? setOpen(false) : openChat()}
         title="Escribinos por WhatsApp"
         aria-label={open ? 'Cerrar chat de WhatsApp' : 'Abrir chat de WhatsApp'}
+        aria-expanded={open}
         type="button"
         style={{
           position:'fixed',
@@ -376,24 +463,24 @@ export function WhatsAppChat() {
           right: isMobile ? '16px' : '24px',
           zIndex:1000,
           width: isMobile ? 56 : 58, height: isMobile ? 56 : 58, borderRadius:'50%',
-          background:C.blue, border:'none', cursor:'pointer',
+          background:'#25D366', border:'none', cursor:'pointer',
           display:'flex', alignItems:'center', justifyContent:'center',
-          boxShadow:'0 4px 24px rgba(43,123,184,.45)',
+          boxShadow:'0 6px 24px rgba(37,211,102,.5)',
           transition:'transform .2s, box-shadow .2s',
         }}
       >
         {/* Pulse ring */}
         {!open && (
-          <div style={{
+          <div aria-hidden="true" style={{
             position:'absolute', width:'100%', height:'100%', borderRadius:'50%',
-            background:'rgba(43,123,184,.35)',
+            background:'rgba(37,211,102,.45)',
             animation:'wa-pulse 2s infinite',
             pointerEvents:'none',
           }} />
         )}
         {/* Badge */}
         {badge && !open && (
-          <div style={{
+          <div aria-hidden="true" style={{
             position:'absolute', top:-3, right:-3,
             width:18, height:18, borderRadius:'50%',
             background:'#ef4444', color:'#fff',

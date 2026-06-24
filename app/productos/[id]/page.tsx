@@ -4,6 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { C, categories } from '@/app/components/constants'
 import { WhatsAppIcon } from '@/app/components/ui'
+import WhatsAppChatLazy from '@/app/components/WhatsAppChatLazy'
 import { CONFIG } from '@/lib/config'
 import { getProductos, getCategorias } from '@/lib/data'
 import type { Producto } from '@/lib/supabase'
@@ -259,6 +260,8 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
           </div>
         )}
       </div>
+
+      <WhatsAppChatLazy context={{ type: 'product', name: producto.nombre, id: producto.id }} />
     </main>
   )
 }

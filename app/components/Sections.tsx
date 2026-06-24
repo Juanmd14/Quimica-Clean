@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { C, stats } from './constants'
@@ -32,7 +32,7 @@ function ProductThumb({ id, imageUrl, color, color2, emoji, height = 140 }: {
       {!imgError && (
         <Image
           src={src}
-          alt="Producto"
+          alt=""
           fill
           sizes="(max-width: 768px) 50vw, 220px"
           onError={() => setImgError(true)}
@@ -91,39 +91,92 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
   const { isMobile } = useBreakpoint()
   const { productos } = useProductos()
   const catProducts = productos.filter(p => p.categoria === cat.nombre)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const titleId = 'qc-cat-modal-title'
+
+  // Escape + body scroll lock + focus restore
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'Tab') {
+        const root = dialogRef.current
+        if (!root) return
+        const focusables = root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        )
+        if (focusables.length === 0) return
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    // Move focus into dialog
+    requestAnimationFrame(() => dialogRef.current?.focus())
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+      previouslyFocused?.focus()
+    }
+  }, [onClose])
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(10,20,35,0.72)', backdropFilter: 'blur(5px)', zIndex: 200 }} />
-      <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        background: C.white, borderRadius: '20px',
-        padding: isMobile ? '20px 16px' : '36px',
-        width: '92%', maxWidth: '820px',
-        maxHeight: isMobile ? '90vh' : '85vh',
-        overflowY: 'auto',
-        zIndex: 201, boxShadow: '0 40px 100px rgba(0,0,0,0.28)',
-        animation: 'modalIn 0.25s ease both',
-      }}>
+      <div onClick={onClose} aria-hidden="true" style={{ position: 'fixed', inset: 0, background: 'rgba(10,20,35,0.72)', backdropFilter: 'blur(5px)', zIndex: 200 }} />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        style={{
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          background: C.white, borderRadius: '20px',
+          padding: isMobile ? '20px 16px' : '36px',
+          width: '92%', maxWidth: '820px',
+          maxHeight: isMobile ? '90vh' : '85vh',
+          overflowY: 'auto',
+          zIndex: 201, boxShadow: '0 40px 100px rgba(0,0,0,0.28)',
+          animation: 'qcModalIn 0.25s ease both',
+          outline: 'none',
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px', position: 'relative', overflow: 'hidden' }}>
+            <div aria-hidden="true" style={{ width: '44px', height: '44px', borderRadius: '12px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '24px', position: 'relative', overflow: 'hidden' }}>
               {cat.imagen_url ? (
-                <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="44px" style={{ objectFit: 'cover' }} />
+                <Image src={cat.imagen_url} alt="" fill sizes="44px" style={{ objectFit: 'cover' }} />
               ) : (
                 <span>{cat.emoji}</span>
               )}
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text }}>{cat.nombre}</div>
+              <h3 id={titleId} style={{ fontWeight: 800, fontSize: isMobile ? '16px' : '20px', color: C.text, margin: 0 }}>{cat.nombre}</h3>
               <div style={{ fontSize: '12px', color: C.textMid }}>{catProducts.length} productos</div>
             </div>
           </div>
-          <button onClick={onClose} style={{
-            background: C.offWhite, border: `1px solid ${C.border}`, width: '36px', height: '36px',
-            borderRadius: '8px', cursor: 'pointer', fontSize: '20px', color: C.textMid,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>×</button>
+          <button
+            onClick={onClose}
+            type="button"
+            aria-label="Cerrar"
+            style={{
+              background: C.offWhite, border: `1px solid ${C.border}`, width: '44px', height: '44px',
+              borderRadius: '10px', cursor: 'pointer', fontSize: '22px', color: C.textMid,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         <div style={{
@@ -153,12 +206,6 @@ function CategoryModal({ cat, onClose }: { cat: CategoriaData; onClose: () => vo
           ))}
         </div>
       </div>
-      <style>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: translate(-50%, -47%) scale(0.97); }
-          to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-      `}</style>
     </>
   )
 }
@@ -195,9 +242,9 @@ export function Categories() {
               padding: isMobile ? '18px 12px' : '24px 16px',
               textAlign: 'center', borderRadius: '16px',
             }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', position: 'relative', overflow: 'hidden' }}>
+              <div aria-hidden="true" style={{ width: '64px', height: '64px', borderRadius: '14px', background: C.blueLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', position: 'relative', overflow: 'hidden' }}>
                 {cat.imagen_url ? (
-                  <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="64px" style={{ objectFit: 'cover' }} />
+                  <Image src={cat.imagen_url} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontSize: '36px', lineHeight: 1 }}>{cat.emoji}</span>
                 )}
@@ -257,16 +304,22 @@ export function Products() {
             WebkitOverflowScrolling: 'touch',
           }}>
             {['Todos', ...categoriaList].map(cat => (
-              <button key={cat} onClick={() => setActiveCat(cat)} style={{
-                background: activeCat === cat ? C.blue : C.white,
-                border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
-                color: activeCat === cat ? 'white' : C.textMid,
-                padding: '7px 14px', borderRadius: '20px',
-                fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 500,
-                cursor: 'pointer', transition: 'background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s',
-                boxShadow: activeCat === cat ? '0 4px 12px rgba(43,123,184,0.3)' : 'none',
-                flexShrink: 0,
-              }}>{cat}</button>
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCat(cat)}
+                aria-pressed={activeCat === cat}
+                style={{
+                  background: activeCat === cat ? C.blue : C.white,
+                  border: `1.5px solid ${activeCat === cat ? C.blue : C.border}`,
+                  color: activeCat === cat ? 'white' : C.textMid,
+                  padding: '10px 16px', minHeight: '40px', borderRadius: '20px',
+                  fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 500,
+                  cursor: 'pointer', transition: 'background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s',
+                  boxShadow: activeCat === cat ? '0 4px 12px rgba(43,123,184,0.3)' : 'none',
+                  flexShrink: 0,
+                }}
+              >{cat}</button>
             ))}
           </div>
         </div>
@@ -300,13 +353,13 @@ export function Products() {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <a href="/productos" className="qc-btn-blue" style={{
+          <Link href="/productos" className="qc-btn-blue" style={{
             display: 'inline-block',
             padding: '13px 32px', borderRadius: '8px', textDecoration: 'none',
             fontWeight: 600, fontSize: '14px',
           }}>
             Ver todo el catálogo →
-          </a>
+          </Link>
         </div>
       </Reveal>
     </section>

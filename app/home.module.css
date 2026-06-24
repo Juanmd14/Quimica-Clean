@@ -69,6 +69,10 @@
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-float { animation: none; }
+  }
+
   /* Responsive Design */
   @media (max-width: 1024px) {
     .reasons-grid {

@@ -203,11 +203,21 @@ export function MoleculeCanvas() {
       }
       animRef.current = requestAnimationFrame(draw)
     }
-    draw()
+
+    // Defer animation start to idle time (after LCP)
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    const usingRic = typeof w.requestIdleCallback === 'function'
+    const startId = usingRic ? w.requestIdleCallback!(() => draw()) : window.setTimeout(() => draw(), 800)
+
     return () => {
       cancelAnimationFrame(animRef.current)
       window.removeEventListener('resize', resize)
       io.disconnect()
+      if (usingRic && typeof w.cancelIdleCallback === 'function') w.cancelIdleCallback(startId)
+      else clearTimeout(startId)
     }
   }, [])
 

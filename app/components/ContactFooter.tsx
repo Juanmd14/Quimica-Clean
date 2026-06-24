@@ -357,12 +357,18 @@ export function Contact() {
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Atención directa de nuestro equipo, no es un bot</div>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {/* Nombre */}
               <div>
+                <label htmlFor="qc-nombre" className="sr-only">Nombre y apellido</label>
                 <input
+                  id="qc-nombre"
                   type="text"
                   placeholder="Nombre y apellido *"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!(errors.nombre && touched.nombre)}
+                  aria-describedby={errors.nombre && touched.nombre ? 'qc-nombre-err' : undefined}
                   maxLength={50}
                   value={formData.nombre}
                   onChange={e => setFormData({ ...formData, nombre: e.target.value })}
@@ -371,15 +377,22 @@ export function Contact() {
                   style={inputStyle}
                 />
                 {errors.nombre && touched.nombre && (
-                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.nombre}</div>
+                  <div id="qc-nombre-err" style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px', fontWeight: 500 }}>⚠ {errors.nombre}</div>
                 )}
               </div>
 
               {/* Teléfono */}
               <div>
+                <label htmlFor="qc-telefono" className="sr-only">Teléfono</label>
                 <input
+                  id="qc-telefono"
                   type="tel"
+                  inputMode="tel"
                   placeholder="Teléfono *"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!(errors.telefono && touched.telefono)}
+                  aria-describedby={errors.telefono && touched.telefono ? 'qc-telefono-err' : undefined}
                   maxLength={20}
                   value={formData.telefono}
                   onChange={e => setFormData({ ...formData, telefono: e.target.value.replace(/[^\d\s\+\-\(\)]/g, '') })}
@@ -388,35 +401,42 @@ export function Contact() {
                   style={inputStyle}
                 />
                 {errors.telefono && touched.telefono && (
-                  <div style={{ fontSize: '11px', color: '#f87171', marginTop: '4px', fontWeight: 500 }}>⚠️ {errors.telefono}</div>
+                  <div id="qc-telefono-err" style={{ fontSize: '12px', color: '#fca5a5', marginTop: '4px', fontWeight: 500 }}>⚠ {errors.telefono}</div>
                 )}
               </div>
 
               {/* Producto de interés */}
-              <input
-                type="text"
-                placeholder="Producto de interés"
-                maxLength={50}
-                value={formData.producto_interes}
-                onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
-                className="qc-input"
-                style={inputStyle}
-              />
+              <div>
+                <label htmlFor="qc-producto" className="sr-only">Producto de interés</label>
+                <input
+                  id="qc-producto"
+                  type="text"
+                  placeholder="Producto de interés"
+                  maxLength={50}
+                  value={formData.producto_interes}
+                  onChange={e => setFormData({ ...formData, producto_interes: e.target.value })}
+                  className="qc-input"
+                  style={inputStyle}
+                />
+              </div>
 
               {/* Mensaje */}
               <div>
+                <label htmlFor="qc-mensaje" className="sr-only">Mensaje o consulta</label>
                 <textarea
+                  id="qc-mensaje"
                   placeholder="Mensaje o consulta"
                   rows={3}
                   maxLength={300}
+                  aria-describedby="qc-mensaje-count"
                   value={formData.mensaje}
                   onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
                   className="qc-input"
                   style={{ ...inputStyle, resize: 'none' }}
                 />
-                <div style={{
+                <div id="qc-mensaje-count" aria-live="polite" style={{
                   fontSize: '11px', textAlign: 'right', marginTop: '4px',
-                  color: formData.mensaje.length > 250 ? C.gold : 'rgba(255,255,255,0.3)',
+                  color: formData.mensaje.length > 250 ? C.gold : 'rgba(255,255,255,0.45)',
                   transition: 'color 0.2s',
                 }}>
                   {formData.mensaje.length}/300
@@ -427,25 +447,49 @@ export function Contact() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
+                aria-busy={status === 'loading'}
                 className="qc-btn-gold"
                 style={{
                   width: '100%', padding: isMobile ? '13px' : '11px', borderRadius: '8px',
                   fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '14px',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 }}
               >
-                {status === 'loading' ? '⏳ Enviando...' : '✓ Enviar consulta'}
+                {status === 'loading' ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true" style={{ animation: 'qc-spin 0.9s linear infinite' }}>
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Enviando…
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Enviar consulta
+                  </>
+                )}
               </button>
             </form>
 
             {/* Messages */}
             {status === 'success' && (
-              <div style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#86efac', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span>✅</span> ¡Consulta enviada exitosamente! Nos pondremos en contacto pronto.
+              <div role="status" aria-live="polite" style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#86efac', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                ¡Consulta enviada! Nos pondremos en contacto pronto.
               </div>
             )}
             {status === 'error' && (
-              <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#fca5a5', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span>❌</span> Error al enviar. Intentá por WhatsApp o email.
+              <div role="alert" aria-live="assertive" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '8px', padding: '13px 16px', fontSize: '13px', color: '#fca5a5', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Error al enviar. Intentá por WhatsApp o email.
               </div>
             )}
           </div>
@@ -473,13 +517,13 @@ export function Footer() {
           <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '8px', overflow: 'hidden', background: 'white', flexShrink: 0 }}>
-                <Image src="/logo_qm.jpg" alt="Quimica Clean" width={36} height={36} style={{ objectFit: 'contain' }} />
+                <Image src="/logo_qm.jpg" alt="" width={36} height={36} style={{ objectFit: 'contain' }} />
               </div>
               <span style={{ fontWeight: 700, fontSize: '15px', color: 'white' }}>
                 QUÍMICA <span style={{ color: C.gold }}>CLEAN</span>
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: '320px', margin: 0 }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.62)', lineHeight: 1.7, maxWidth: '320px', margin: 0 }}>
               Distribuidora mayorista de concentrados y materias primas para industrias y laboratorios de todo el país.
             </p>
           </div>
@@ -506,11 +550,11 @@ export function Footer() {
           {/* Contacto — full width en mobile */}
           <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: C.blue, textTransform: 'uppercase' as const, marginBottom: '12px' }}>Contacto</div>
-            <div style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75 }}>
+            <div style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.75 }}>
               <div>admquimicaclean@gmail.com</div>
               <div>Tucumán, Argentina</div>
-              <div style={{ marginTop: '4px', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Lun–Vie: 8:00–13:30 y 14:30–18:00</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Sáb: 8:00–13:00</div>
+              <div style={{ marginTop: '4px', fontSize: '11.5px', color: 'rgba(255,255,255,0.6)' }}>Lun–Vie: 8:00–13:30 y 14:30–18:00</div>
+              <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)' }}>Sáb: 8:00–13:00</div>
             </div>
           </div>
         </div>
@@ -556,16 +600,17 @@ export function Footer() {
             gap: isMobile ? '12px' : '0',
             textAlign: isMobile ? 'center' : 'left',
           }}>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.62)' }}>
               © 2026 Química Clean · San Miguel de Tucumán, Argentina
               <br />
               Todos los derechos reservados.
-              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.18)', marginLeft: '6px' }}>
-                · Sitio por{' '}
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '6px' }}>
+                · Desarrollado por{' '}
                 <a
                   href="https://juanmd14.netlify.app"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer nofollow"
+                  aria-label="Sitio del desarrollador Juan (se abre en una pestaña nueva)"
                   className="qc-link-juan"
                   style={{ textDecoration: 'none' }}
                 >
@@ -574,8 +619,8 @@ export function Footer() {
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'center' : 'flex-end' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-green 2s infinite' }} />
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Sistema en línea</span>
+              <div aria-hidden="true" style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-green 2s infinite' }} />
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.62)' }}>Sistema en línea</span>
             </div>
           </div>
         </div>
