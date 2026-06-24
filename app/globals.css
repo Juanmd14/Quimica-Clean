@@ -355,6 +355,11 @@ input, textarea, select {
 }
 .hero-arrow-down svg { animation: heroArrowBounce 2s ease-in-out infinite; }
 
+.hero-play-btn:hover,
+.hero-play-btn:focus-visible {
+  color: rgba(255,255,255,0.92) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-content,
   .hero-content[data-anim] {

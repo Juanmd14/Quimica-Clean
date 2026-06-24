@@ -281,32 +281,39 @@ export function Hero() {
               }} />
             </button>
           ))}
-          {/* Play/Pause */}
+          {/* Separador sutil entre dots y play */}
+          <span aria-hidden="true" style={{
+            display: 'inline-block',
+            width: '1px', height: '12px',
+            background: 'rgba(255,255,255,0.18)',
+            marginLeft: '10px', marginRight: '2px',
+          }} />
+          {/* Play/Pause — minimalista, integrado con los dots */}
           <button
             type="button"
             onClick={() => setPaused(p => !p)}
             aria-label={paused ? 'Reanudar carrusel' : 'Pausar carrusel'}
             aria-pressed={paused}
+            className="hero-play-btn"
             style={{
-              marginLeft: '8px',
               width: '36px', height: '36px',
               padding: 0,
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.18)',
-              borderRadius: '50%',
+              background: 'transparent',
+              border: 'none',
               cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'rgba(255,255,255,0.85)',
+              color: 'rgba(255,255,255,0.45)',
+              transition: 'color 0.2s ease',
             }}
           >
             {paused ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <polygon points="6,4 20,12 6,20" />
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="7,5 19,12 7,19" />
               </svg>
             ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <rect x="6" y="5" width="4" height="14" rx="1" />
-                <rect x="14" y="5" width="4" height="14" rx="1" />
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="7" y="5" width="3.5" height="14" rx="0.8" />
+                <rect x="13.5" y="5" width="3.5" height="14" rx="0.8" />
               </svg>
             )}
           </button>

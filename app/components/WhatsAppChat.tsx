@@ -11,6 +11,7 @@ import type { ChatContext } from './WhatsAppChatLazy'
 const ASESORAS = [
   { id: 'luciana', name: 'Luciana', role: 'Asesora comercial', photo: '/asesora-luciana.jpg', phone: '5493813202593' },
   { id: 'rocio',   name: 'Rocío',   role: 'Asesora comercial', photo: '/asesora-rocio.jpg',   phone: '5493813006202' },
+  { id: 'laura',   name: 'Laura',   role: 'Asesora comercial', photo: '/laura-asesora.jpeg',  phone: '5493815436868' },
 ] as const
 type Asesora = (typeof ASESORAS)[number]
 
@@ -39,22 +40,26 @@ const CHIP_POOL: Record<ChipCtx, Chip[]> = {
   ],
 }
 
-function pickAsesora(): Asesora {
-  if (typeof window === 'undefined') return ASESORAS[0]
+function useAsesora(): Asesora {
+  // Default optimista: si el fetch al endpoint no resolvió todavía, mostramos Luciana.
+  // El chat tarda ≥2.5s en revelar el tooltip y ≥1.3s en mostrar el saludo,
+  // así que normalmente el fetch ya está resuelto antes de que el usuario vea el nombre.
+  const [asesora, setAsesora] = useState<Asesora>(ASESORAS[0])
 
-  // Same browsing session: keep the assigned asesora to avoid confusing the visitor
-  const sessionChoice = sessionStorage.getItem('qc-asesora-id')
-  const fromSession = ASESORAS.find(a => a.id === sessionChoice)
-  if (fromSession) return fromSession
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/asesora', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { id?: string } | null) => {
+        if (cancelled || !d) return
+        const match = ASESORAS.find(a => a.id === d.id)
+        if (match) setAsesora(match)
+      })
+      .catch(() => { /* fallback al default */ })
+    return () => { cancelled = true }
+  }, [])
 
-  // New session: round-robin via localStorage counter
-  // First visit ever → -1, becomes 0 (Luciana). Next visit → 1 (Rocío). And so on.
-  const last = parseInt(localStorage.getItem('qc-asesora-counter') ?? '-1', 10)
-  const nextIdx = (Number.isFinite(last) ? last + 1 : 0) % ASESORAS.length
-  const chosen = ASESORAS[nextIdx]
-  localStorage.setItem('qc-asesora-counter', String(nextIdx))
-  sessionStorage.setItem('qc-asesora-id', chosen.id)
-  return chosen
+  return asesora
 }
 
 function buildGreeting(context: ChatContext, status: BusinessStatus, name: string, nextOpenAt: string): ReactNode {
@@ -103,7 +108,7 @@ export function WhatsAppChat({ context = { type: 'home' } as ChatContext }: { co
   const [badge, setBadge]             = useState(true)
   const [botTime, setBotTime]         = useState('')
   const [userMsg, setUserMsg]         = useState('')
-  const [asesora]                     = useState<Asesora>(() => pickAsesora())
+  const asesora                       = useAsesora()
   const [status, setStatus]           = useState<BusinessStatus>(() => getBusinessStatus())
   const [nextOpenAt, setNextOpenAt]   = useState<string>(() => getNextOpenAt())
   const inputRef = useRef<HTMLInputElement>(null)
